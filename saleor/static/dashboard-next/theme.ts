@@ -172,9 +172,6 @@ export default (colors: IThemeColors): Theme =>
       },
       MuiOutlinedInput: {
         input: {
-          "&::placeholder": {
-            opacity: [[0], "!important"] as any
-          },
           color: colors.input.text,
           padding: "20px 12px 8px 12px"
         },
@@ -204,9 +201,6 @@ export default (colors: IThemeColors): Theme =>
               borderColor: [[colors.primary], "!important"] as any
             },
             "& input": {
-              "&::placeholder": {
-                opacity: [[1], "!important"] as any
-              },
               color: colors.input.textHover,
               zIndex: 2
             }

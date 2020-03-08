@@ -15,7 +15,6 @@ const props: AssignAttributeDialogProps = {
   confirmButtonState: "default",
   errors: [],
   onClose: () => undefined,
-  onOpen: () => undefined,
   onSubmit: () => undefined,
   onToggle: () => undefined,
   open: true,

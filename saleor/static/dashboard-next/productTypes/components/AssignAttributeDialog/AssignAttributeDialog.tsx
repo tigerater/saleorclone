@@ -21,7 +21,6 @@ import ConfirmButton, {
   ConfirmButtonTransitionState
 } from "@saleor/components/ConfirmButton";
 import useModalDialogErrors from "@saleor/hooks/useModalDialogErrors";
-import useModalDialogOpen from "@saleor/hooks/useModalDialogOpen";
 import useSearchQuery from "@saleor/hooks/useSearchQuery";
 import i18n from "@saleor/i18n";
 import { maybe, renderCollection } from "@saleor/misc";
@@ -53,7 +52,6 @@ export interface AssignAttributeDialogProps extends FetchMoreProps {
   attributes: SearchAttributes_productType_availableAttributes_edges_node[];
   selected: string[];
   onClose: () => void;
-  onOpen: () => void;
   onSubmit: () => void;
   onToggle: (id: string) => void;
 }
@@ -69,7 +67,6 @@ const AssignAttributeDialog: React.FC<AssignAttributeDialogProps> = ({
   onClose,
   onFetch,
   onFetchMore,
-  onOpen,
   onSubmit,
   onToggle
 }: AssignAttributeDialogProps) => {
@@ -77,10 +74,7 @@ const AssignAttributeDialog: React.FC<AssignAttributeDialogProps> = ({
   const [query, onQueryChange, resetQuery] = useSearchQuery(onFetch);
   const errors = useModalDialogErrors(apiErrors, open);
 
-  useModalDialogOpen(open, {
-    onClose: resetQuery,
-    onOpen
-  });
+  React.useEffect(resetQuery, [open]);
 
   return (
     <Dialog onClose={onClose} open={open} fullWidth maxWidth="sm">
@@ -114,8 +108,7 @@ const AssignAttributeDialog: React.FC<AssignAttributeDialogProps> = ({
               <CircularProgress size={16} />
             </div>
           }
-          threshold={100}
-          key="infinite-scroll"
+          threshold={10}
         >
           <Table key="table">
             <TableBody>

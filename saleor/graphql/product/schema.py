@@ -26,7 +26,6 @@ from .bulk_mutations.products import (
 from .enums import StockAvailability
 from .filters import (
     AttributeFilterInput,
-    CategoryFilterInput,
     CollectionFilterInput,
     ProductFilterInput,
     ProductTypeFilterInput,
@@ -157,10 +156,9 @@ class ProductQueries(graphene.ObjectType):
         id=graphene.Argument(graphene.ID, required=True),
         description="Lookup an attribute by ID.",
     )
-    categories = FilterInputConnectionField(
+    categories = PrefetchingConnectionField(
         Category,
         query=graphene.String(description=DESCRIPTIONS["category"]),
-        filter=CategoryFilterInput(),
         level=graphene.Argument(graphene.Int),
         description="List of the shop's categories.",
     )

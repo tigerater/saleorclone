@@ -393,8 +393,10 @@ class CheckoutVoucherForm(forms.ModelForm):
         if "voucher" in cleaned_data:
             voucher = cleaned_data["voucher"]
             try:
-                discount = get_voucher_discount_for_checkout(voucher, self.instance)
-                cleaned_data["discount"] = discount
+                discount_amount = get_voucher_discount_for_checkout(
+                    voucher, self.instance
+                )
+                cleaned_data["discount_amount"] = discount_amount
             except NotApplicable as e:
                 self.add_error("voucher", smart_text(e))
         return cleaned_data
@@ -406,5 +408,5 @@ class CheckoutVoucherForm(forms.ModelForm):
         self.instance.translated_discount_name = (
             voucher.translated.name if voucher.translated.name != voucher.name else ""
         )
-        self.instance.discount = self.cleaned_data["discount"]
+        self.instance.discount_amount = self.cleaned_data["discount_amount"]
         return super().save(commit)

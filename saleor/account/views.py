@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth import views as django_views
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.tokens import default_token_generator
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
@@ -23,7 +22,6 @@ from .forms import (
     get_address_form,
     logout_on_password_change,
 )
-from .models import User
 
 
 @find_and_assign_anonymous_checkout()
@@ -158,8 +156,8 @@ def address_delete(request, pk):
 @login_required
 @require_POST
 def account_delete(request):
-    user = User.objects.get(pk=request.user.pk)
-    send_account_delete_confirmation_email(user)
+    user = request.user
+    send_account_delete_confirmation_email.delay(str(user.token), user.email)
     messages.success(
         request,
         pgettext(
@@ -172,9 +170,9 @@ def account_delete(request):
 
 @login_required
 def account_delete_confirm(request, token):
-    user = User.objects.get(pk=request.user.pk)
+    user = request.user
 
-    if not default_token_generator.check_token(user, token):
+    if str(request.user.token) != token:
         raise Http404("No such page!")
 
     if request.method == "POST":

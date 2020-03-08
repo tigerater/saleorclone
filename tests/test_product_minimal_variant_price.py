@@ -184,8 +184,7 @@ def test_dashboard_product_create_view_sets_minimal_variant_price(
     data = {
         "name": "Product name",
         "description": "Description.",
-        "price_0": "9.99",
-        "price_1": "USD",
+        "price": "9.99",
         "category": category.pk,
     }
 
@@ -200,19 +199,14 @@ def test_dashboard_product_variant_create_view_updates_minimal_variant_price(
     admin_client, product
 ):
     url = reverse("dashboard:variant-add", kwargs={"product_pk": product.pk})
-    data = {
-        "sku": "ACME/1/2/3",
-        "price_override_0": "4.99",
-        "price_override_1": product.currency,
-        "quantity": 1,
-    }
+    data = {"sku": "ACME/1/2/3", "price_override": "4.99", "quantity": 1}
 
     response = admin_client.post(url, data)
     assert response.status_code == 302
 
     product.refresh_from_db()
 
-    assert product.variants.count() == 2
+    [old_variant, new_variant] = product.variants.all()
     assert product.minimal_variant_price != product.price
     assert product.minimal_variant_price == Money("4.99", "USD")
 

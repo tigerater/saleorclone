@@ -465,7 +465,7 @@ def test_create_attribute_and_attribute_values(
 
     attribute_name = "Example name"
     name = "Value name"
-    variables = {"name": attribute_name, "values": [{"name": name}]}
+    variables = {"name": attribute_name, "values": [{"name": name, "value": "#1231"}]}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -551,7 +551,13 @@ def test_create_attribute_and_attribute_values_errors(
     product_type,
 ):
     query = CREATE_ATTRIBUTES_QUERY
-    variables = {"name": "Example name", "values": [{"name": name_1}, {"name": name_2}]}
+    variables = {
+        "name": "Example name",
+        "values": [
+            {"name": name_1, "value": "#1231"},
+            {"name": name_2, "value": "#121"},
+        ],
+    }
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -626,7 +632,7 @@ def test_update_attribute_remove_and_add_values(
     variables = {
         "name": name,
         "id": node_id,
-        "addValues": [{"name": attribute_value_name}],
+        "addValues": [{"name": attribute_value_name, "value": "#1231"}],
         "removeValues": [value_id],
     }
     response = staff_api_client.post_graphql(
@@ -652,7 +658,7 @@ def test_update_empty_attribute_and_add_values(
     variables = {
         "name": name,
         "id": node_id,
-        "addValues": [{"name": attribute_value_name}],
+        "addValues": [{"name": attribute_value_name, "value": "#1231"}],
         "removeValues": [],
     }
     response = staff_api_client.post_graphql(
@@ -686,7 +692,7 @@ def test_update_attribute_and_add_attribute_values_errors(
         "name": "Example name",
         "id": node_id,
         "removeValues": [],
-        "addValues": [{"name": name_1}, {"name": name_2}],
+        "addValues": [{"name": name_1, "value": "#1"}, {"name": name_2, "value": "#2"}],
     }
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
@@ -755,9 +761,9 @@ def test_delete_attribute(
 
 CREATE_ATTRIBUTE_VALUE_QUERY = """
     mutation createAttributeValue(
-        $attributeId: ID!, $name: String!) {
+        $attributeId: ID!, $name: String!, $value: String) {
     attributeValueCreate(
-        attribute: $attributeId, input: {name: $name}) {
+        attribute: $attributeId, input: {name: $name, value: $value}) {
         errors {
             field
             message
@@ -771,6 +777,7 @@ CREATE_ATTRIBUTE_VALUE_QUERY = """
             name
             type
             slug
+            value
         }
     }
 }
@@ -784,7 +791,8 @@ def test_create_attribute_value(
     query = CREATE_ATTRIBUTE_VALUE_QUERY
     attribute_id = graphene.Node.to_global_id("Attribute", attribute.id)
     name = "test name"
-    variables = {"name": name, "attributeId": attribute_id}
+    value = "test-string"
+    variables = {"name": name, "value": value, "attributeId": attribute_id}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -795,6 +803,7 @@ def test_create_attribute_value(
     attr_data = data["attributeValue"]
     assert attr_data["name"] == name
     assert attr_data["slug"] == slugify(name)
+    assert attr_data["value"] == value
     assert attr_data["type"] == "STRING"
     assert name in [value["name"] for value in data["attribute"]["values"]]
 
@@ -806,7 +815,11 @@ def test_create_attribute_value_not_unique_name(
     query = CREATE_ATTRIBUTE_VALUE_QUERY
     attribute_id = graphene.Node.to_global_id("Attribute", attribute.id)
     value_name = attribute.values.first().name
-    variables = {"name": value_name, "attributeId": attribute_id}
+    variables = {
+        "name": value_name,
+        "value": "test-string",
+        "attributeId": attribute_id,
+    }
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -819,9 +832,9 @@ def test_create_attribute_value_not_unique_name(
 
 UPDATE_ATTRIBUTE_VALUE_QUERY = """
 mutation updateChoice(
-        $id: ID!, $name: String!) {
+        $id: ID!, $name: String!, $value: String) {
     attributeValueUpdate(
-    id: $id, input: {name: $name}) {
+    id: $id, input: {name: $name, value: $value}) {
         errors {
             field
             message
@@ -829,6 +842,7 @@ mutation updateChoice(
         attributeValue {
             name
             slug
+            value
         }
         attribute {
             values {
@@ -847,7 +861,7 @@ def test_update_attribute_value(
     value = pink_attribute_value
     node_id = graphene.Node.to_global_id("AttributeValue", value.id)
     name = "Crimson name"
-    variables = {"name": name, "id": node_id}
+    variables = {"name": name, "value": "#RED", "id": node_id}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -867,7 +881,7 @@ def test_update_attribute_value_name_not_unique(
         name="Example Name", slug="example-name", value="#RED"
     )
     node_id = graphene.Node.to_global_id("AttributeValue", value.id)
-    variables = {"name": pink_attribute_value.name, "id": node_id}
+    variables = {"name": pink_attribute_value.name, "value": "#RED", "id": node_id}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -876,6 +890,23 @@ def test_update_attribute_value_name_not_unique(
     assert data["errors"]
     assert data["errors"][0]["message"]
     assert data["errors"][0]["field"] == "name"
+
+
+def test_update_same_attribute_value(
+    staff_api_client, pink_attribute_value, permission_manage_products
+):
+    query = UPDATE_ATTRIBUTE_VALUE_QUERY
+    value = pink_attribute_value
+    node_id = graphene.Node.to_global_id("AttributeValue", value.id)
+    attr_value = "#BLUE"
+    variables = {"name": value.name, "value": attr_value, "id": node_id}
+    response = staff_api_client.post_graphql(
+        query, variables, permissions=[permission_manage_products]
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["attributeValueUpdate"]
+    assert not data["errors"]
+    assert data["attributeValue"]["value"] == attr_value
 
 
 def test_delete_attribute_value(
@@ -984,7 +1015,7 @@ def test_resolve_assigned_attribute_without_values(api_client, product_type, pro
                     slug
                   }
                   values {
-                    name
+                    value
                   }
                 }
                 variants {
@@ -993,7 +1024,7 @@ def test_resolve_assigned_attribute_without_values(api_client, product_type, pro
                       slug
                     }
                     values {
-                      name
+                      value
                     }
                   }
                 }

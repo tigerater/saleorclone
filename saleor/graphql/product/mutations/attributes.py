@@ -24,6 +24,10 @@ from ..types import Attribute, AttributeValue
 
 class AttributeValueCreateInput(graphene.InputObjectType):
     name = graphene.String(required=True, description=AttributeValueDescriptions.NAME)
+    value = graphene.String(
+        description=AttributeValueDescriptions.VALUE,
+        deprecation_reason="This field is depracated",
+    )
 
 
 class AttributeCreateInput(graphene.InputObjectType):

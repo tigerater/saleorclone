@@ -4,7 +4,9 @@ from __future__ import unicode_literals
 from decimal import Decimal
 
 import django.core.validators
+import django_prices.models
 import versatileimagefield.fields
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -105,8 +107,11 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=255)),
                 (
                     "discount",
-                    models.DecimalField(
-                        verbose_name="discount value", max_digits=12, decimal_places=2
+                    django_prices.models.MoneyField(
+                        currency=settings.DEFAULT_CURRENCY,
+                        verbose_name="discount value",
+                        max_digits=12,
+                        decimal_places=2,
                     ),
                 ),
             ],
@@ -127,8 +132,11 @@ class Migration(migrations.Migration):
                 ("description", models.TextField(verbose_name="description")),
                 (
                     "price",
-                    models.DecimalField(
-                        verbose_name="price", max_digits=12, decimal_places=2
+                    django_prices.models.MoneyField(
+                        currency=settings.DEFAULT_CURRENCY,
+                        verbose_name="price",
+                        max_digits=12,
+                        decimal_places=2,
                     ),
                 ),
                 (
@@ -231,8 +239,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "price_override",
-                    models.DecimalField(
+                    django_prices.models.MoneyField(
                         decimal_places=2,
+                        currency=settings.DEFAULT_CURRENCY,
                         max_digits=12,
                         blank=True,
                         null=True,
@@ -286,8 +295,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "cost_price",
-                    models.DecimalField(
+                    django_prices.models.MoneyField(
                         decimal_places=2,
+                        currency=settings.DEFAULT_CURRENCY,
                         max_digits=12,
                         blank=True,
                         null=True,

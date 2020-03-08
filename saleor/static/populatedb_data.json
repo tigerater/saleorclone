@@ -209,8 +209,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:35.666Z",
       "charge_taxes": true,
@@ -244,8 +243,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:35.878Z",
       "charge_taxes": true,
@@ -279,8 +277,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:36.096Z",
       "charge_taxes": true,
@@ -314,8 +311,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:36.309Z",
       "charge_taxes": true,
@@ -349,8 +345,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:36.514Z",
       "charge_taxes": true,
@@ -384,8 +379,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"49\"]}",
       "updated_at": "2019-03-06T12:47:36.727Z",
       "charge_taxes": true,
@@ -419,8 +413,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"3\"]}",
       "updated_at": "2019-03-06T12:47:36.885Z",
       "charge_taxes": true,
@@ -454,8 +447,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"52\"]}",
       "updated_at": "2019-03-06T12:47:37.040Z",
       "charge_taxes": true,
@@ -489,8 +481,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"50\"]}",
       "updated_at": "2019-03-06T12:47:37.201Z",
       "charge_taxes": true,
@@ -524,8 +515,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"1\"]}",
       "updated_at": "2019-03-06T12:47:37.363Z",
       "charge_taxes": true,
@@ -559,8 +549,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"2\"]}",
       "updated_at": "2019-03-06T12:47:37.517Z",
       "charge_taxes": true,
@@ -594,8 +583,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"54\"]}",
       "updated_at": "2019-03-06T12:47:37.679Z",
       "charge_taxes": true,
@@ -629,8 +617,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"53\"]}",
       "updated_at": "2019-03-06T12:47:37.844Z",
       "charge_taxes": true,
@@ -664,8 +651,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"16\": [\"51\"]}",
       "updated_at": "2019-03-06T12:47:38.007Z",
       "charge_taxes": true,
@@ -699,8 +685,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{\"20\": [\"67\"]}",
       "updated_at": "2019-03-06T12:47:38.171Z",
       "charge_taxes": true,
@@ -734,8 +719,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "15.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "attributes": "{\"20\": [\"67\"]}",
       "updated_at": "2019-03-06T12:47:38.362Z",
       "charge_taxes": true,
@@ -769,8 +753,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.00", "currency": "USD" },
       "attributes": "{\"15\": [\"46\"], \"21\": [\"68\"]}",
       "updated_at": "2019-03-06T12:47:38.530Z",
       "charge_taxes": true,
@@ -804,8 +787,7 @@
         "entityMap": {}
       },
       "category": 8,
-      "price_amount": "3.20",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "3.20", "currency": "USD" },
       "attributes": "{\"15\": [\"46\"], \"21\": [\"69\"]}",
       "updated_at": "2019-03-06T12:47:38.875Z",
       "charge_taxes": true,
@@ -839,8 +821,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "20.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "attributes": "{\"23\": [\"72\"]}",
       "updated_at": "2019-03-06T12:47:39.256Z",
       "charge_taxes": true,
@@ -874,8 +855,7 @@
         "entityMap": {}
       },
       "category": 7,
-      "price_amount": "20.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "attributes": "{\"23\": [\"72\"]}",
       "updated_at": "2019-03-06T12:47:39.501Z",
       "charge_taxes": true,
@@ -909,8 +889,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "59.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "59.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:39.769Z",
       "charge_taxes": true,
@@ -944,8 +923,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "49.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "49.00", "currency": "USD" },
       "attributes": "{}",
       "updated_at": "2019-03-06T12:47:40.537Z",
       "charge_taxes": true,
@@ -979,8 +957,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:41.280Z",
       "charge_taxes": true,
@@ -1014,8 +991,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:41.681Z",
       "charge_taxes": true,
@@ -1049,8 +1025,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:41.972Z",
       "charge_taxes": true,
@@ -1084,8 +1059,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:42.283Z",
       "charge_taxes": true,
@@ -1119,8 +1093,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:42.524Z",
       "charge_taxes": true,
@@ -1154,8 +1127,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:42.771Z",
       "charge_taxes": true,
@@ -1189,8 +1161,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:43.640Z",
       "charge_taxes": true,
@@ -1224,8 +1195,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:44.067Z",
       "charge_taxes": true,
@@ -1259,8 +1229,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:44.582Z",
       "charge_taxes": true,
@@ -1294,8 +1263,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:45.080Z",
       "charge_taxes": true,
@@ -1329,8 +1297,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:45.376Z",
       "charge_taxes": true,
@@ -1364,8 +1331,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:45.669Z",
       "charge_taxes": true,
@@ -1399,8 +1365,7 @@
         "entityMap": {}
       },
       "category": 9,
-      "price_amount": "30.00",
-      "currency": "USD",
+      "price": { "_type": "Money", "amount": "30.00", "currency": "USD" },
       "attributes": "{\"25\": [\"82\"]}",
       "updated_at": "2019-03-06T12:47:45.937Z",
       "charge_taxes": true,
@@ -1414,14 +1379,17 @@
     "fields": {
       "sku": "546451996",
       "name": "1l",
-      "price_override_amount": "15.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "15.00",
+        "currency": "USD"
+      },
       "product": 61,
       "attributes": "{\"18\": [\"60\"]}",
       "track_inventory": true,
       "quantity": 113,
       "quantity_allocated": 14,
-      "cost_price_amount": "5.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "5.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1431,14 +1399,17 @@
     "fields": {
       "sku": "546451997",
       "name": "2.5l",
-      "price_override_amount": "35.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "35.00",
+        "currency": "USD"
+      },
       "product": 61,
       "attributes": "{\"18\": [\"61\"]}",
       "track_inventory": true,
       "quantity": 21,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "2.5 kg"
     }
   },
@@ -1448,14 +1419,17 @@
     "fields": {
       "sku": "546451999",
       "name": "5l",
-      "price_override_amount": "49.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "49.00",
+        "currency": "USD"
+      },
       "product": 61,
       "attributes": "{\"18\": [\"62\"]}",
       "track_inventory": true,
       "quantity": 11,
       "quantity_allocated": 11,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "5.0 kg"
     }
   },
@@ -1465,14 +1439,17 @@
     "fields": {
       "sku": "998223591",
       "name": "1l",
-      "price_override_amount": "15.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "15.00",
+        "currency": "USD"
+      },
       "product": 62,
       "attributes": "{\"18\": [\"60\"]}",
       "track_inventory": true,
       "quantity": 43,
       "quantity_allocated": 19,
-      "cost_price_amount": "5.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "5.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1482,14 +1459,17 @@
     "fields": {
       "sku": "998223599",
       "name": "2.5l",
-      "price_override_amount": "25.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "25.00",
+        "currency": "USD"
+      },
       "product": 62,
       "attributes": "{\"18\": [\"61\"]}",
       "track_inventory": true,
       "quantity": 110,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -1499,14 +1479,17 @@
     "fields": {
       "sku": "998223594",
       "name": "5l",
-      "price_override_amount": "49.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "49.00",
+        "currency": "USD"
+      },
       "product": 62,
       "attributes": "{\"18\": [\"62\"]}",
       "track_inventory": true,
       "quantity": 125,
       "quantity_allocated": 14,
-      "cost_price_amount": "25.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "25.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -1516,14 +1499,17 @@
     "fields": {
       "sku": "998223582",
       "name": "1l",
-      "price_override_amount": "15.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "15.00",
+        "currency": "USD"
+      },
       "product": 63,
       "attributes": "{\"18\": [\"60\"]}",
       "track_inventory": true,
       "quantity": 1235,
       "quantity_allocated": 4,
-      "cost_price_amount": "5.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "5.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1533,14 +1519,17 @@
     "fields": {
       "sku": "998223583",
       "name": "2.5l",
-      "price_override_amount": "25.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "25.00",
+        "currency": "USD"
+      },
       "product": 63,
       "attributes": "{\"18\": [\"61\"]}",
       "track_inventory": true,
       "quantity": 1222,
       "quantity_allocated": 11,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "2.5 kg"
     }
   },
@@ -1550,14 +1539,17 @@
     "fields": {
       "sku": "998223584",
       "name": "5l",
-      "price_override_amount": "49.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "49.00",
+        "currency": "USD"
+      },
       "product": 63,
       "attributes": "{\"18\": [\"62\"]}",
       "track_inventory": true,
       "quantity": 472,
       "quantity_allocated": 27,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "5.0 kg"
     }
   },
@@ -1567,14 +1559,17 @@
     "fields": {
       "sku": "998323582",
       "name": "1l",
-      "price_override_amount": "15.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "15.00",
+        "currency": "USD"
+      },
       "product": 64,
       "attributes": "{\"18\": [\"60\"]}",
       "track_inventory": true,
       "quantity": 991,
       "quantity_allocated": 5,
-      "cost_price_amount": "5.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "5.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1584,14 +1579,17 @@
     "fields": {
       "sku": "998323583",
       "name": "2.5l",
-      "price_override_amount": "30.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "30.00",
+        "currency": "USD"
+      },
       "product": 64,
       "attributes": "{\"18\": [\"61\"]}",
       "track_inventory": true,
       "quantity": 760,
       "quantity_allocated": 9,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "2.5 kg"
     }
   },
@@ -1601,14 +1599,17 @@
     "fields": {
       "sku": "998323584",
       "name": "5l",
-      "price_override_amount": "49.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "49.00",
+        "currency": "USD"
+      },
       "product": 64,
       "attributes": "{\"18\": [\"62\"]}",
       "track_inventory": true,
       "quantity": 578,
       "quantity_allocated": 7,
-      "cost_price_amount": "15.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "weight": "5.0 kg"
     }
   },
@@ -1618,14 +1619,17 @@
     "fields": {
       "sku": "998423582",
       "name": "1l",
-      "price_override_amount": "15.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "15.00",
+        "currency": "USD"
+      },
       "product": 65,
       "attributes": "{\"18\": [\"60\"]}",
       "track_inventory": true,
       "quantity": 427,
       "quantity_allocated": 16,
-      "cost_price_amount": "5.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "5.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1635,14 +1639,17 @@
     "fields": {
       "sku": "998423583",
       "name": "2.5l",
-      "price_override_amount": "30.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "30.00",
+        "currency": "USD"
+      },
       "product": 65,
       "attributes": "{\"18\": [\"61\"]}",
       "track_inventory": true,
       "quantity": 513,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "2.5 kg"
     }
   },
@@ -1652,14 +1659,17 @@
     "fields": {
       "sku": "998423585",
       "name": "5l",
-      "price_override_amount": "49.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "49.00",
+        "currency": "USD"
+      },
       "product": 65,
       "attributes": "{\"18\": [\"62\"]}",
       "track_inventory": true,
       "quantity": 155,
       "quantity_allocated": 14,
-      "cost_price_amount": "15.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "15.00", "currency": "USD" },
       "weight": "5.0 kg"
     }
   },
@@ -1669,14 +1679,13 @@
     "fields": {
       "sku": "988323582",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 71,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1221,
       "quantity_allocated": 10,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1686,14 +1695,17 @@
     "fields": {
       "sku": "938323582",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 71,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 177,
       "quantity_allocated": 2,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1703,14 +1715,17 @@
     "fields": {
       "sku": "988323522",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 71,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 221,
       "quantity_allocated": 10,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -1720,13 +1735,13 @@
     "fields": {
       "sku": "12312312321",
       "name": "",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 81,
       "attributes": "{}",
       "track_inventory": true,
       "quantity": 21244,
       "quantity_allocated": 13,
-      "cost_price_amount": null,
+      "cost_price": null,
       "weight": "0.0 kg"
     }
   },
@@ -1736,13 +1751,13 @@
     "fields": {
       "sku": "1231998121",
       "name": "",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 82,
       "attributes": "{}",
       "track_inventory": true,
       "quantity": 12157,
       "quantity_allocated": 26,
-      "cost_price_amount": null,
+      "cost_price": null,
       "weight": "0.0 kg"
     }
   },
@@ -1752,13 +1767,13 @@
     "fields": {
       "sku": "98616712",
       "name": "",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 83,
       "attributes": "{}",
       "track_inventory": true,
       "quantity": 12136,
       "quantity_allocated": 15,
-      "cost_price_amount": null,
+      "cost_price": null,
       "weight": "0.0 kg"
     }
   },
@@ -1768,13 +1783,13 @@
     "fields": {
       "sku": "98616713",
       "name": "",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 84,
       "attributes": "{}",
       "track_inventory": true,
       "quantity": 975527,
       "quantity_allocated": 10,
-      "cost_price_amount": null,
+      "cost_price": null,
       "weight": "0.0 kg"
     }
   },
@@ -1784,14 +1799,17 @@
     "fields": {
       "sku": "698223582",
       "name": "45cm x 45cm",
-      "price_override_amount": "20.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "20.00",
+        "currency": "USD"
+      },
       "product": 85,
       "attributes": "{\"22\": [\"70\"]}",
       "track_inventory": true,
       "quantity": 9869,
       "quantity_allocated": 8,
-      "cost_price_amount": "11.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "11.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -1801,14 +1819,13 @@
     "fields": {
       "sku": "698223581",
       "name": "55cm x 55cm",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 85,
       "attributes": "{\"22\": [\"71\"]}",
       "track_inventory": true,
       "quantity": 687,
       "quantity_allocated": 16,
-      "cost_price_amount": "12.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "12.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -1818,14 +1835,13 @@
     "fields": {
       "sku": "987126191",
       "name": "45cm x 45cm",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 86,
       "attributes": "{\"22\": [\"70\"]}",
       "track_inventory": true,
       "quantity": 572,
       "quantity_allocated": 1,
-      "cost_price_amount": "13.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "13.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -1835,14 +1851,13 @@
     "fields": {
       "sku": "998223590",
       "name": "55cm x 55cm",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 86,
       "attributes": "{\"22\": [\"71\"]}",
       "track_inventory": true,
       "quantity": 1020,
       "quantity_allocated": 21,
-      "cost_price_amount": "13.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "13.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -1852,14 +1867,13 @@
     "fields": {
       "sku": "93855755",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 72,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1218,
       "quantity_allocated": 7,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1869,14 +1883,17 @@
     "fields": {
       "sku": "43226647",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 72,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 178,
       "quantity_allocated": 3,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1886,14 +1903,17 @@
     "fields": {
       "sku": "80884671",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 72,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 224,
       "quantity_allocated": 13,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -1903,14 +1923,13 @@
     "fields": {
       "sku": "67882967",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 73,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1214,
       "quantity_allocated": 3,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1920,14 +1939,17 @@
     "fields": {
       "sku": "14925419",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 73,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 181,
       "quantity_allocated": 6,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1937,14 +1959,17 @@
     "fields": {
       "sku": "62426105",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 73,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 223,
       "quantity_allocated": 12,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -1954,14 +1979,13 @@
     "fields": {
       "sku": "45328412",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 74,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1214,
       "quantity_allocated": 3,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1971,14 +1995,17 @@
     "fields": {
       "sku": "27512590",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 74,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 185,
       "quantity_allocated": 10,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -1988,14 +2015,17 @@
     "fields": {
       "sku": "40636347",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 74,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 225,
       "quantity_allocated": 14,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2005,14 +2035,13 @@
     "fields": {
       "sku": "43200242",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 75,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1216,
       "quantity_allocated": 5,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2022,14 +2051,17 @@
     "fields": {
       "sku": "79129513",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 75,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 187,
       "quantity_allocated": 12,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2039,14 +2071,17 @@
     "fields": {
       "sku": "75799450",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 75,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 225,
       "quantity_allocated": 14,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2056,14 +2091,13 @@
     "fields": {
       "sku": "3944859",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 76,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1214,
       "quantity_allocated": 3,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2073,14 +2107,17 @@
     "fields": {
       "sku": "5829405",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 76,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 179,
       "quantity_allocated": 4,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2090,14 +2127,17 @@
     "fields": {
       "sku": "84725784",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 76,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 238,
       "quantity_allocated": 27,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2107,14 +2147,13 @@
     "fields": {
       "sku": "70058446",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 77,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1222,
       "quantity_allocated": 11,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2124,14 +2163,17 @@
     "fields": {
       "sku": "94044081",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 77,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 177,
       "quantity_allocated": 2,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2141,14 +2183,17 @@
     "fields": {
       "sku": "80696397",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 77,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 221,
       "quantity_allocated": 10,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2158,14 +2203,13 @@
     "fields": {
       "sku": "60752428",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 78,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1216,
       "quantity_allocated": 5,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2175,14 +2219,17 @@
     "fields": {
       "sku": "81470859",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 78,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 181,
       "quantity_allocated": 6,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2192,14 +2239,17 @@
     "fields": {
       "sku": "30635751",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 78,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 228,
       "quantity_allocated": 17,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2209,14 +2259,13 @@
     "fields": {
       "sku": "57211177",
       "name": "500ml",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 79,
       "attributes": "{\"15\": [\"46\"]}",
       "track_inventory": true,
       "quantity": 1221,
       "quantity_allocated": 10,
-      "cost_price_amount": "1.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2226,14 +2275,17 @@
     "fields": {
       "sku": "57423879",
       "name": "1l",
-      "price_override_amount": "5.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "5.00",
+        "currency": "USD"
+      },
       "product": 79,
       "attributes": "{\"15\": [\"47\"]}",
       "track_inventory": true,
       "quantity": 179,
       "quantity_allocated": 4,
-      "cost_price_amount": "1.50",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "1.50", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2243,14 +2295,17 @@
     "fields": {
       "sku": "21438542",
       "name": "2l",
-      "price_override_amount": "7.00",
+      "price_override": {
+        "_type": "Money",
+        "amount": "7.00",
+        "currency": "USD"
+      },
       "product": 79,
       "attributes": "{\"15\": [\"48\"]}",
       "track_inventory": true,
       "quantity": 229,
       "quantity_allocated": 18,
-      "cost_price_amount": "2.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "2.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2260,14 +2315,13 @@
     "fields": {
       "sku": "398323583",
       "name": "39",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 87,
       "attributes": "{\"24\": [\"75\"]}",
       "track_inventory": true,
       "quantity": 9125,
       "quantity_allocated": 4,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2277,14 +2331,13 @@
     "fields": {
       "sku": "398323584",
       "name": "40",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 87,
       "attributes": "{\"24\": [\"76\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2294,14 +2347,13 @@
     "fields": {
       "sku": "398323585",
       "name": "41",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 87,
       "attributes": "{\"24\": [\"77\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2311,14 +2363,13 @@
     "fields": {
       "sku": "398323586",
       "name": "42",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 87,
       "attributes": "{\"24\": [\"78\"]}",
       "track_inventory": true,
       "quantity": 131,
       "quantity_allocated": 0,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2328,14 +2379,13 @@
     "fields": {
       "sku": "398323588",
       "name": "43",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 87,
       "attributes": "{\"24\": [\"79\"]}",
       "track_inventory": true,
       "quantity": 882,
       "quantity_allocated": 21,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2345,14 +2395,13 @@
     "fields": {
       "sku": "993223583",
       "name": "40",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 88,
       "attributes": "{\"24\": [\"76\"]}",
       "track_inventory": true,
       "quantity": 7611,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2362,14 +2411,13 @@
     "fields": {
       "sku": "978223582",
       "name": "41",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 88,
       "attributes": "{\"24\": [\"77\"]}",
       "track_inventory": true,
       "quantity": 977,
       "quantity_allocated": 6,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "1.0 kg"
     }
   },
@@ -2379,13 +2427,13 @@
     "fields": {
       "sku": "918323583",
       "name": "40",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 88,
       "attributes": "{\"24\": [\"76\"]}",
       "track_inventory": true,
       "quantity": 0,
       "quantity_allocated": 0,
-      "cost_price_amount": null,
+      "cost_price": null,
       "weight": "2.0 kg"
     }
   },
@@ -2395,14 +2443,13 @@
     "fields": {
       "sku": "918223582",
       "name": "45",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 88,
       "attributes": "{\"24\": [\"81\"]}",
       "track_inventory": true,
       "quantity": 15,
       "quantity_allocated": 15,
-      "cost_price_amount": "20.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "20.00", "currency": "USD" },
       "weight": "2.0 kg"
     }
   },
@@ -2412,14 +2459,13 @@
     "fields": {
       "sku": "988323583",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 89,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1213,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2429,14 +2475,13 @@
     "fields": {
       "sku": "338223582",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 89,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 7,
       "quantity_allocated": 6,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2446,14 +2491,13 @@
     "fields": {
       "sku": "118223591",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 89,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2463,14 +2507,13 @@
     "fields": {
       "sku": "448323583",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 89,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2480,14 +2523,13 @@
     "fields": {
       "sku": "3128223583",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 89,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5802,
       "quantity_allocated": 11,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2497,14 +2539,13 @@
     "fields": {
       "sku": "29716755",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 107,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1227,
       "quantity_allocated": 14,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2514,14 +2555,13 @@
     "fields": {
       "sku": "66594736",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 107,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 8,
       "quantity_allocated": 7,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2531,14 +2571,13 @@
     "fields": {
       "sku": "50269944",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 107,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2548,14 +2587,13 @@
     "fields": {
       "sku": "31352185",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 107,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2565,14 +2603,13 @@
     "fields": {
       "sku": "85364796",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 107,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5817,
       "quantity_allocated": 26,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2582,14 +2619,13 @@
     "fields": {
       "sku": "44026421",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 108,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1217,
       "quantity_allocated": 4,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2599,14 +2635,13 @@
     "fields": {
       "sku": "90892602",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 108,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 4,
       "quantity_allocated": 3,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2616,14 +2651,13 @@
     "fields": {
       "sku": "59014392",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 108,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2633,14 +2667,13 @@
     "fields": {
       "sku": "43659438",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 108,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2650,14 +2683,13 @@
     "fields": {
       "sku": "60597697",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 108,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5820,
       "quantity_allocated": 29,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2667,14 +2699,13 @@
     "fields": {
       "sku": "26592266",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 109,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1220,
       "quantity_allocated": 7,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2684,14 +2715,13 @@
     "fields": {
       "sku": "36260498",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 109,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 2,
       "quantity_allocated": 1,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2701,14 +2731,13 @@
     "fields": {
       "sku": "37558859",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 109,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2718,14 +2747,13 @@
     "fields": {
       "sku": "19402012",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 109,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2735,14 +2763,13 @@
     "fields": {
       "sku": "17570141",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 109,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5817,
       "quantity_allocated": 26,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2752,14 +2779,13 @@
     "fields": {
       "sku": "98530976",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 110,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1221,
       "quantity_allocated": 8,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2769,14 +2795,13 @@
     "fields": {
       "sku": "46806935",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 110,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 6,
       "quantity_allocated": 5,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2786,14 +2811,13 @@
     "fields": {
       "sku": "71103052",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 110,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2803,14 +2827,13 @@
     "fields": {
       "sku": "84812015",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 110,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2820,14 +2843,13 @@
     "fields": {
       "sku": "89820261",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 110,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5816,
       "quantity_allocated": 25,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2837,14 +2859,13 @@
     "fields": {
       "sku": "81115323",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 111,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1215,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2854,14 +2875,13 @@
     "fields": {
       "sku": "38254631",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 111,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 5,
       "quantity_allocated": 4,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2871,14 +2891,13 @@
     "fields": {
       "sku": "11511539",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 111,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9821,
       "quantity_allocated": 3,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2888,14 +2907,13 @@
     "fields": {
       "sku": "84192227",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 111,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2905,14 +2923,13 @@
     "fields": {
       "sku": "91642659",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 111,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5807,
       "quantity_allocated": 16,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2922,14 +2939,13 @@
     "fields": {
       "sku": "76491340",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 112,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1217,
       "quantity_allocated": 4,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2939,14 +2955,13 @@
     "fields": {
       "sku": "55101176",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 112,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 3,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2956,14 +2971,13 @@
     "fields": {
       "sku": "28094954",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 112,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9819,
       "quantity_allocated": 1,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2973,14 +2987,13 @@
     "fields": {
       "sku": "40232182",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 112,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -2990,14 +3003,13 @@
     "fields": {
       "sku": "21522631",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 112,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5809,
       "quantity_allocated": 18,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3007,14 +3019,13 @@
     "fields": {
       "sku": "29810068",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 113,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1220,
       "quantity_allocated": 7,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3024,14 +3035,13 @@
     "fields": {
       "sku": "57917658",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 113,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 6,
       "quantity_allocated": 5,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3041,14 +3051,13 @@
     "fields": {
       "sku": "42680611",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 113,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3058,14 +3067,13 @@
     "fields": {
       "sku": "72289815",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 113,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3075,14 +3083,13 @@
     "fields": {
       "sku": "98653891",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 113,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5817,
       "quantity_allocated": 26,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3092,14 +3099,13 @@
     "fields": {
       "sku": "77306807",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 114,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1213,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3109,14 +3115,13 @@
     "fields": {
       "sku": "68848129",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 114,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3126,14 +3131,13 @@
     "fields": {
       "sku": "35342696",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 114,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3143,14 +3147,13 @@
     "fields": {
       "sku": "98935349",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 114,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3160,14 +3163,13 @@
     "fields": {
       "sku": "45179543",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 114,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5805,
       "quantity_allocated": 14,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3177,14 +3179,13 @@
     "fields": {
       "sku": "62783187",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 115,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1216,
       "quantity_allocated": 3,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3194,14 +3195,13 @@
     "fields": {
       "sku": "91406604",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 115,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 3,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3211,14 +3211,13 @@
     "fields": {
       "sku": "22119503",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 115,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3228,14 +3227,13 @@
     "fields": {
       "sku": "19230637",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 115,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3245,14 +3243,13 @@
     "fields": {
       "sku": "61630747",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 115,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5825,
       "quantity_allocated": 34,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3262,14 +3259,13 @@
     "fields": {
       "sku": "15744278",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 116,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1213,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3279,14 +3275,13 @@
     "fields": {
       "sku": "21599567",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 116,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 4,
       "quantity_allocated": 3,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3296,14 +3291,13 @@
     "fields": {
       "sku": "65363253",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 116,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9820,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3313,14 +3307,13 @@
     "fields": {
       "sku": "51987722",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 116,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3330,14 +3323,13 @@
     "fields": {
       "sku": "43313080",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 116,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5805,
       "quantity_allocated": 14,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3347,14 +3339,13 @@
     "fields": {
       "sku": "33963052",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 117,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1218,
       "quantity_allocated": 5,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3364,14 +3355,13 @@
     "fields": {
       "sku": "66846240",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 117,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 11,
       "quantity_allocated": 10,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3381,14 +3371,13 @@
     "fields": {
       "sku": "55365141",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 117,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9823,
       "quantity_allocated": 5,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3398,14 +3387,13 @@
     "fields": {
       "sku": "73186143",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 117,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 1,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3415,14 +3403,13 @@
     "fields": {
       "sku": "42651772",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 117,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5805,
       "quantity_allocated": 14,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3432,14 +3419,13 @@
     "fields": {
       "sku": "70760297",
       "name": "S",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 118,
       "attributes": "{\"13\": [\"36\"]}",
       "track_inventory": true,
       "quantity": 1213,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3449,14 +3435,13 @@
     "fields": {
       "sku": "36334412",
       "name": "M",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 118,
       "attributes": "{\"13\": [\"37\"]}",
       "track_inventory": true,
       "quantity": 10,
       "quantity_allocated": 9,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3466,14 +3451,13 @@
     "fields": {
       "sku": "35994675",
       "name": "L",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 118,
       "attributes": "{\"13\": [\"38\"]}",
       "track_inventory": true,
       "quantity": 9818,
       "quantity_allocated": 0,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3483,14 +3467,13 @@
     "fields": {
       "sku": "10404946",
       "name": "XL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 118,
       "attributes": "{\"13\": [\"39\"]}",
       "track_inventory": true,
       "quantity": 3,
       "quantity_allocated": 2,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },
@@ -3500,14 +3483,13 @@
     "fields": {
       "sku": "45507483",
       "name": "XXL",
-      "price_override_amount": null,
+      "price_override": null,
       "product": 118,
       "attributes": "{\"13\": [\"40\"]}",
       "track_inventory": true,
       "quantity": 5818,
       "quantity_allocated": 27,
-      "cost_price_amount": "10.00",
-      "currency": "USD",
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "USD" },
       "weight": "0.0 kg"
     }
   },

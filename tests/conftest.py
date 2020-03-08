@@ -116,7 +116,7 @@ def checkout_with_voucher(checkout, product, voucher):
     variant = product.variants.get()
     add_variant_to_checkout(checkout, variant, 3)
     checkout.voucher_code = voucher.code
-    checkout.discount = Money("20.00", "USD")
+    checkout.discount_amount = Money("20.00", "USD")
     checkout.save()
     return checkout
 
@@ -126,7 +126,7 @@ def checkout_with_voucher_percentage(checkout, product, voucher_percentage):
     variant = product.variants.get()
     add_variant_to_checkout(checkout, variant, 3)
     checkout.voucher_code = voucher_percentage.code
-    checkout.discount = Money("3.00", "USD")
+    checkout.discount_amount = Money("3.00", "USD")
     checkout.save()
     return checkout
 
@@ -422,6 +422,11 @@ def permission_manage_orders():
 @pytest.fixture
 def permission_manage_plugins():
     return Permission.objects.get(codename="manage_plugins")
+
+
+@pytest.fixture
+def permission_manage_bots():
+    return Permission.objects.get(codename="manage_bots")
 
 
 @pytest.fixture
@@ -727,9 +732,9 @@ def voucher_specific_product_type(voucher_percentage):
 
 
 @pytest.fixture
-def voucher_with_high_min_spent_amount():
+def voucher_with_high_min_amount_spent():
     return Voucher.objects.create(
-        code="mirumee", discount_value=10, min_spent=Money(1000000, "USD")
+        code="mirumee", discount_value=10, min_amount_spent=Money(1000000, "USD")
     )
 
 
@@ -766,26 +771,22 @@ def gift_card(customer_user, staff_user):
     return GiftCard.objects.create(
         code="mirumee_giftcard",
         user=customer_user,
-        initial_balance=Money(10, "USD"),
-        current_balance=Money(10, "USD"),
+        initial_balance=10,
+        current_balance=10,
     )
 
 
 @pytest.fixture
 def gift_card_used(staff_user):
     return GiftCard.objects.create(
-        code="gift_card_used",
-        initial_balance=Money(150, "USD"),
-        current_balance=Money(100, "USD"),
+        code="gift_card_used", initial_balance=150, current_balance=100
     )
 
 
 @pytest.fixture
 def gift_card_created_by_staff(staff_user):
     return GiftCard.objects.create(
-        code="mirumee_staff",
-        initial_balance=Money(5, "USD"),
-        current_balance=Money(5, "USD"),
+        code="mirumee_staff", initial_balance=5, current_balance=5
     )
 
 

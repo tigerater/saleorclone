@@ -21,7 +21,7 @@ SORT_BY_FIELDS = [
     ("payments__charge_status", "payment_status"),
     ("user__email", "email"),
     ("created", "created"),
-    ("total_net_amount", "total"),
+    ("total_net", "total"),
 ]
 
 SORT_BY_FIELDS_LABELS = {
@@ -29,7 +29,7 @@ SORT_BY_FIELDS_LABELS = {
     "payments__charge_status": pgettext_lazy("Order list sorting option", "payment"),
     "user__email": pgettext_lazy("Order list sorting option", "email"),
     "created": pgettext_lazy("Order list sorting option", "created"),
-    "total_net_amount": pgettext_lazy("Order list sorting option", "created"),
+    "total_net": pgettext_lazy("Order list sorting option", "created"),
 }
 
 
@@ -59,9 +59,7 @@ class OrderFilter(SortedFilterSet):
         widget=forms.Select,
     )
     total_net = RangeFilter(
-        label=pgettext_lazy("Order list filter label", "Total"),
-        widget=MoneyRangeWidget,
-        field_name="total_net_amount",
+        label=pgettext_lazy("Order list filter label", "Total"), widget=MoneyRangeWidget
     )
     sort_by = OrderingFilter(
         label=pgettext_lazy("Order list filter label", "Sort by"),

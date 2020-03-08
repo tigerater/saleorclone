@@ -35,8 +35,8 @@ def test_sorting_header_many_fields(admin_client):
     assert result["url"] == url + "?sort_by=-name"
     assert result["is_active"] is True
 
-    data = {"sort_by": "price_amount"}
+    data = {"sort_by": "price"}
     response = admin_client.get(url, data)
-    result = sorting_header(response.context, "price_amount", "Price")
-    assert result["url"] == url + "?sort_by=-price_amount"
+    result = sorting_header(response.context, "price", "Price")
+    assert result["url"] == url + "?sort_by=-price"
     assert result["is_active"] is True

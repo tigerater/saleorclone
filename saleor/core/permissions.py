@@ -6,7 +6,6 @@ MODELS_PERMISSIONS = [
     "account.impersonate_users",
     "discount.manage_discounts",
     "giftcard.manage_gift_card",
-    "extensions.manage_plugins",
     "menu.manage_menus",
     "order.manage_orders",
     "page.manage_pages",

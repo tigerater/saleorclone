@@ -41,7 +41,18 @@ All notable, unreleased changes to this project will be documented in this file.
 - Disabled unneeded reports from uWSGI about broken pipe and write errors from disconnected clients. Preventing from spamming sentry users. - #4596 by @NyanKiyoshi
 - Upgraded to django 2.2.4 - #4603 by @NyanKiyoshi
 - Invalid IP address in HTTP requests now fallback to the requester's IP address. - #4597 by @NyanKiyoshi
-- Add queries and mutation for serving and saving the configuration of all plugins - #4576 by @korycins
+- Refactor account mutations - #4510 by @fowczarek
+    - split mutations into multiple files
+    - use "Account" prefix for all mutation related to the logged-in user
+    - deprecated mutations:
+        - PasswordReset
+        - CustomerRegister
+        - LoggedUserUpdate
+        - CustomerAddressCreate
+        - CustomerSetDefaultAddress
+        - CustomerPasswordReset
+
+
 
 ## 2.8.0
 

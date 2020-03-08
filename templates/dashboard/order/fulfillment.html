@@ -76,9 +76,9 @@
                 <tr>
                   <td>
                     {% if line.variant %}
-                      <a href="{% url 'dashboard:variant-details' product_pk=line.variant.product.pk variant_pk=line.variant.pk %}">{{ line }}</a>
+                      <a href="{% url 'dashboard:variant-details' product_pk=line.variant.product.pk variant_pk=line.variant.pk %}">{{ line.product_name }}</a>
                     {% else %}
-                      {{ line }}
+                      {{ line.product_name }}
                     {% endif %}
                     <br>
                     <span class="grey-text">

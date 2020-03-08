@@ -169,17 +169,12 @@ class BasePlugin:
         if plugin_configuration.configuration:
             # Let's add a translated descriptions and labels
             cls._append_config_structure(plugin_configuration.configuration)
-            cls._hide_secret_configuration_fields(plugin_configuration.configuration)
         return plugin_configuration
 
     @classmethod
     def _get_default_configuration(cls):
         defaults = None
         return defaults
-
-    @classmethod
-    def _hide_secret_configuration_fields(cls, configuration: List[dict]):
-        return
 
     @classmethod
     def _append_config_structure(cls, configuration):
@@ -200,5 +195,4 @@ class BasePlugin:
         if configuration.configuration:
             # Let's add a translated descriptions and labels
             cls._append_config_structure(configuration.configuration)
-            cls._hide_secret_configuration_fields(configuration.configuration)
         return configuration

@@ -12,6 +12,7 @@ from django.utils.translation import pgettext_lazy
 from ..account.models import Address, User
 from ..checkout.models import Checkout
 from ..core import analytics
+from ..extensions.manager import get_extensions_manager
 from ..order import events, utils as order_utils
 from ..order.emails import send_payment_confirmation
 from ..order.models import Order
@@ -116,6 +117,7 @@ def handle_fully_paid_order(order):
     except Exception:
         # Analytics failing should not abort the checkout flow
         logger.exception("Recording order in analytics failed")
+    get_extensions_manager().order_fully_paid(order)
 
 
 def require_active_payment(view):
@@ -206,6 +208,7 @@ def mark_order_as_paid(order: Order, request_user: User):
     payment.captured_amount = order.total.gross.amount
     payment.save(update_fields=["captured_amount", "charge_status"])
     events.order_manually_marked_as_paid_event(order=order, user=request_user)
+    get_extensions_manager().order_fully_paid(order)
 
 
 def create_transaction(
@@ -374,13 +377,10 @@ def validate_gateway_response(response: GatewayResponse):
 
 @transaction.atomic
 def _gateway_postprocess(transaction, payment):
-    if not transaction.is_success:
-        return
-
     transaction_kind = transaction.kind
 
     if transaction_kind in {TransactionKind.CAPTURE, TransactionKind.CONFIRM}:
-        payment.captured_amount += Decimal(transaction.amount)
+        payment.captured_amount += transaction.amount
 
         # Set payment charge status to fully charged
         # only if there is no more amount needs to charge
@@ -462,6 +462,19 @@ def gateway_capture(payment: Payment, amount: Decimal = None) -> Transaction:
         amount=amount,
     )
 
+    _gateway_postprocess(transaction, payment)
+    return transaction
+
+
+@require_active_payment
+def gateway_void(payment) -> Transaction:
+    if not payment.can_void():
+        raise PaymentError("Only pre-authorized transactions can be voided.")
+
+    payment_token = get_payment_token(payment)
+    transaction = call_gateway(
+        operation_type=OperationType.VOID, payment=payment, payment_token=payment_token
+    )
     _gateway_postprocess(transaction, payment)
     return transaction
 

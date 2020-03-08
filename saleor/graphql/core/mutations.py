@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Tuple, Union
+from typing import Tuple
 
 import graphene
 from django.contrib.auth import get_user_model
@@ -9,7 +9,6 @@ from django.core.exceptions import (
     ValidationError,
 )
 from django.db.models.fields.files import FileField
-from graphene import ObjectType
 from graphene.types.mutation import MutationOptions
 from graphene_django.registry import get_global_registry
 from graphql.error import GraphQLError
@@ -20,8 +19,7 @@ from ...account import models
 from ..account.types import User
 from ..utils import get_nodes
 from .types import Error, MetaInput, MetaPath, Upload
-from .utils import from_global_id_strict_type, snake_to_camel_case
-from .utils.error_codes import get_error_code_from_error
+from .utils import snake_to_camel_case
 
 registry = get_global_registry()
 
@@ -43,38 +41,21 @@ def get_output_fields(model, return_field_name):
     return fields
 
 
-def get_error_fields(error_type_class, error_type_field):
-    """ """
-    return {
-        error_type_field: graphene.Field(
-            graphene.List(
-                graphene.NonNull(error_type_class),
-                description="List of errors that occurred executing the mutation.",
-            )
-        )
-    }
-
-
 def validation_error_to_error_type(validation_error: ValidationError) -> list:
     """Convert a ValidationError into a list of Error types."""
     err_list = []
     if hasattr(validation_error, "error_dict"):
         # convert field errors
-        for field, field_errors in validation_error.error_dict.items():
-            field = None if field == NON_FIELD_ERRORS else snake_to_camel_case(field)
+        for field, field_errors in validation_error.message_dict.items():
             for err in field_errors:
-                err_list.append(
-                    (
-                        Error(field=field, message=err.messages[0]),
-                        get_error_code_from_error(err),
-                    )
+                field = (
+                    None if field == NON_FIELD_ERRORS else snake_to_camel_case(field)
                 )
+                err_list.append(Error(field=field, message=err))
     else:
         # convert non-field errors
         for err in validation_error.error_list:
-            err_list.append(
-                (Error(message=err.messages[0]), get_error_code_from_error(err))
-            )
+            err_list.append(Error(message=err.message))
     return err_list
 
 
@@ -95,14 +76,9 @@ class BaseMutation(graphene.Mutation):
 
     @classmethod
     def __init_subclass_with_meta__(
-        cls,
-        description=None,
-        permissions: Tuple = None,
-        _meta=None,
-        error_type_class=None,
-        error_type_field=None,
-        **options,
+        cls, description=None, permissions: Tuple = None, _meta=None, **options
     ):
+
         if not _meta:
             _meta = MutationOptions(cls)
 
@@ -118,15 +94,9 @@ class BaseMutation(graphene.Mutation):
             )
 
         _meta.permissions = permissions
-        _meta.error_type_class = error_type_class
-        _meta.error_type_field = error_type_field
         super().__init_subclass_with_meta__(
             description=description, _meta=_meta, **options
         )
-        if error_type_class and error_type_field:
-            cls._meta.fields.update(
-                get_error_fields(error_type_class, error_type_field)
-            )
 
     @classmethod
     def _update_mutation_arguments_and_fields(cls, arguments, fields):
@@ -134,48 +104,18 @@ class BaseMutation(graphene.Mutation):
         cls._meta.fields.update(fields)
 
     @classmethod
-    def get_node_by_pk(
-        cls, info, graphene_type: ObjectType, pk: Union[int, str], qs=None
-    ):
-        """Attempt to resolve a node from the given internal ID.
-
-        Whether by using the provided query set object or by calling type's get_node().
-        """
-        if qs is not None:
-            return qs.filter(pk=pk).first()
-        get_node = getattr(graphene_type, "get_node", None)
-        if get_node:
-            return get_node(info, pk)
-        return None
-
-    @classmethod
-    def get_node_or_error(cls, info, node_id, field="id", only_type=None, qs=None):
+    def get_node_or_error(cls, info, node_id, field="id", only_type=None):
         if not node_id:
             return None
 
         try:
-            if only_type is not None:
-                pk = from_global_id_strict_type(node_id, only_type, field=field)
-            else:
-                # FIXME: warn when supplied only_type is None?
-                only_type, pk = graphene.Node.from_global_id(node_id)
-
-            if isinstance(only_type, str):
-                only_type = info.schema.get_type(only_type).graphene_type
-
-            node = cls.get_node_by_pk(info, graphene_type=only_type, pk=pk, qs=qs)
+            node = graphene.Node.get_node_from_global_id(info, node_id, only_type)
         except (AssertionError, GraphQLError) as e:
-            raise ValidationError(
-                {field: ValidationError(str(e), code="graphql_error")}
-            )
+            raise ValidationError({field: str(e)})
         else:
             if node is None:
                 raise ValidationError(
-                    {
-                        field: ValidationError(
-                            "Couldn't resolve to a node: %s" % node_id, code="not_found"
-                        )
-                    }
+                    {field: "Couldn't resolve to a node: %s" % node_id}
                 )
         return node
 
@@ -184,9 +124,7 @@ class BaseMutation(graphene.Mutation):
         try:
             instances = get_nodes(ids, only_type, qs=qs)
         except GraphQLError as e:
-            raise ValidationError(
-                {field: ValidationError(str(e), code="graphql_error")}
-            )
+            raise ValidationError({field: str(e)})
         return instances
 
     @classmethod
@@ -247,22 +185,27 @@ class BaseMutation(graphene.Mutation):
         return instance
 
     @classmethod
-    def check_permissions(cls, user):
-        """Determine whether user has rights to perform this mutation.
+    def check_permissions(cls, context):
+        """Determine whether user or service account has rights to perform this mutation.
 
-        Default implementation assumes that user is allowed to perform any
+        Default implementation assumes that account is allowed to perform any
         mutation. By overriding this method or defining required permissions
         in the meta-class, you can restrict access to it.
 
-        The `user` parameter is the User instance associated with the request.
+        The `context` parameter is the Context instance associated with the request.
         """
-        if cls._meta.permissions:
-            return user.has_perms(cls._meta.permissions)
-        return True
+        if not cls._meta.permissions:
+            return True
+        if context.user.has_perms(cls._meta.permissions):
+            return True
+        service_account = getattr(context, "service_account", None)
+        if service_account and service_account.has_perms(cls._meta.permissions):
+            return True
+        return False
 
     @classmethod
     def mutate(cls, root, info, **data):
-        if not cls.check_permissions(info.context.user):
+        if not cls.check_permissions(info.context):
             raise PermissionDenied()
 
         try:
@@ -271,30 +214,12 @@ class BaseMutation(graphene.Mutation):
                 response.errors = []
             return response
         except ValidationError as e:
-            return cls.handle_errors(e)
+            errors = validation_error_to_error_type(e)
+            return cls(errors=errors)
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
         pass
-
-    @classmethod
-    def handle_errors(cls, error: ValidationError, **extra):
-        errors = validation_error_to_error_type(error)
-        return cls.handle_typed_errors(errors, **extra)
-
-    @classmethod
-    def handle_typed_errors(cls, errors: list, **extra):
-        """Return class instance with errors."""
-        if (
-            cls._meta.error_type_class is not None
-            and cls._meta.error_type_field is not None
-        ):
-            typed_errors = [
-                cls._meta.error_type_class(field=e.field, message=e.message, code=code)
-                for e, code in errors
-            ]
-            extra.update({cls._meta.error_type_field: typed_errors})
-        return cls(errors=[e[0] for e in errors], **extra)
 
 
 class ModelMutation(BaseMutation):
@@ -411,10 +336,6 @@ class ModelMutation(BaseMutation):
 
     @classmethod
     def get_instance(cls, info, **data):
-        """Retrieve an instance from the supplied global id.
-
-        The expected graphene type can be lazy (str).
-        """
         object_id = data.get("id")
         if object_id:
             model_type = registry.get_type_for_model(cls._meta.model)
@@ -457,7 +378,7 @@ class ModelDeleteMutation(ModelMutation):
     @classmethod
     def perform_mutation(cls, _root, info, **data):
         """Perform a mutation that deletes a model instance."""
-        if not cls.check_permissions(info.context.user):
+        if not cls.check_permissions(info.context):
             raise PermissionDenied()
 
         node_id = data.get("id")
@@ -546,13 +467,12 @@ class BaseBulkMutation(BaseMutation):
 
     @classmethod
     def mutate(cls, root, info, **data):
-        if not cls.check_permissions(info.context.user):
+        if not cls.check_permissions(info.context):
             raise PermissionDenied()
 
         count, errors = cls.perform_mutation(root, info, **data)
         if errors:
-            return cls.handle_errors(errors, count=count)
-
+            errors = validation_error_to_error_type(errors)
         return cls(errors=errors, count=count)
 
 

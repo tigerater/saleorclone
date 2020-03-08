@@ -18,7 +18,7 @@ from saleor.product.models import (
     ProductType,
     ProductVariant,
 )
-from tests.utils import generate_attribute_map, get_redirect_location
+from tests.utils import get_redirect_location
 
 from ..utils import create_image
 
@@ -1108,16 +1108,11 @@ def test_product_form_change_attributes(db, product, color_attribute):
     assert form.is_valid()
 
     product = form.save()
-    db_attributes_map = generate_attribute_map(product)
+    assert product.attributes[str(color_attribute.pk)] == [str(color_value.pk)]
 
-    author_value = AttributeValue.objects.filter(name=new_author).first()
-    assert author_value is not None, "The author value was not created"
-
-    expected_attribute_map = {
-        color_attribute.pk: {color_value.pk},
-        text_attribute.pk: {author_value.pk},
-    }
-    assert db_attributes_map == expected_attribute_map
+    # Check that new attribute was created for author
+    author_value = AttributeValue.objects.get(name=new_author)
+    assert product.attributes[str(text_attribute.pk)] == [str(author_value.pk)]
 
 
 def test_product_form_assign_collection_to_product(product):

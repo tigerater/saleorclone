@@ -25,11 +25,12 @@ from ...order.utils import (
     fulfill_order_line,
     recalculate_order,
 )
-from ...payment import ChargeStatus, CustomPaymentChoices, PaymentError, gateway
+from ...payment import ChargeStatus, CustomPaymentChoices, PaymentError
 from ...payment.utils import (
     clean_mark_order_as_paid,
     gateway_capture,
     gateway_refund,
+    gateway_void,
     mark_order_as_paid,
 )
 from ...product.models import Product, ProductVariant
@@ -387,7 +388,7 @@ class VoidPaymentForm(BasePaymentForm):
             raise forms.ValidationError(self.clean_error)
 
     def void(self, user):
-        return self.try_payment_action(user, gateway.void)
+        return self.try_payment_action(user, gateway_void)
 
 
 class OrderMarkAsPaidForm(forms.Form):

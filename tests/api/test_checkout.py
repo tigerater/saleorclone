@@ -7,10 +7,8 @@ import pytest
 from django.core.exceptions import ValidationError
 from prices import Money, TaxedMoney
 
-from saleor.checkout.error_codes import CheckoutErrorCode
 from saleor.checkout.models import Checkout
 from saleor.checkout.utils import clean_checkout, is_fully_paid
-from saleor.core.payments import PaymentInterface
 from saleor.core.taxes import zero_money
 from saleor.graphql.checkout.mutations import (
     clean_shipping_method,
@@ -18,8 +16,7 @@ from saleor.graphql.checkout.mutations import (
 )
 from saleor.graphql.core.utils import str_to_enum
 from saleor.order.models import Order
-from saleor.payment import TransactionKind
-from saleor.payment.interface import GatewayResponse
+from saleor.payment import PaymentError
 from saleor.payment.models import Transaction
 from saleor.shipping import ShippingMethodType
 from saleor.shipping.models import ShippingMethod
@@ -35,12 +32,6 @@ def other_shipping_method(shipping_zone):
         price=Money(9, "USD"),
         shipping_zone=shipping_zone,
     )
-
-
-@pytest.fixture(autouse=True)
-def setup_dummy_gateway(settings):
-    settings.PLUGINS = ["saleor.payment.gateways.dummy.plugin.DummyGatewayPlugin"]
-    return settings
 
 
 def test_clean_shipping_method_after_shipping_address_changes_stay_the_same(
@@ -111,11 +102,6 @@ MUTATION_CHECKOUT_CREATE = """
           field
           message
         }
-        checkoutErrors {
-          field
-          message
-          code
-        }
       }
     }
 """
@@ -165,32 +151,15 @@ def test_checkout_create(api_client, variant, graphql_address_data):
 
 
 @pytest.mark.parametrize(
-    "quantity, expected_error_message, error_code",
+    "quantity, expected_error_message",
     (
-        (
-            -1,
-            "The quantity should be higher than zero.",
-            CheckoutErrorCode.ZERO_QUANTITY,
-        ),
-        (
-            0,
-            "The quantity should be higher than zero.",
-            CheckoutErrorCode.ZERO_QUANTITY,
-        ),
-        (
-            51,
-            "Cannot add more than 50 times this item.",
-            CheckoutErrorCode.QUANTITY_GREATER_THAN_LIMIT,
-        ),
+        (-1, "The quantity should be higher than zero."),
+        (0, "The quantity should be higher than zero."),
+        (51, "Cannot add more than 50 times this item."),
     ),
 )
 def test_checkout_create_cannot_add_invalid_quantities(
-    api_client,
-    variant,
-    graphql_address_data,
-    quantity,
-    expected_error_message,
-    error_code,
+    api_client, variant, graphql_address_data, quantity, expected_error_message
 ):
 
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
@@ -209,14 +178,6 @@ def test_checkout_create_cannot_add_invalid_quantities(
     assert content["errors"]
     assert content["errors"] == [
         {"field": "quantity", "message": expected_error_message}
-    ]
-
-    assert content["checkoutErrors"] == [
-        {
-            "field": "quantity",
-            "message": expected_error_message,
-            "code": error_code.name,
-        }
     ]
 
 
@@ -258,9 +219,6 @@ def test_checkout_create_required_email(api_client, variant):
     assert errors
     assert errors[0]["field"] == "email"
     assert errors[0]["message"] == "This field cannot be blank."
-
-    checkout_errors = content["data"]["checkoutCreate"]["checkoutErrors"]
-    assert checkout_errors[0]["code"] == CheckoutErrorCode.REQUIRED.name
 
 
 def test_checkout_create_default_email_for_logged_in_customer(user_api_client, variant):
@@ -798,12 +756,7 @@ MUTATION_CHECKOUT_SHIPPING_ADDRESS_UPDATE = """
             },
             errors {
                 field,
-                message,
-            }
-            checkoutErrors {
-                field
                 message
-                code
             }
         }
     }"""
@@ -869,13 +822,6 @@ def test_checkout_shipping_address_with_invalid_phone_number_returns_error(
     assert response["errors"] == [
         {"field": "phone", "message": "'+33600000' is not a valid phone number."}
     ]
-    assert response["checkoutErrors"] == [
-        {
-            "field": "phone",
-            "message": "'+33600000' is not a valid phone number.",
-            "code": CheckoutErrorCode.INVALID.name,
-        }
-    ]
 
 
 @pytest.mark.parametrize(
@@ -938,8 +884,6 @@ def test_checkout_shipping_address_update_invalid_country_code(
     assert data["errors"][0]["message"] == "Invalid country code."
     assert data["errors"][0]["field"] == "country"
 
-    assert data["checkoutErrors"][0]["code"] == CheckoutErrorCode.INVALID.name
-
 
 def test_checkout_billing_address_update(
     user_api_client, checkout_with_item, graphql_address_data
@@ -998,11 +942,6 @@ CHECKOUT_EMAIL_UPDATE_MUTATION = """
                 field,
                 message
             }
-            checkoutErrors {
-                field,
-                message
-                code
-            }
         }
     }
 """
@@ -1036,9 +975,6 @@ def test_checkout_email_update_validation(user_api_client, checkout_with_item):
     assert errors[0]["field"] == "email"
     assert errors[0]["message"] == "This field cannot be blank."
 
-    checkout_errors = content["data"]["checkoutEmailUpdate"]["checkoutErrors"]
-    assert checkout_errors[0]["code"] == CheckoutErrorCode.REQUIRED.name
-
 
 MUTATION_CHECKOUT_COMPLETE = """
     mutation checkoutComplete($checkoutId: ID!) {
@@ -1065,7 +1001,6 @@ def test_checkout_complete(
     address,
     shipping_method,
 ):
-
     assert not gift_card.last_used_on
 
     checkout = checkout_with_gift_card
@@ -1094,7 +1029,6 @@ def test_checkout_complete(
     checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
     variables = {"checkoutId": checkout_id}
     response = user_api_client.post_graphql(MUTATION_CHECKOUT_COMPLETE, variables)
-
     content = get_graphql_content(response)
     data = content["data"]["checkoutComplete"]
     assert not data["errors"]
@@ -1124,61 +1058,32 @@ def test_checkout_complete(
     ).exists(), "Checkout should have been deleted"
 
 
-ERROR_GATEWAY_RESPONSE = GatewayResponse(
-    is_success=False,
-    action_required=False,
-    kind=TransactionKind.CAPTURE,
-    amount=0.0,
-    currency="usd",
-    transaction_id="1234",
-    error="ERROR",
-)
-
-
-def _process_payment_transaction_returns_error(*args, **kwards):
-    return ERROR_GATEWAY_RESPONSE
-
-
 def _process_payment_raise_error(*args, **kwargs):
-    raise Exception("Oops! Something went wrong.")
+    raise PaymentError("Oops! Something went wrong.")
 
 
-@pytest.fixture(
-    params=[_process_payment_raise_error, _process_payment_transaction_returns_error]
+def _process_payment_transaction_returns_error(*args, **kwargs):
+    return Transaction(error="Oops! Something went wrong.", is_success=False)
+
+
+@pytest.mark.parametrize(
+    "side_effect",
+    (_process_payment_raise_error, _process_payment_transaction_returns_error),
 )
-def error_side_effect(request):
-    return request.param
-
-
-@pytest.fixture
-def fake_manager(mocker):
-    return mocker.Mock(spec=PaymentInterface)
-
-
-@pytest.fixture
-def mock_get_manager(mocker, fake_manager):
-    mgr = mocker.patch(
-        "saleor.payment.gateway.get_extensions_manager",
-        autospec=True,
-        return_value=fake_manager,
-    )
-    yield fake_manager
-    mgr.assert_called_once()
-
-
+@patch("saleor.graphql.checkout.mutations.gateway_process_payment")
 def test_checkout_complete_does_not_delete_checkout_after_unsuccessful_payment(
-    mock_get_manager,
-    error_side_effect,
+    mocked_process_payment,
     user_api_client,
     checkout_with_voucher,
     voucher,
     payment_dummy,
     address,
     shipping_method,
+    side_effect,
 ):
-    expected_error = "Oops! Something went wrong."
-    mock_get_manager.process_payment.side_effect = error_side_effect
     expected_voucher_usage_count = voucher.used
+    mocked_process_payment.side_effect = side_effect
+
     checkout = checkout_with_voucher
     checkout.shipping_address = address
     checkout.shipping_method = shipping_method
@@ -1202,12 +1107,12 @@ def test_checkout_complete_does_not_delete_checkout_after_unsuccessful_payment(
     response = user_api_client.post_graphql(MUTATION_CHECKOUT_COMPLETE, variables)
     content = get_graphql_content(response)
     data = content["data"]["checkoutComplete"]
+    assert data["errors"] == [{"field": None, "message": "Oops! Something went wrong."}]
 
     assert Order.objects.count() == orders_count
 
     payment.refresh_from_db(fields=["order"])
-    transaction = payment.transactions.get()
-    assert transaction.error
+    assert payment.transactions.count() == 0
     assert payment.order is None
 
     # ensure the voucher usage count was not incremented
@@ -1226,7 +1131,8 @@ def test_checkout_complete_invalid_checkout_id(user_api_client):
     response = user_api_client.post_graphql(MUTATION_CHECKOUT_COMPLETE, variables)
     content = get_graphql_content(response)
     data = content["data"]["checkoutComplete"]
-    assert data["errors"][0]["message"] == "Couldn't resolve to a node: invalidId"
+    error_message = "Couldn't resolve to a node: %s" % checkout_id
+    assert data["errors"][0]["message"] == error_message
     assert data["errors"][0]["field"] == "checkoutId"
     assert orders_count == Order.objects.count()
 

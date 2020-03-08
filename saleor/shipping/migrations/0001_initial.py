@@ -3,6 +3,8 @@
 from __future__ import unicode_literals
 
 import django.db.models.manager
+import django_prices.models
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -302,8 +304,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "price",
-                    models.DecimalField(
-                        decimal_places=2, max_digits=12, verbose_name="price"
+                    django_prices.models.MoneyField(
+                        currency=settings.DEFAULT_CURRENCY,
+                        decimal_places=2,
+                        max_digits=12,
+                        verbose_name="price",
                     ),
                 ),
                 (

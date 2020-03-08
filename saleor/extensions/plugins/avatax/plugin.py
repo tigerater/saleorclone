@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Union
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 from prices import Money, TaxedMoney, TaxedMoneyRange
 
@@ -31,7 +30,6 @@ from .tasks import api_post_request_task
 if TYPE_CHECKING:
     from ....checkout.models import Checkout, CheckoutLine
     from ....order.models import Order, OrderLine
-    from ...models import PluginConfiguration
 
 logger = logging.getLogger(__name__)
 
@@ -159,9 +157,9 @@ class AvataxPlugin(BasePlugin):
         total_gross = Money(amount=total_net + tax, currency=currency)
         total_net = Money(amount=total_net, currency=currency)
         total = TaxedMoney(net=total_net, gross=total_gross)
-        voucher_value = checkout.discount
-        if voucher_value:
-            total -= voucher_value
+        voucher_amount = checkout.discount_amount
+        if voucher_amount:
+            total -= voucher_amount
         return max(total, zero_taxed_money(total.currency))
 
     def _calculate_checkout_subtotal(
@@ -419,31 +417,6 @@ class AvataxPlugin(BasePlugin):
         if not self.active:
             return previous_value
         return True
-
-    @classmethod
-    def validate_plugin_configuration(cls, plugin_configuration: "PluginConfiguration"):
-        """Validate if provided configuration is correct."""
-        missing_fields = []
-        configuration = plugin_configuration.configuration
-        configuration = {item["name"]: item["value"] for item in configuration}
-        if not configuration["Username or account"]:
-            missing_fields.append("Username or account")
-        if not configuration["Password or license"]:
-            missing_fields.append("Password or license")
-
-        if plugin_configuration.active and missing_fields:
-            error_msg = (
-                "To enable a plugin, you need to provide values for the "
-                "following fields: "
-            )
-            raise ValidationError(error_msg + ", ".join(missing_fields))
-
-    @classmethod
-    def _hide_secret_configuration_fields(cls, configuration):
-        for field in configuration:
-            if field.get("name") == "Password or license" and field.get("value"):
-                # We don't want to share our secret data
-                field["value"] = "*" * 6
 
     @classmethod
     def _get_default_configuration(cls):

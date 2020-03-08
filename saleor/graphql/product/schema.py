@@ -1,8 +1,8 @@
 import graphene
-from graphql_jwt.decorators import permission_required
 
 from ..core.enums import ReportingPeriod
 from ..core.fields import FilterInputConnectionField, PrefetchingConnectionField
+from ..decorators import permission_required
 from ..descriptions import DESCRIPTIONS
 from ..translations.mutations import (
     AttributeTranslate,
@@ -187,25 +187,21 @@ class ProductQueries(graphene.ObjectType):
         Product,
         filter=ProductFilterInput(),
         attributes=graphene.List(
-            AttributeScalar,
-            description=(
-                'DEPRECATED: Will be removed in Saleor 2.10, use the "filter" input.',
-                "Filter products by attributes.",
-            ),
+            AttributeScalar, description="Filter products by attributes."
         ),
         categories=graphene.List(
-            graphene.ID,
-            description=(
-                'DEPRECATED: Will be removed in Saleor 2.10, use the "filter" input.',
-                "Filter products by category.",
-            ),
+            graphene.ID, description="Filter products by category."
         ),
         collections=graphene.List(
-            graphene.ID,
-            description=(
-                'DEPRECATED: Will be removed in Saleor 2.10, use the "filter" input.',
-                "Filter products by collections.",
-            ),
+            graphene.ID, description="Filter products by collections."
+        ),
+        price_lte=graphene.Float(
+            description="""DEPRECATED: Use the "filter" input.
+            Filter by price less than or equal to the given value."""
+        ),
+        price_gte=graphene.Float(
+            description="""DEPRECATED: Use the "filter" input.
+            Filter by price greater than or equal to the given value."""
         ),
         sort_by=graphene.Argument(ProductOrder, description="Sort products."),
         stock_availability=graphene.Argument(

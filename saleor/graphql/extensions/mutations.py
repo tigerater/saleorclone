@@ -2,7 +2,7 @@ import graphene
 
 from ...extensions.manager import get_extensions_manager
 from ..core.mutations import BaseMutation
-from .types import Plugin
+from .types import PluginConfiguration
 
 
 class ConfigurationItemInput(graphene.InputObjectType):
@@ -12,7 +12,7 @@ class ConfigurationItemInput(graphene.InputObjectType):
     )
 
 
-class PluginUpdateInput(graphene.InputObjectType):
+class PluginConfigurationUpdateInput(graphene.InputObjectType):
     active = graphene.Boolean(
         required=False, description="Indicates whether the plugin should be enabled"
     )
@@ -23,12 +23,12 @@ class PluginUpdateInput(graphene.InputObjectType):
     )
 
 
-class PluginUpdate(BaseMutation):
-    plugin = graphene.Field(Plugin)
+class PluginConfigurationUpdate(BaseMutation):
+    plugin_configuration = graphene.Field(PluginConfiguration)
 
     class Arguments:
         id = graphene.ID(required=True, description="ID of plugin to update")
-        input = PluginUpdateInput(
+        input = PluginConfigurationUpdateInput(
             description="Fields required to update a plugin configuration.",
             required=True,
         )
@@ -41,7 +41,7 @@ class PluginUpdate(BaseMutation):
     def perform_mutation(cls, root, info, **data):
         plugin_id = data.get("id")
         input = data.get("input")
-        instance = cls.get_node_or_error(info, plugin_id, only_type=Plugin)
+        instance = cls.get_node_or_error(info, plugin_id, only_type=PluginConfiguration)
         manager = get_extensions_manager()
         instance = manager.save_plugin_configuration(instance.name, input)
-        return PluginUpdate(plugin=instance)
+        return PluginConfigurationUpdate(plugin_configuration=instance)

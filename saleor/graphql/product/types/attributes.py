@@ -3,12 +3,12 @@ import re
 import graphene
 import graphene_django_optimizer as gql_optimizer
 from graphene import relay
-from graphql_jwt.decorators import permission_required
 
 from ....product import models
 from ...core.connection import CountableDjangoObjectType
 from ...core.resolvers import resolve_meta, resolve_private_meta
 from ...core.types import MetadataObjectType
+from ...decorators import permission_required
 from ...translations.enums import LanguageCodeEnum
 from ...translations.resolvers import resolve_translation
 from ...translations.types import AttributeTranslation, AttributeValueTranslation
@@ -51,6 +51,10 @@ class AttributeValue(CountableDjangoObjectType):
     name = graphene.String(description=AttributeValueDescriptions.NAME)
     slug = graphene.String(description=AttributeValueDescriptions.SLUG)
     type = AttributeValueType(description=AttributeValueDescriptions.TYPE)
+    value = graphene.String(
+        description=AttributeValueDescriptions.VALUE,
+        deprecation_reason="This field is deprecated",
+    )
     translation = graphene.Field(
         AttributeValueTranslation,
         language_code=graphene.Argument(
@@ -192,9 +196,7 @@ class SelectedAttribute(graphene.ObjectType):
         AttributeValue,
         default_value=None,
         description="The value or the first value of an attribute.",
-        deprecation_reason=(
-            "DEPRECATED: Will be removed in Saleor 2.10, use values instead."
-        ),
+        deprecation_reason="Use values instead.",
     )
     values = graphene.List(
         AttributeValue, description="Values of an attribute.", required=True

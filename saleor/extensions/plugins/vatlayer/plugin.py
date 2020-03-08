@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 
 class VatlayerPlugin(BasePlugin):
+    PLUGIN_NAME = "Vatlayer"
     META_FIELD = "vatlayer"
     META_NAMESPACE = "taxes"
 
@@ -280,3 +281,13 @@ class VatlayerPlugin(BasePlugin):
         rate_name = self.__get_tax_code_from_object_meta(obj).code
         tax = taxes.get(rate_name) or taxes.get(DEFAULT_TAX_RATE_NAME)
         return Decimal(tax["value"])
+
+    @classmethod
+    def _get_default_configuration(cls):
+        defaults = {
+            "name": cls.PLUGIN_NAME,
+            "description": "",
+            "active": bool(settings.VATLAYER_ACCESS_KEY),
+            "configuration": None,
+        }
+        return defaults

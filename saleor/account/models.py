@@ -1,7 +1,11 @@
+import uuid
+from typing import Set
+
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
+    Permission,
     PermissionsMixin,
 )
 from django.contrib.postgres.fields import JSONField
@@ -9,8 +13,9 @@ from django.db import models
 from django.db.models import Q, Value
 from django.forms.models import model_to_dict
 from django.utils import timezone
-from django.utils.translation import pgettext_lazy
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django_countries.fields import Country, CountryField
+from oauthlib.common import generate_token
 from phonenumber_field.modelfields import PhoneNumber, PhoneNumberField
 from versatileimagefield.fields import VersatileImageField
 
@@ -126,6 +131,10 @@ class UserManager(BaseUserManager):
         return self.get_queryset().filter(is_staff=True)
 
 
+def get_token():
+    return str(uuid.uuid4())
+
+
 class User(PermissionsMixin, ModelWithMetadata, AbstractBaseUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=256, blank=True)
@@ -134,6 +143,7 @@ class User(PermissionsMixin, ModelWithMetadata, AbstractBaseUser):
         Address, blank=True, related_name="user_addresses"
     )
     is_staff = models.BooleanField(default=False)
+    token = models.UUIDField(default=get_token, editable=False, unique=True)
     is_active = models.BooleanField(default=True)
     note = models.TextField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now, editable=False)
@@ -180,6 +190,54 @@ class User(PermissionsMixin, ModelWithMetadata, AbstractBaseUser):
         if address:
             return "%s %s (%s)" % (address.first_name, address.last_name, self.email)
         return self.email
+
+
+class Bot(ModelWithMetadata):
+    name = models.CharField(max_length=60)
+    auth_token = models.CharField(default=generate_token, unique=True, max_length=30)
+    created = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_("bot permissions"),
+        blank=True,
+        help_text=_("Specific permissions for this bot."),
+        related_name="bot_set",
+        related_query_name="bot",
+    )
+
+    class Meta:
+        permissions = (
+            ("manage_bots", pgettext_lazy("Permission description", "Manage bots")),
+        )
+
+    def _get_permissions(self) -> Set[str]:
+        """Return the permissions of the bot."""
+        if not self.is_active:
+            return set()
+        perm_cache_name = "_bot_perm_cache"
+        if not hasattr(self, perm_cache_name):
+            perms = self.permissions.all()
+            perms = perms.values_list("content_type__app_label", "codename").order_by()
+            setattr(self, perm_cache_name, {f"{ct}.{name}" for ct, name in perms})
+        return getattr(self, perm_cache_name)
+
+    def has_perms(self, perm_list):
+        """Return True if the bot has each of the specified permissions."""
+        wanted_perms = set(perm_list)
+        actual_perms = self._get_permissions()
+
+        if not self.is_active:
+            return False
+
+        return (wanted_perms & actual_perms) == wanted_perms
+
+    def has_perm(self, perm):
+        """Return True if the bot has the specified permission."""
+        if not self.is_active:
+            return False
+
+        return perm in self._get_permissions()
 
 
 class CustomerNote(models.Model):

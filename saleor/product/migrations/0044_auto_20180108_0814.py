@@ -7,7 +7,9 @@ from decimal import Decimal
 import django.contrib.postgres.fields.hstore
 import django.core.validators
 import django.db.models.deletion
+import django_prices.models
 import versatileimagefield.fields
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -97,7 +99,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="product",
             name="price",
-            field=models.DecimalField(decimal_places=2, max_digits=12),
+            field=django_prices.models.MoneyField(
+                currency=settings.DEFAULT_CURRENCY, decimal_places=2, max_digits=12
+            ),
         ),
         migrations.AlterField(
             model_name="product",
@@ -205,8 +209,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="productvariant",
             name="price_override",
-            field=models.DecimalField(
-                blank=True, decimal_places=2, max_digits=12, null=True
+            field=django_prices.models.MoneyField(
+                blank=True,
+                currency=settings.DEFAULT_CURRENCY,
+                decimal_places=2,
+                max_digits=12,
+                null=True,
             ),
         ),
         migrations.AlterField(
@@ -217,8 +225,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="stock",
             name="cost_price",
-            field=models.DecimalField(
-                blank=True, decimal_places=2, max_digits=12, null=True
+            field=django_prices.models.MoneyField(
+                blank=True,
+                currency=settings.DEFAULT_CURRENCY,
+                decimal_places=2,
+                max_digits=12,
+                null=True,
             ),
         ),
         migrations.AlterField(

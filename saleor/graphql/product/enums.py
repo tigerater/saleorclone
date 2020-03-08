@@ -25,8 +25,8 @@ class StockAvailability(graphene.Enum):
 
 class ProductOrderField(graphene.Enum):
     NAME = "name"
-    PRICE = "price_amount"
-    MINIMAL_PRICE = "minimal_variant_price_amount"
+    PRICE = "price"
+    MINIMAL_PRICE = "minimal_variant_price"
     DATE = "updated_at"
 
     @property

@@ -44,7 +44,7 @@ class OrderQueryset(models.QuerySet):
         statuses = {OrderStatus.UNFULFILLED, OrderStatus.PARTIALLY_FULFILLED}
         qs = self.filter(status__in=statuses, payments__is_active=True)
         qs = qs.annotate(amount_paid=Sum("payments__captured_amount"))
-        return qs.filter(total_gross_amount__lte=F("amount_paid"))
+        return qs.filter(total_gross__lte=F("amount_paid"))
 
     def ready_to_capture(self):
         """Return orders with payments to capture.
@@ -81,12 +81,6 @@ class Order(models.Model):
         Address, related_name="+", editable=False, null=True, on_delete=models.SET_NULL
     )
     user_email = models.EmailField(blank=True, default="")
-
-    currency = models.CharField(
-        max_length=settings.DEFAULT_CURRENCY_CODE_LENGTH,
-        default=settings.DEFAULT_CURRENCY,
-    )
-
     shipping_method = models.ForeignKey(
         ShippingMethod,
         blank=True,
@@ -94,72 +88,52 @@ class Order(models.Model):
         related_name="orders",
         on_delete=models.SET_NULL,
     )
-    shipping_method_name = models.CharField(
-        max_length=255, null=True, default=None, blank=True, editable=False
-    )
-
-    shipping_price_net_amount = models.DecimalField(
-        max_digits=settings.DEFAULT_MAX_DIGITS,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        default=0,
-        editable=False,
-    )
     shipping_price_net = MoneyField(
-        amount_field="shipping_price_net_amount", currency_field="currency"
-    )
-
-    shipping_price_gross_amount = models.DecimalField(
+        currency=settings.DEFAULT_CURRENCY,
         max_digits=settings.DEFAULT_MAX_DIGITS,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
         default=0,
         editable=False,
     )
     shipping_price_gross = MoneyField(
-        amount_field="shipping_price_gross_amount", currency_field="currency"
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=settings.DEFAULT_MAX_DIGITS,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=0,
+        editable=False,
     )
-
     shipping_price = TaxedMoneyField(
-        net_amount_field="shipping_price_net_amount",
-        gross_amount_field="shipping_price_gross_amount",
-        currency_field="currency",
+        net_field="shipping_price_net", gross_field="shipping_price_gross"
     )
-
+    shipping_method_name = models.CharField(
+        max_length=255, null=True, default=None, blank=True, editable=False
+    )
     token = models.CharField(max_length=36, unique=True, blank=True)
     # Token of a checkout instance that this order was created from
     checkout_token = models.CharField(max_length=36, blank=True)
-
-    total_net_amount = models.DecimalField(
+    total_net = MoneyField(
+        currency=settings.DEFAULT_CURRENCY,
         max_digits=settings.DEFAULT_MAX_DIGITS,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        default=0,
-    )
-    total_net = MoneyField(amount_field="total_net_amount", currency_field="currency")
-
-    total_gross_amount = models.DecimalField(
-        max_digits=settings.DEFAULT_MAX_DIGITS,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        default=0,
+        default=zero_money,
     )
     total_gross = MoneyField(
-        amount_field="total_gross_amount", currency_field="currency"
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=settings.DEFAULT_MAX_DIGITS,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=zero_money,
     )
-
-    total = TaxedMoneyField(
-        net_amount_field="total_net_amount",
-        gross_amount_field="total_gross_amount",
-        currency_field="currency",
-    )
-
+    total = TaxedMoneyField(net_field="total_net", gross_field="total_gross")
     voucher = models.ForeignKey(
         Voucher, blank=True, null=True, related_name="+", on_delete=models.SET_NULL
     )
     gift_cards = models.ManyToManyField(GiftCard, blank=True, related_name="orders")
-    discount_amount = models.DecimalField(
+    discount_amount = MoneyField(
+        currency=settings.DEFAULT_CURRENCY,
         max_digits=settings.DEFAULT_MAX_DIGITS,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        default=0,
+        default=zero_money,
     )
-    discount = MoneyField(amount_field="discount_amount", currency_field="currency")
     discount_name = models.CharField(max_length=255, default="", blank=True)
     translated_discount_name = models.CharField(max_length=255, default="", blank=True)
     display_gross_prices = models.BooleanField(default=True)
@@ -367,34 +341,19 @@ class OrderLine(models.Model):
     quantity_fulfilled = models.IntegerField(
         validators=[MinValueValidator(0)], default=0
     )
-
-    currency = models.CharField(
-        max_length=settings.DEFAULT_CURRENCY_CODE_LENGTH,
-        default=settings.DEFAULT_CURRENCY,
-    )
-
-    unit_price_net_amount = models.DecimalField(
-        max_digits=settings.DEFAULT_MAX_DIGITS,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-    )
     unit_price_net = MoneyField(
-        amount_field="unit_price_net_amount", currency_field="currency"
-    )
-
-    unit_price_gross_amount = models.DecimalField(
+        currency=settings.DEFAULT_CURRENCY,
         max_digits=settings.DEFAULT_MAX_DIGITS,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
     )
     unit_price_gross = MoneyField(
-        amount_field="unit_price_gross_amount", currency_field="currency"
+        currency=settings.DEFAULT_CURRENCY,
+        max_digits=settings.DEFAULT_MAX_DIGITS,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
     )
-
     unit_price = TaxedMoneyField(
-        net_amount_field="unit_price_net_amount",
-        gross_amount_field="unit_price_gross_amount",
-        currency="currency",
+        net_field="unit_price_net", gross_field="unit_price_gross"
     )
-
     tax_rate = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal("0.0")
     )

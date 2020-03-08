@@ -97,9 +97,8 @@ def test_mutation_returns_error_field_in_camel_case(
         query, variables, permissions=[permission_manage_products]
     )
     content = get_graphql_content(response)
-    errors = content["data"]["productVariantUpdate"]["errors"]
-    assert len(errors) == 1
-    assert errors[0]["field"] == "costPriceAmount"
+    error = content["data"]["productVariantUpdate"]["errors"][0]
+    assert error["field"] == "costPrice"
 
 
 def test_reporting_period_to_date():

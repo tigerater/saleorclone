@@ -3,9 +3,9 @@ import graphene_django_optimizer as gql_optimizer
 from graphene import relay
 
 from ...discount import models
-from ..core import types
 from ..core.connection import CountableDjangoObjectType
 from ..core.fields import PrefetchingConnectionField
+from ..core.types import CountryDisplay
 from ..product.types import Category, Collection, Product
 from ..translations.enums import LanguageCodeEnum
 from ..translations.resolvers import resolve_translation
@@ -84,7 +84,7 @@ class Voucher(CountableDjangoObjectType):
         model_field="products",
     )
     countries = graphene.List(
-        types.CountryDisplay,
+        CountryDisplay,
         description="List of countries available for the shipping voucher.",
     )
     translation = graphene.Field(
@@ -102,9 +102,6 @@ class Voucher(CountableDjangoObjectType):
         required=True,
     )
     type = VoucherTypeEnum(description="Determines a type of voucher", required=True)
-    min_amount_spent = graphene.Field(
-        types.Money, deprecation_reason="Use the minSpent field instead."
-    )
 
     class Meta:
         description = """
@@ -119,7 +116,7 @@ class Voucher(CountableDjangoObjectType):
             "discount_value_type",
             "end_date",
             "id",
-            "min_spent",
+            "min_amount_spent",
             "min_checkout_items_quantity",
             "name",
             "start_date",
@@ -145,10 +142,6 @@ class Voucher(CountableDjangoObjectType):
     @staticmethod
     def resolve_countries(root: models.Voucher, *_args, **_kwargs):
         return [
-            types.CountryDisplay(code=country.code, country=country.name)
+            CountryDisplay(code=country.code, country=country.name)
             for country in root.countries
         ]
-
-    @staticmethod
-    def resolve_min_amount_spent(root: models.Voucher, *_args, **_kwargs):
-        return root.min_spent

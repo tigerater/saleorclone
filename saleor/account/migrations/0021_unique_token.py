@@ -1,10 +1,6 @@
-import uuid
-
 from django.db import migrations, models
 
-
-def get_token():
-    return str(uuid.uuid4())
+from saleor.account.models import get_token
 
 
 def create_uuid(apps, schema_editor):

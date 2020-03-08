@@ -3,6 +3,8 @@
 import django.db.models.deletion
 import django_countries.fields
 import django_measurement.models
+import django_prices.models
+from django.conf import settings
 from django.db import migrations, models
 
 import saleor.core.weight
@@ -64,8 +66,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="shippingmethod",
             name="maximum_order_price",
-            field=models.DecimalField(
-                blank=True, decimal_places=2, max_digits=12, null=True
+            field=django_prices.models.MoneyField(
+                blank=True,
+                currency=settings.DEFAULT_CURRENCY,
+                decimal_places=2,
+                max_digits=12,
+                null=True,
             ),
         ),
         migrations.AddField(
@@ -78,8 +84,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="shippingmethod",
             name="minimum_order_price",
-            field=models.DecimalField(
-                blank=True, decimal_places=2, default=0, max_digits=12, null=True
+            field=django_prices.models.MoneyField(
+                blank=True,
+                currency=settings.DEFAULT_CURRENCY,
+                decimal_places=2,
+                default=0,
+                max_digits=12,
+                null=True,
             ),
         ),
         migrations.AddField(
@@ -95,7 +106,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="shippingmethod",
             name="price",
-            field=models.DecimalField(decimal_places=2, default=0, max_digits=12),
+            field=django_prices.models.MoneyField(
+                currency=settings.DEFAULT_CURRENCY,
+                decimal_places=2,
+                default=0,
+                max_digits=12,
+            ),
         ),
         migrations.AddField(
             model_name="shippingmethod",

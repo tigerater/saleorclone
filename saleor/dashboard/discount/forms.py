@@ -12,14 +12,12 @@ from ...discount import DiscountValueType
 from ...discount.models import Sale, Voucher
 from ...product.models import Category, Product
 from ...product.tasks import update_products_minimal_variant_prices_of_discount_task
-from ..forms import AjaxSelect2MultipleChoiceField, MoneyModelForm
+from ..forms import AjaxSelect2MultipleChoiceField
 
 MinAmountSpent = MoneyField(
-    available_currencies=settings.AVAILABLE_CURRENCIES,
-    min_values=[zero_money()],
-    max_digits=settings.DEFAULT_MAX_DIGITS,
-    decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+    min_value=zero_money(),
     required=False,
+    currency=settings.DEFAULT_CURRENCY,
     label=pgettext_lazy(
         "Lowest value for order to be able to use the voucher",
         "Apply only if the purchase value is greater than or equal to",
@@ -89,13 +87,12 @@ class VoucherForm(forms.ModelForm):
     class Meta:
         model = Voucher
         exclude = [
-            "min_spent",
+            "min_amount_spent",
             "countries",
             "products",
             "collections",
             "categories",
             "used",
-            "currency",
         ]
         labels = {
             "type": pgettext_lazy("Discount type", "Discount type"),
@@ -124,11 +121,8 @@ class VoucherForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
 
-class MinSpentVoucherBaseForm(MoneyModelForm):
-    min_spent = MinAmountSpent
-
-
-class ShippingVoucherForm(MinSpentVoucherBaseForm):
+class ShippingVoucherForm(forms.ModelForm):
+    min_amount_spent = MinAmountSpent
     countries = forms.MultipleChoiceField(
         choices=countries,
         required=False,
@@ -140,13 +134,15 @@ class ShippingVoucherForm(MinSpentVoucherBaseForm):
 
     class Meta:
         model = Voucher
-        fields = ["countries", "min_checkout_items_quantity"]
+        fields = ["countries", "min_amount_spent", "min_checkout_items_quantity"]
 
 
-class EntireOrderVoucherForm(MinSpentVoucherBaseForm):
+class EntireOrderVoucherForm(forms.ModelForm):
+    min_amount_spent = MinAmountSpent
+
     class Meta:
         model = Voucher
-        fields = ["min_spent", "min_checkout_items_quantity"]
+        fields = ["min_amount_spent", "min_checkout_items_quantity"]
 
     def save(self, commit=True):
         self.instance.category = None
@@ -155,8 +151,9 @@ class EntireOrderVoucherForm(MinSpentVoucherBaseForm):
         return super().save(commit)
 
 
-class CommonVoucherForm(MinSpentVoucherBaseForm):
+class CommonVoucherForm(forms.ModelForm):
     use_required_attribute = False
+    min_amount_spent = MinAmountSpent
     apply_once_per_order = forms.BooleanField(
         required=False,
         label=pgettext_lazy(
@@ -195,6 +192,7 @@ class SpecificProductVoucherForm(CommonVoucherForm):
             "collections",
             "categories",
             "apply_once_per_order",
+            "min_amount_spent",
             "min_checkout_items_quantity",
         ]
         labels = {
@@ -221,7 +219,12 @@ class ProductVoucherForm(CommonVoucherForm):
 
     class Meta:
         model = Voucher
-        fields = ["products", "apply_once_per_order", "min_checkout_items_quantity"]
+        fields = [
+            "products",
+            "apply_once_per_order",
+            "min_amount_spent",
+            "min_checkout_items_quantity",
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -232,7 +235,12 @@ class ProductVoucherForm(CommonVoucherForm):
 class CollectionVoucherForm(CommonVoucherForm):
     class Meta:
         model = Voucher
-        fields = ["collections", "apply_once_per_order", "min_checkout_items_quantity"]
+        fields = [
+            "collections",
+            "apply_once_per_order",
+            "min_amount_spent",
+            "min_checkout_items_quantity",
+        ]
         labels = {"collections": pgettext_lazy("Collections", "Collections")}
 
     def __init__(self, *args, **kwargs):
@@ -249,4 +257,9 @@ class CategoryVoucherForm(CommonVoucherForm):
 
     class Meta:
         model = Voucher
-        fields = ["categories", "apply_once_per_order", "min_checkout_items_quantity"]
+        fields = [
+            "categories",
+            "apply_once_per_order",
+            "min_amount_spent",
+            "min_checkout_items_quantity",
+        ]

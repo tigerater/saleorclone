@@ -14,7 +14,6 @@ from .product.schema import ProductMutations, ProductQueries
 from .shipping.schema import ShippingMutations, ShippingQueries
 from .shop.schema import ShopMutations, ShopQueries
 from .translations.schema import TranslationQueries
-from .webhook.schema import WebhookMutations, WebhookQueries
 
 
 class Query(
@@ -32,7 +31,6 @@ class Query(
     ShippingQueries,
     ShopQueries,
     TranslationQueries,
-    WebhookQueries,
 ):
     node = graphene.Node.Field()
 
@@ -51,7 +49,6 @@ class Mutations(
     ProductMutations,
     ShippingMutations,
     ShopMutations,
-    WebhookMutations,
 ):
     pass
 

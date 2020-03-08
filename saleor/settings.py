@@ -41,8 +41,8 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-ALLOWED_CLIENT_HOSTS = get_list(
-    os.environ.get("ALLOWED_CLIENT_HOSTS", "localhost,127.0.0.1")
+ALLOWED_STOREFRONT_HOSTS = get_list(
+    os.environ.get("ALLOWED_STOREFRONT_HOSTS", "localhost,127.0.0.1")
 )
 
 INTERNAL_IPS = get_list(os.environ.get("INTERNAL_IPS", "127.0.0.1"))
@@ -219,7 +219,6 @@ MIDDLEWARE = [
     "social_django.middleware.SocialAuthExceptionMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
     "saleor.graphql.middleware.jwt_middleware",
-    "saleor.graphql.middleware.service_account_middleware",
 ]
 
 INSTALLED_APPS = [
@@ -672,7 +671,10 @@ GRAPHENE = {
 
 EXTENSIONS_MANAGER = "saleor.extensions.manager.ExtensionsManager"
 
-PLUGINS = os.environ.get("PLUGINS", [])
+PLUGINS = [
+    "saleor.extensions.plugins.avatax.plugin.AvataxPlugin",
+    "saleor.extensions.plugins.vatlayer.plugin.VatlayerPlugin",
+]
 
 # Whether DraftJS should be used be used instead of HTML
 # True to use DraftJS (JSON based), for the 2.0 dashboard

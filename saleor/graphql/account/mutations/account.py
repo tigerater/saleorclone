@@ -3,11 +3,13 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 
 from ....account import emails, events as account_events, models, utils
+from ....account.error_codes import AccountErrorCode
 from ....checkout import AddressType
 from ....core.utils.url import validate_storefront_url
 from ...account.enums import AddressTypeEnum
 from ...account.types import Address, AddressInput, User
 from ...core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
+from ...core.types.common import AccountError
 from .base import (
     INVALID_TOKEN,
     BaseAddressDelete,
@@ -31,6 +33,8 @@ class AccountRegister(ModelMutation):
         description = "Register a new user."
         exclude = ["password"]
         model = models.User
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
     @classmethod
     def save(cls, info, user, cleaned_input):
@@ -38,7 +42,6 @@ class AccountRegister(ModelMutation):
         user.set_password(password)
         user.save()
         account_events.customer_account_created_event(user=user)
-        info.context.extensions.customer_created(customer=user)
 
 
 class AccountInput(graphene.InputObjectType):
@@ -63,10 +66,12 @@ class AccountUpdate(BaseCustomerCreate):
         description = "Updates the account of the logged-in user."
         exclude = ["password"]
         model = models.User
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -89,10 +94,12 @@ class AccountRequestDeletion(BaseMutation):
         description = (
             "Sends an email with the account removal link for the logged-in user."
         )
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -116,16 +123,21 @@ class AccountDelete(ModelDeleteMutation):
     class Meta:
         description = "Remove user account."
         model = models.User
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def clean_instance(cls, info, instance):
         super().clean_instance(info, instance)
         if instance.is_staff:
-            raise ValidationError("Cannot delete a staff account.")
+            raise ValidationError(
+                "Cannot delete a staff account.",
+                code=AccountErrorCode.DELETE_STAFF_ACCOUNT,
+            )
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -134,7 +146,9 @@ class AccountDelete(ModelDeleteMutation):
 
         token = data.pop("token")
         if not default_token_generator.check_token(user, token):
-            raise ValidationError({"token": INVALID_TOKEN})
+            raise ValidationError(
+                {"token": ValidationError(INVALID_TOKEN, code=AccountErrorCode.INVALID)}
+            )
 
         db_id = user.id
 
@@ -166,20 +180,22 @@ class AccountAddressCreate(ModelMutation):
     class Meta:
         description = "Create a new address for the customer."
         model = models.Address
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
         success_response = super().perform_mutation(root, info, **data)
         address_type = data.get("type", None)
+        user = info.context.user
+        success_response.user = user
         if address_type:
-            user = info.context.user
             instance = success_response.address
             utils.change_user_default_address(user, instance, address_type)
-            success_response.user = user
         return success_response
 
     @classmethod
@@ -193,12 +209,16 @@ class AccountAddressUpdate(BaseAddressUpdate):
     class Meta:
         description = "Updates an address of the logged-in user."
         model = models.Address
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
 
 class AccountAddressDelete(BaseAddressDelete):
     class Meta:
         description = "Delete an address of the logged-in user."
         model = models.Address
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
 
 class AccountSetDefaultAddress(BaseMutation):
@@ -212,10 +232,12 @@ class AccountSetDefaultAddress(BaseMutation):
 
     class Meta:
         description = "Sets a default address for the authenticated user."
+        error_type_class = AccountError
+        error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -223,7 +245,14 @@ class AccountSetDefaultAddress(BaseMutation):
         user = info.context.user
 
         if not user.addresses.filter(pk=address.pk).exists():
-            raise ValidationError({"id": "The address doesn't belong to that user."})
+            raise ValidationError(
+                {
+                    "id": ValidationError(
+                        "The address doesn't belong to that user.",
+                        code=AccountErrorCode.INVALID,
+                    )
+                }
+            )
 
         if data.get("type") == AddressTypeEnum.BILLING.value:
             address_type = AddressType.BILLING

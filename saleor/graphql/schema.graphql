@@ -1868,7 +1868,6 @@ type Mutations {
   paymentCapture(amount: Decimal, paymentId: ID!): PaymentCapture
   paymentRefund(amount: Decimal, paymentId: ID!): PaymentRefund
   paymentVoid(paymentId: ID!): PaymentVoid
-  paymentSecureConfirm(paymentId: ID!): PaymentSecureConfirm
   pageCreate(input: PageInput!): PageCreate
   pageDelete(id: ID!): PageDelete
   pageBulkDelete(ids: [ID]!): PageBulkDelete
@@ -2412,11 +2411,6 @@ type PaymentRefund {
   payment: Payment
 }
 
-type PaymentSecureConfirm {
-  errors: [Error!]
-  payment: Payment
-}
-
 type PaymentSource {
   gateway: String!
   creditCardInfo: CreditCard
@@ -2506,6 +2500,7 @@ type Product implements Node {
   isAvailable: Boolean
   basePrice: Money
   price: Money @deprecated(reason: "Has been replaced by 'basePrice'")
+  minimalVariantPrice: Money
   taxRate: TaxRateType @deprecated(reason: "taxRate is deprecated. Use taxType to obtain taxCode for given tax gateway")
   taxType: TaxType
   attributes: [SelectedAttribute!]!
@@ -2592,6 +2587,7 @@ input ProductFilterInput {
   stockAvailability: StockAvailability
   productType: ID
   search: String
+  minimalPrice: PriceRangeInput
 }
 
 type ProductImage implements Node {
@@ -2669,6 +2665,7 @@ input ProductOrder {
 enum ProductOrderField {
   NAME
   PRICE
+  MINIMAL_PRICE
   DATE
 }
 
@@ -3428,7 +3425,6 @@ enum TransactionKind {
   REFUND
   CAPTURE
   VOID
-  CONFIRM
 }
 
 union TranslatableItem = Product | Category | Collection | Attribute | AttributeValue | ProductVariant | Page | ShippingMethod | Sale | Voucher | MenuItem

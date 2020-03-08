@@ -2,7 +2,7 @@ import graphene
 import graphene_django_optimizer as gql_optimizer
 from django.contrib.auth import get_user_model
 from graphene import relay
-from graphql_jwt.decorators import login_required
+from graphql_jwt.decorators import login_required, permission_required
 
 from ...account import models
 from ...checkout.utils import get_user_checkout
@@ -14,7 +14,6 @@ from ..core.fields import PrefetchingConnectionField
 from ..core.resolvers import resolve_meta, resolve_private_meta
 from ..core.types import CountryDisplay, Image, MetadataObjectType, PermissionDisplay
 from ..core.utils import get_node_optimized
-from ..decorators import permission_required
 from ..utils import format_permissions_for_display
 from .enums import CustomerEventsEnum
 
@@ -152,37 +151,6 @@ class CustomerEvent(CountableDjangoObjectType):
             except order_models.OrderLine.DoesNotExist:
                 pass
         return None
-
-
-class ServiceAccount(MetadataObjectType, CountableDjangoObjectType):
-    permissions = graphene.List(
-        PermissionDisplay, description="List of service's permissions."
-    )
-    created = graphene.DateTime(description="Created date")
-    is_active = graphene.Boolean()
-    name = graphene.String()
-
-    class Meta:
-        description = "Represents service account data."
-        interfaces = [relay.Node]
-        model = models.ServiceAccount
-        permissions = ("account.manage_service_account",)
-        only_fields = ["name" "permissions", "created", "is_active", "auth_token", "id"]
-
-    @staticmethod
-    def resolve_permissions(root: models.ServiceAccount, _info, **_kwargs):
-        permissions = root.permissions.prefetch_related("content_type").order_by(
-            "codename"
-        )
-        return format_permissions_for_display(permissions)
-
-    @staticmethod
-    def resolve_auth_token(root: models.ServiceAccount, _info, **_kwargs):
-        return "*" * 6 + root.auth_token[-4:]
-
-    @staticmethod
-    def resolve_meta(root, _info):
-        return resolve_meta(root, _info)
 
 
 class User(MetadataObjectType, CountableDjangoObjectType):

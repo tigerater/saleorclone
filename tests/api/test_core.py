@@ -270,10 +270,11 @@ def test_mutation_invalid_permission_in_meta(_mocked, should_fail, permissions_v
         _run_test()
         return
 
-    with pytest.raises(ImproperlyConfigured) as exc:
+    with pytest.raises(
+        ImproperlyConfigured,
+        message="Permissions should be a tuple or a string in Meta",
+    ):
         _run_test()
-
-    assert exc.value.args[0] == "Permissions should be a tuple or a string in Meta"
 
 
 MUTATION_TOKEN_VERIFY = """

@@ -6,7 +6,6 @@ import graphene_django_optimizer as gql_optimizer
 from django.db.models import Prefetch
 from graphene import relay
 from graphql.error import GraphQLError
-from graphql_jwt.decorators import permission_required
 
 from ....product import models
 from ....product.templatetags.product_images import (
@@ -32,6 +31,7 @@ from ...core.types import (
     TaxedMoneyRange,
     TaxType,
 )
+from ...decorators import permission_required
 from ...translations.enums import LanguageCodeEnum
 from ...translations.resolvers import resolve_translation
 from ...translations.types import (
@@ -125,7 +125,7 @@ class BasePricingInfo(graphene.ObjectType):
         description="Whether it is in stock and visible or not.",
         deprecation_reason=(
             "DEPRECATED: Will be removed in Saleor 2.10, "
-            "this has been moved to the parent type as 'isAvailable'."
+            "this has been moved to the parent type as 'is_available'."
         ),
     )
     on_sale = graphene.Boolean(description="Whether it is in sale or not.")
@@ -192,7 +192,7 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         description="Price of the product variant.",
         deprecation_reason=(
             "DEPRECATED: Will be removed in Saleor 2.10, "
-            "has been replaced by 'pricing.priceUndiscounted'"
+            "has been replaced by 'pricing.price_undiscounted'"
         ),
     )
     availability = graphene.Field(

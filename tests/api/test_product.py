@@ -120,6 +120,7 @@ def test_product_query(staff_api_client, product, permission_manage_products):
                         name
                         url
                         slug
+                        thumbnailUrl
                         thumbnail{
                             url
                             alt

@@ -88,12 +88,7 @@ class Checkout(MetadataObjectType, CountableDjangoObjectType):
             "shipping costs, and discounts included."
         ),
     )
-    discount_amount = graphene.Field(
-        Money,
-        deprecation_reason=(
-            "DEPRECATED: Will be removed in Saleor 2.10, use discount instead."
-        ),
-    )
+    discount_amount = graphene.Field(Money, deprecation_reason="Use discount instead.")
 
     class Meta:
         only_fields = [

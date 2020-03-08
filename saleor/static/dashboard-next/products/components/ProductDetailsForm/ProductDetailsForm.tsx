@@ -14,6 +14,8 @@ import CardTitle from "@saleor/components/CardTitle";
 import FormSpacer from "@saleor/components/FormSpacer";
 import RichTextEditor from "@saleor/components/RichTextEditor";
 import i18n from "../../../i18n";
+import { FormData as CreateFormData } from "../ProductCreatePage";
+import { FormData as UpdateFormData } from "../ProductUpdatePage";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -25,10 +27,7 @@ const styles = (theme: Theme) =>
   });
 
 interface ProductDetailsFormProps extends WithStyles<typeof styles> {
-  data: {
-    description: RawDraftContentState;
-    name: string;
-  };
+  data: CreateFormData & UpdateFormData;
   disabled?: boolean;
   errors: { [key: string]: string };
   // Draftail isn't controlled - it needs only initial input

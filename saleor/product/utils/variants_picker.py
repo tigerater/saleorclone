@@ -1,6 +1,6 @@
 from collections import defaultdict
 from decimal import Decimal
-from typing import Dict, Iterable, List
+from typing import Iterable
 
 from django_prices.templatetags import prices_i18n
 
@@ -10,23 +10,6 @@ from ...discount import DiscountInfo
 from ...extensions.manager import get_extensions_manager
 from ...seo.schema.product import variant_json_ld
 from .availability import get_product_availability
-
-
-def _attributes_to_single(attributes: Dict[str, List[str]]) -> Dict[str, str]:
-    """This converts nested attributes to a flat attribute ({attr_pk: val_pk}).
-    This is used for backward compatibility between the storefront 1.0
-    and dashboard 2.0's new attribute mechanism."""
-
-    new_attributes = {}
-
-    for attr_pk, values in attributes.items():
-        if len(values) != 1:
-            # Skip multiple values - which should have been denied by the dashboard
-            continue
-
-        new_attributes[attr_pk] = values[0]
-
-    return new_attributes
 
 
 def get_variant_picker_data(
@@ -44,9 +27,7 @@ def get_variant_picker_data(
     variants = product.variants.all()
     data = {"variantAttributes": [], "variants": []}
 
-    variant_attributes = (
-        product.product_type.variant_attributes.all().variant_attributes_sorted()
-    )
+    variant_attributes = product.product_type.variant_attributes.all()
 
     # Collect only available variants
     filter_available_variants = defaultdict(list)
@@ -69,17 +50,14 @@ def get_variant_picker_data(
             "availability": in_stock,
             "price": price_as_dict(price),
             "priceUndiscounted": price_as_dict(price_undiscounted),
-            "attributes": _attributes_to_single(variant.attributes),
+            "attributes": variant.attributes,
             "priceLocalCurrency": price_as_dict(price_local_currency),
             "schemaData": schema_data,
         }
         data["variants"].append(variant_data)
 
-        for variant_key, variant_values in variant.attributes.items():
-            if len(variant_values) != 1:
-                # Skip multiple values - which should have been denied by the dashboard
-                continue
-            filter_available_variants[int(variant_key)].append(variant_values[0])
+        for variant_key, variant_value in variant.attributes.items():
+            filter_available_variants[int(variant_key)].append(int(variant_value))
 
     for attribute in variant_attributes:
         available_variants = filter_available_variants.get(attribute.pk, None)

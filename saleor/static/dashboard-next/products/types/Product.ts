@@ -2,8 +2,6 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { AttributeInputTypeEnum } from "./../../types/globalTypes";
-
 // ====================================================
 // GraphQL fragment: Product
 // ====================================================
@@ -52,7 +50,6 @@ export interface Product_purchaseCost {
 
 export interface Product_attributes_attribute_values {
   __typename: "AttributeValue";
-  id: string;
   name: string | null;
   slug: string | null;
 }
@@ -62,12 +59,10 @@ export interface Product_attributes_attribute {
   id: string;
   slug: string | null;
   name: string | null;
-  inputType: AttributeInputTypeEnum | null;
-  valueRequired: boolean;
   values: (Product_attributes_attribute_values | null)[] | null;
 }
 
-export interface Product_attributes_values {
+export interface Product_attributes_value {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
@@ -77,7 +72,7 @@ export interface Product_attributes_values {
 export interface Product_attributes {
   __typename: "SelectedAttribute";
   attribute: Product_attributes_attribute;
-  values: (Product_attributes_values | null)[];
+  value: Product_attributes_value;
 }
 
 export interface Product_pricing_priceRange_start_net {

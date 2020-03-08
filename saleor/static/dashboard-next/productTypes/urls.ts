@@ -2,6 +2,7 @@ import { stringify as stringifyQs } from "qs";
 import urlJoin from "url-join";
 
 import { BulkAction, Dialog, Pagination, SingleAction } from "../types";
+import { AttributeTypeEnum } from "../types/globalTypes";
 
 const productTypeSection = "/product-types/";
 
@@ -18,14 +19,12 @@ export const productTypeAddUrl = productTypeAddPath;
 
 export const productTypePath = (id: string) => urlJoin(productTypeSection, id);
 export type ProductTypeUrlDialog =
-  | "assign-attribute"
-  | "unassign-attribute"
-  | "unassign-attributes"
+  | "add-attribute"
+  | "edit-attribute"
   | "remove";
-export type ProductTypeUrlQueryParams = BulkAction &
-  Dialog<ProductTypeUrlDialog> &
+export type ProductTypeUrlQueryParams = Dialog<ProductTypeUrlDialog> &
   SingleAction & {
-    type?: string;
+    type?: AttributeTypeEnum;
   };
 export const productTypeUrl = (
   id: string,

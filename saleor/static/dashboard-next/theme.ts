@@ -63,10 +63,7 @@ export default (colors: IThemeColors): Theme =>
         root: {
           borderColor: colors.paperBorder,
           borderRadius: 8,
-          borderStyle: "solid",
-          borderWidth: 1,
-          boxShadow: "none",
-          overflow: "visible"
+          boxShadow: "none"
         }
       },
       MuiCardActions: {
@@ -98,7 +95,7 @@ export default (colors: IThemeColors): Theme =>
             boxShadow: `inset 0 0 0px 9999px ${colors.autofill}`
           },
           "&::placeholder": {
-            opacity: "1 !important" as any
+            opacity: "initial !important" as "initial"
           }
         },
         underline: {
@@ -110,8 +107,7 @@ export default (colors: IThemeColors): Theme =>
       MuiInputBase: {
         input: {
           "&::placeholder": {
-            color: colors.font.gray,
-            opacity: "1 !important" as any
+            color: colors.font.gray
           }
         }
       },
@@ -131,7 +127,6 @@ export default (colors: IThemeColors): Theme =>
           color: colors.input.text
         },
         shrink: {
-          // Negates x0.75 scale
           width: "133%"
         }
       },
@@ -172,9 +167,6 @@ export default (colors: IThemeColors): Theme =>
       },
       MuiOutlinedInput: {
         input: {
-          "&::placeholder": {
-            opacity: [[0], "!important"] as any
-          },
           color: colors.input.text,
           padding: "20px 12px 8px 12px"
         },
@@ -204,9 +196,6 @@ export default (colors: IThemeColors): Theme =>
               borderColor: [[colors.primary], "!important"] as any
             },
             "& input": {
-              "&::placeholder": {
-                opacity: [[1], "!important"] as any
-              },
               color: colors.input.textHover,
               zIndex: 2
             }
@@ -274,14 +263,7 @@ export default (colors: IThemeColors): Theme =>
           fontWeight: 400
         },
         paddingCheckbox: {
-          "&:first-child": {
-            padding: "0 12px",
-            width: 72
-          },
-          "&:not(first-child)": {
-            padding: 0,
-            width: 52
-          }
+          width: 72
         },
         root: {
           "&:first-child": {

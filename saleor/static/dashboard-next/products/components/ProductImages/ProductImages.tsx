@@ -12,7 +12,6 @@ import {
 import CardTitle from "@saleor/components/CardTitle";
 import ImageTile from "@saleor/components/ImageTile";
 import ImageUpload from "@saleor/components/ImageUpload";
-import { ReorderAction } from "@saleor/types";
 import React from "react";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import i18n from "../../../i18n";
@@ -114,21 +113,17 @@ interface ProductImagesProps extends WithStyles<typeof styles> {
   loading?: boolean;
   onImageDelete: (id: string) => () => void;
   onImageEdit: (id: string) => () => void;
-  onImageReorder?: ReorderAction;
   onImageUpload(file: File);
+  onImageReorder?(event: { oldIndex: number; newIndex: number });
 }
 
-interface SortableImageProps {
-  image: {
-    id: string;
-    alt?: string;
-    url: string;
-  };
-  onImageEdit: (id: string) => void;
-  onImageDelete: () => void;
+interface ImageListContainerProps extends WithStyles<typeof styles> {
+  items: any;
+  onImageDelete: (id: string) => () => void;
+  onImageEdit: (id: string) => () => void;
 }
 
-const SortableImage = SortableElement<SortableImageProps>(
+const SortableImage = SortableElement(
   ({ image, onImageEdit, onImageDelete }) => (
     <ImageTile
       image={image}
@@ -138,14 +133,7 @@ const SortableImage = SortableElement<SortableImageProps>(
   )
 );
 
-interface ImageListContainerProps {
-  className: string;
-  items: any;
-  onImageDelete: (id: string) => () => void;
-  onImageEdit: (id: string) => () => void;
-}
-
-const ImageListContainer = SortableContainer<ImageListContainerProps>(
+const ImageListContainer = SortableContainer(
   withStyles(styles, { name: "ImageListContainer" })(
     ({
       classes,
@@ -153,7 +141,7 @@ const ImageListContainer = SortableContainer<ImageListContainerProps>(
       onImageDelete,
       onImageEdit,
       ...props
-    }: ImageListContainerProps & WithStyles<typeof styles>) => {
+    }: ImageListContainerProps) => {
       return (
         <div {...props}>
           {items.map((image, index) => (

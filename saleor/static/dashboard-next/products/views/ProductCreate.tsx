@@ -9,9 +9,7 @@ import SearchCategories from "../../containers/SearchCategories";
 import SearchCollections from "../../containers/SearchCollections";
 import i18n from "../../i18n";
 import { decimal, getMutationState, maybe } from "../../misc";
-import ProductCreatePage, {
-  ProductCreatePageSubmitData
-} from "../components/ProductCreatePage";
+import ProductCreatePage, { FormData } from "../components/ProductCreatePage";
 import { TypedProductCreateMutation } from "../mutations";
 import { TypedProductCreateQuery } from "../queries";
 import { ProductCreate } from "../types/ProductCreate";
@@ -44,13 +42,6 @@ export const ProductUpdate: React.StatelessComponent<
                       text: i18n.t("Product created")
                     });
                     navigate(productUrl(data.productCreate.product.id));
-                  } else {
-                    const attributeError = data.productCreate.errors.find(
-                      err => err.field === "attributes"
-                    );
-                    if (!!attributeError) {
-                      notify({ text: attributeError.message });
-                    }
                   }
                 };
 
@@ -64,32 +55,29 @@ export const ProductUpdate: React.StatelessComponent<
                         loading: productCreateDataLoading
                       }
                     ) => {
-                      const handleSubmit = (
-                        formData: ProductCreatePageSubmitData
-                      ) => {
+                      const handleSubmit = (formData: FormData) => {
                         productCreate({
                           variables: {
-                            attributes: formData.attributes.map(attribute => ({
-                              id: attribute.id,
-                              values: attribute.value
-                            })),
+                            attributes: formData.attributes,
                             basePrice: decimal(formData.basePrice),
-                            category: formData.category,
+                            category: formData.category.value,
                             chargeTaxes: formData.chargeTaxes,
-                            collections: formData.collections,
+                            collections: formData.collections.map(
+                              collection => collection.value
+                            ),
                             descriptionJson: JSON.stringify(
                               formData.description
                             ),
                             isPublished: formData.isPublished,
                             name: formData.name,
-                            productType: formData.productType,
+                            productType: formData.productType.value.id,
                             publicationDate:
                               formData.publicationDate !== ""
                                 ? formData.publicationDate
                                 : null,
                             seo: {
                               description: formData.seoDescription,
-                              title: formData.seoTitle
+                              title: formData.seoTitle,
                             },
                             sku: formData.sku,
                             stockQuantity:

@@ -6,9 +6,9 @@ import * as React from "react";
 import CardTitle from "@saleor/components/CardTitle";
 import { FormSpacer } from "@saleor/components/FormSpacer";
 import RadioGroupField from "@saleor/components/RadioGroupField";
-import { RequirementsPicker } from "@saleor/discounts/types";
 import i18n from "@saleor/i18n";
 import { FormErrors } from "@saleor/types";
+import { RequirementsPickerEnum } from "../../../types/globalTypes";
 import { FormData } from "../VoucherDetailsPage";
 
 interface VoucherRequirementsProps {
@@ -28,15 +28,15 @@ const VoucherRequirements = ({
   const requirementsPickerChoices = [
     {
       label: i18n.t("None"),
-      value: RequirementsPicker.NONE
+      value: RequirementsPickerEnum.NONE
     },
     {
       label: i18n.t("Minimal order value"),
-      value: RequirementsPicker.ORDER
+      value: RequirementsPickerEnum.ORDER
     },
     {
       label: i18n.t("Minimum quantity of items"),
-      value: RequirementsPicker.ITEM
+      value: RequirementsPickerEnum.ITEM
     }
   ];
 
@@ -52,7 +52,7 @@ const VoucherRequirements = ({
           onChange={onChange}
         />
         <FormSpacer />
-        {data.requirementsPicker === RequirementsPicker.ORDER ? (
+        {data.requirementsPicker === RequirementsPickerEnum.ORDER ? (
           <TextField
             disabled={disabled}
             error={!!errors.minAmountSpent}
@@ -63,7 +63,7 @@ const VoucherRequirements = ({
             onChange={onChange}
             fullWidth
           />
-        ) : data.requirementsPicker === RequirementsPicker.ITEM ? (
+        ) : data.requirementsPicker === RequirementsPickerEnum.ITEM ? (
           <TextField
             disabled={disabled}
             error={!!errors.minCheckoutItemsQuantity}

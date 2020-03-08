@@ -2,8 +2,6 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { AttributeInputTypeEnum } from "./../../types/globalTypes";
-
 // ====================================================
 // GraphQL query operation: ProductCreateData
 // ====================================================
@@ -11,6 +9,7 @@ import { AttributeInputTypeEnum } from "./../../types/globalTypes";
 export interface ProductCreateData_productTypes_edges_node_productAttributes_values {
   __typename: "AttributeValue";
   id: string;
+  sortOrder: number | null;
   name: string | null;
   slug: string | null;
 }
@@ -18,10 +17,8 @@ export interface ProductCreateData_productTypes_edges_node_productAttributes_val
 export interface ProductCreateData_productTypes_edges_node_productAttributes {
   __typename: "Attribute";
   id: string;
-  inputType: AttributeInputTypeEnum | null;
   slug: string | null;
   name: string | null;
-  valueRequired: boolean;
   values: (ProductCreateData_productTypes_edges_node_productAttributes_values | null)[] | null;
 }
 

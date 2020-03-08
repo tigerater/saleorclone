@@ -20,14 +20,26 @@ export interface ProductTypeUpdate_productTypeUpdate_productType_taxType {
   taxCode: string | null;
 }
 
+export interface ProductTypeUpdate_productTypeUpdate_productType_productAttributes_values {
+  __typename: "AttributeValue";
+  id: string;
+  name: string | null;
+  slug: string | null;
+}
+
 export interface ProductTypeUpdate_productTypeUpdate_productType_productAttributes {
   __typename: "Attribute";
   id: string;
   name: string | null;
   slug: string | null;
-  visibleInStorefront: boolean;
-  filterableInDashboard: boolean;
-  filterableInStorefront: boolean;
+  values: (ProductTypeUpdate_productTypeUpdate_productType_productAttributes_values | null)[] | null;
+}
+
+export interface ProductTypeUpdate_productTypeUpdate_productType_variantAttributes_values {
+  __typename: "AttributeValue";
+  id: string;
+  name: string | null;
+  slug: string | null;
 }
 
 export interface ProductTypeUpdate_productTypeUpdate_productType_variantAttributes {
@@ -35,9 +47,7 @@ export interface ProductTypeUpdate_productTypeUpdate_productType_variantAttribut
   id: string;
   name: string | null;
   slug: string | null;
-  visibleInStorefront: boolean;
-  filterableInDashboard: boolean;
-  filterableInStorefront: boolean;
+  values: (ProductTypeUpdate_productTypeUpdate_productType_variantAttributes_values | null)[] | null;
 }
 
 export interface ProductTypeUpdate_productTypeUpdate_productType_weight {

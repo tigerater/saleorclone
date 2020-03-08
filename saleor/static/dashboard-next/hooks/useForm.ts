@@ -5,37 +5,31 @@ import { UserError } from "@saleor/types";
 import { toggle } from "@saleor/utils/lists";
 import useStateFromProps from "./useStateFromProps";
 
-export interface ChangeEvent<TData = any> {
+export interface ChangeEvent<TName = string, TData = any> {
   target: {
-    name: string;
+    name: keyof TName | string;
     value: TData;
   };
 }
 
-export type FormChange = (event: ChangeEvent, cb?: () => void) => void;
-
 export interface UseFormResult<T> {
-  change: FormChange;
+  change: (event: ChangeEvent<T>, cb?: () => void) => void;
   data: T;
   errors: Record<string, string>;
   hasChanged: boolean;
   reset: () => void;
   set: (data: T) => void;
   submit: () => void;
-  triggerChange: () => void;
-  toggleValue: FormChange;
+  toggleValue: (event: ChangeEvent<T>) => void;
 }
 
 function parseErrors(errors: UserError[]): Record<string, string> {
   return errors
     ? errors.reduce(
-        (acc, curr) =>
-          curr.field
-            ? {
-                ...acc,
-                [curr.field.split(":")[0]]: curr.message
-              }
-            : acc,
+        (prev, curr) => ({
+          ...prev,
+          [curr.field.split(":")[0]]: curr.message
+        }),
         {}
       )
     : {};
@@ -44,16 +38,13 @@ function parseErrors(errors: UserError[]): Record<string, string> {
 type FormData = Record<string, any | any[]>;
 
 function merge<T extends FormData>(prevData: T, prevState: T, data: T): T {
-  return Object.keys(prevState).reduce(
-    (acc, key) => {
-      if (!isEqual(data[key], prevData[key])) {
-        acc[key as keyof T] = data[key];
-      }
+  return Object.keys(prevState).reduce((acc, key) => {
+    if (!isEqual(data[key], prevData[key])) {
+      acc[key as keyof T] = data[key];
+    }
 
-      return acc;
-    },
-    { ...prevState }
-  );
+    return acc;
+  }, prevState);
 }
 
 function handleRefresh<T extends FormData>(
@@ -77,26 +68,19 @@ function useForm<T extends FormData>(
     onRefresh: newData => handleRefresh(data, newData, setChanged)
   });
 
-  function toggleValue(event: ChangeEvent, cb?: () => void) {
+  function toggleValue(event: ChangeEvent<T>) {
     const { name, value } = event.target;
     const field = data[name as keyof T];
 
     if (Array.isArray(field)) {
-      if (!hasChanged) {
-        setChanged(true);
-      }
       setData({
         ...data,
         [name]: toggle(value, field, isEqual)
       });
     }
-
-    if (typeof cb === "function") {
-      cb();
-    }
   }
 
-  function change(event: ChangeEvent) {
+  function change(event: ChangeEvent<T>) {
     const { name, value } = event.target;
 
     if (!(name in data)) {
@@ -128,10 +112,6 @@ function useForm<T extends FormData>(
     return onSubmit(data);
   }
 
-  function triggerChange() {
-    setChanged(true);
-  }
-
   return {
     change,
     data,
@@ -140,8 +120,7 @@ function useForm<T extends FormData>(
     reset,
     set,
     submit,
-    toggleValue,
-    triggerChange
+    toggleValue
   };
 }
 

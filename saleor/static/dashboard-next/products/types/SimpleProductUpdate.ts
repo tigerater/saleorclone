@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { AttributeValueInput, ProductVariantInput, SeoInput, AttributeInputTypeEnum } from "./../../types/globalTypes";
+import { AttributeValueInput, ProductVariantInput, SeoInput } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: SimpleProductUpdate
@@ -58,7 +58,6 @@ export interface SimpleProductUpdate_productUpdate_product_purchaseCost {
 
 export interface SimpleProductUpdate_productUpdate_product_attributes_attribute_values {
   __typename: "AttributeValue";
-  id: string;
   name: string | null;
   slug: string | null;
 }
@@ -68,12 +67,10 @@ export interface SimpleProductUpdate_productUpdate_product_attributes_attribute 
   id: string;
   slug: string | null;
   name: string | null;
-  inputType: AttributeInputTypeEnum | null;
-  valueRequired: boolean;
   values: (SimpleProductUpdate_productUpdate_product_attributes_attribute_values | null)[] | null;
 }
 
-export interface SimpleProductUpdate_productUpdate_product_attributes_values {
+export interface SimpleProductUpdate_productUpdate_product_attributes_value {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
@@ -83,7 +80,7 @@ export interface SimpleProductUpdate_productUpdate_product_attributes_values {
 export interface SimpleProductUpdate_productUpdate_product_attributes {
   __typename: "SelectedAttribute";
   attribute: SimpleProductUpdate_productUpdate_product_attributes_attribute;
-  values: (SimpleProductUpdate_productUpdate_product_attributes_values | null)[];
+  value: SimpleProductUpdate_productUpdate_product_attributes_value;
 }
 
 export interface SimpleProductUpdate_productUpdate_product_pricing_priceRange_start_net {
@@ -200,7 +197,6 @@ export interface SimpleProductUpdate_productVariantUpdate_productVariant_attribu
   id: string;
   name: string | null;
   slug: string | null;
-  valueRequired: boolean;
   values: (SimpleProductUpdate_productVariantUpdate_productVariant_attributes_attribute_values | null)[] | null;
 }
 
@@ -214,7 +210,7 @@ export interface SimpleProductUpdate_productVariantUpdate_productVariant_attribu
 export interface SimpleProductUpdate_productVariantUpdate_productVariant_attributes {
   __typename: "SelectedAttribute";
   attribute: SimpleProductUpdate_productVariantUpdate_productVariant_attributes_attribute;
-  value: SimpleProductUpdate_productVariantUpdate_productVariant_attributes_value | null;
+  value: SimpleProductUpdate_productVariantUpdate_productVariant_attributes_value;
 }
 
 export interface SimpleProductUpdate_productVariantUpdate_productVariant_costPrice {

@@ -24,10 +24,9 @@ import ConfirmButton, {
 } from "@saleor/components/ConfirmButton";
 import Money from "@saleor/components/Money";
 import TableCellAvatar from "@saleor/components/TableCellAvatar";
-import useSearchQuery from "@saleor/hooks/useSearchQuery";
+import { ChangeEvent } from "@saleor/hooks/useForm";
 import i18n from "@saleor/i18n";
-import { maybe, renderCollection } from "@saleor/misc";
-import { FetchMoreProps } from "@saleor/types";
+import { maybe, onQueryChange, renderCollection } from "@saleor/misc";
 import {
   SearchOrderVariant_products_edges_node,
   SearchOrderVariant_products_edges_node_variants
@@ -39,6 +38,7 @@ const styles = (theme: Theme) =>
       paddingLeft: 0
     },
     content: {
+      maxHeight: 600,
       overflowY: "scroll"
     },
     grayText: {
@@ -75,11 +75,15 @@ type SetVariantsAction = (
   data: SearchOrderVariant_products_edges_node_variants[]
 ) => void;
 
-interface OrderProductAddDialogProps extends FetchMoreProps {
+interface OrderProductAddDialogProps extends WithStyles<typeof styles> {
   confirmButtonState: ConfirmButtonTransitionState;
   open: boolean;
   products: SearchOrderVariant_products_edges_node[];
+  loading: boolean;
+  hasMore: boolean;
   onClose: () => void;
+  onFetch: (value: string) => void;
+  onFetchMore: () => void;
   onSubmit: (data: SearchOrderVariant_products_edges_node_variants[]) => void;
 }
 
@@ -160,8 +164,8 @@ const OrderProductAddDialog = withStyles(styles, {
     onFetchMore,
     onClose,
     onSubmit
-  }: OrderProductAddDialogProps & WithStyles<typeof styles>) => {
-    const [query, onQueryChange] = useSearchQuery(onFetch);
+  }: OrderProductAddDialogProps) => {
+    const [query, setQuery] = React.useState("");
     const [variants, setVariants] = React.useState<
       SearchOrderVariant_products_edges_node_variants[]
     >([]);
@@ -177,6 +181,8 @@ const OrderProductAddDialog = withStyles(styles, {
         )
       : [];
 
+    const handleQueryChange = (event: ChangeEvent) =>
+      onQueryChange(event, onFetch, setQuery);
     const handleSubmit = () => onSubmit(variants);
 
     return (
@@ -192,7 +198,7 @@ const OrderProductAddDialog = withStyles(styles, {
           <TextField
             name="query"
             value={query}
-            onChange={onQueryChange}
+            onChange={handleQueryChange}
             label={i18n.t("Search Products", {
               context: "product search input label"
             })}

@@ -7,44 +7,31 @@ from ..descriptions import DESCRIPTIONS
 from .bulk_mutations import CustomerBulkDelete, StaffBulkDelete, UserBulkSetActive
 from .enums import CountryCodeEnum
 from .filters import CustomerFilter, StaffUserFilter
-from .mutations.account import (
-    AccountAddressCreate,
-    AccountAddressDelete,
-    AccountAddressUpdate,
-    AccountDelete,
-    AccountRegister,
+from .mutations import (
     AccountRequestDeletion,
-    AccountSetDefaultAddress,
     AccountUpdate,
-)
-from .mutations.base import (
-    RequestPasswordReset,
-    SetPassword,
-    UserClearStoredMeta,
-    UserUpdateMeta,
-)
-from .mutations.deprecated_account import (
-    CustomerAddressCreate,
-    CustomerPasswordReset,
-    CustomerRegister,
-    CustomerSetDefaultAddress,
-    LoggedUserUpdate,
-)
-from .mutations.deprecated_staff import PasswordReset
-from .mutations.staff import (
     AddressCreate,
     AddressDelete,
     AddressSetDefault,
     AddressUpdate,
+    CustomerAddressCreate,
     CustomerCreate,
     CustomerDelete,
+    CustomerPasswordReset,
+    CustomerRegister,
+    CustomerSetDefaultAddress,
     CustomerUpdate,
+    LoggedUserUpdate,
+    PasswordReset,
+    SetPassword,
     StaffCreate,
     StaffDelete,
     StaffUpdate,
     UserAvatarDelete,
     UserAvatarUpdate,
+    UserClearStoredMeta,
     UserClearStoredPrivateMeta,
+    UserUpdateMeta,
     UserUpdatePrivateMeta,
 )
 from .resolvers import resolve_address_validator, resolve_customers, resolve_staff_users
@@ -115,55 +102,38 @@ class AccountQueries(graphene.ObjectType):
 
 
 class AccountMutations(graphene.ObjectType):
-    # Base mutations
-    request_password_reset = RequestPasswordReset.Field()
+    password_reset = PasswordReset.Field()
     set_password = SetPassword.Field()
 
-    user_update_metadata = UserUpdateMeta.Field()
-    user_clear_stored_metadata = UserClearStoredMeta.Field()
-
-    # Account mutations
-    account_address_create = AccountAddressCreate.Field()
-    account_address_update = AccountAddressUpdate.Field()
-    account_address_delete = AccountAddressDelete.Field()
-    account_set_default_address = AccountSetDefaultAddress.Field()
-
-    account_register = AccountRegister.Field()
-    account_update = AccountUpdate.Field()
-    account_request_deletion = AccountRequestDeletion.Field()
-    account_delete = AccountDelete.Field()
-
-    # Account deprecated mutations
+    customer_create = CustomerCreate.Field()
+    customer_delete = CustomerDelete.Field()
+    customer_bulk_delete = CustomerBulkDelete.Field()
     customer_password_reset = CustomerPasswordReset.Field()
-
+    customer_register = CustomerRegister.Field()
+    customer_update = CustomerUpdate.Field()
     customer_address_create = CustomerAddressCreate.Field()
     customer_set_default_address = CustomerSetDefaultAddress.Field()
 
-    customer_register = CustomerRegister.Field()
     logged_user_update = LoggedUserUpdate.Field()
-
-    # Staff mutation
-    address_create = AddressCreate.Field()
-    address_update = AddressUpdate.Field()
-    address_delete = AddressDelete.Field()
-    address_set_default = AddressSetDefault.Field()
-
-    customer_create = CustomerCreate.Field()
-    customer_update = CustomerUpdate.Field()
-    customer_delete = CustomerDelete.Field()
-    customer_bulk_delete = CustomerBulkDelete.Field()
+    account_update = AccountUpdate.Field()
+    account_request_deletion = AccountRequestDeletion.Field()
 
     staff_create = StaffCreate.Field()
-    staff_update = StaffUpdate.Field()
     staff_delete = StaffDelete.Field()
     staff_bulk_delete = StaffBulkDelete.Field()
+    staff_update = StaffUpdate.Field()
+
+    address_create = AddressCreate.Field()
+    address_delete = AddressDelete.Field()
+    address_update = AddressUpdate.Field()
+    address_set_default = AddressSetDefault.Field()
 
     user_avatar_update = UserAvatarUpdate.Field()
     user_avatar_delete = UserAvatarDelete.Field()
     user_bulk_set_active = UserBulkSetActive.Field()
 
+    user_update_metadata = UserUpdateMeta.Field()
+    user_clear_stored_metadata = UserClearStoredMeta.Field()
+
     user_update_private_metadata = UserUpdatePrivateMeta.Field()
     user_clear_stored_private_metadata = UserClearStoredPrivateMeta.Field()
-
-    # Staff deprecated mutation
-    password_reset = PasswordReset.Field()

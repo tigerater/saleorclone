@@ -17,8 +17,6 @@ import Hr from "@saleor/components/Hr";
 import Link from "@saleor/components/Link";
 import SingleAutocompleteSelectField from "@saleor/components/SingleAutocompleteSelectField";
 import Skeleton from "@saleor/components/Skeleton";
-import useStateFromProps from "@saleor/hooks/useStateFromProps";
-import createSingleAutocompleteSelectHandler from "@saleor/utils/handlers/singleAutocompleteSelectChangeHandler";
 import { SearchCustomers_customers_edges_node } from "../../../containers/SearchCustomers/types/SearchCustomers";
 import { customerUrl } from "../../../customers/urls";
 import i18n from "../../../i18n";
@@ -74,17 +72,12 @@ const OrderCustomer = withStyles(styles, { name: "OrderCustomer" })(
     onProfileView,
     onShippingAddressEdit
   }: OrderCustomerProps) => {
-    const user = maybe(() => order.user);
-
-    const [userDisplayName, setUserDisplayName] = useStateFromProps(
-      maybe(() => user.email, "")
-    );
     const [isInEditMode, setEditModeStatus] = React.useState(false);
     const toggleEditMode = () => setEditModeStatus(!isInEditMode);
 
     const billingAddress = maybe(() => order.billingAddress);
     const shippingAddress = maybe(() => order.shippingAddress);
-
+    const user = maybe(() => order.user);
     return (
       <Card>
         <CardTitle
@@ -106,35 +99,28 @@ const OrderCustomer = withStyles(styles, { name: "OrderCustomer" })(
           {user === undefined ? (
             <Skeleton />
           ) : isInEditMode && canEditCustomer ? (
-            <Form initial={{ query: "" }}>
+            <Form initial={{ query: { label: "", value: "" } }}>
               {({ change, data }) => {
                 const handleChange = (event: React.ChangeEvent<any>) => {
                   change(event);
-                  const value = event.target.value;
-
                   onCustomerEdit({
-                    [value.includes("@") ? "userEmail" : "user"]: value
+                    [event.target.value.value.includes("@")
+                      ? "userEmail"
+                      : "user"]: event.target.value.value
                   });
                   toggleEditMode();
                 };
-                const userChoices = maybe(() => users, []).map(user => ({
-                  label: user.email,
-                  value: user.id
-                }));
-                const handleUserChange = createSingleAutocompleteSelectHandler(
-                  handleChange,
-                  setUserDisplayName,
-                  userChoices
-                );
                 return (
                   <SingleAutocompleteSelectField
-                    allowCustomValues={true}
-                    choices={userChoices}
-                    displayValue={userDisplayName}
+                    custom={true}
+                    choices={maybe(() => users, []).map(user => ({
+                      label: user.email,
+                      value: user.id
+                    }))}
                     fetchChoices={fetchUsers}
                     loading={loading}
                     placeholder={i18n.t("Search Customers")}
-                    onChange={handleUserChange}
+                    onChange={handleChange}
                     name="query"
                     value={data.query}
                   />

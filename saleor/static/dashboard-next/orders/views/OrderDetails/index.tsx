@@ -606,11 +606,14 @@ export const OrderDetails: React.StatelessComponent<OrderDetailsProps> = ({
                             open={params.action === "edit-shipping-address"}
                             variant="shipping"
                             onClose={closeModal}
-                            onConfirm={shippingAddress =>
+                            onConfirm={variables =>
                               orderUpdate.mutate({
                                 id,
                                 input: {
-                                  shippingAddress
+                                  shippingAddress: {
+                                    ...variables,
+                                    country: variables.country.value
+                                  }
                                 }
                               })
                             }
@@ -639,11 +642,14 @@ export const OrderDetails: React.StatelessComponent<OrderDetailsProps> = ({
                             open={params.action === "edit-billing-address"}
                             variant="billing"
                             onClose={closeModal}
-                            onConfirm={billingAddress =>
+                            onConfirm={variables =>
                               orderUpdate.mutate({
                                 id,
                                 input: {
-                                  billingAddress
+                                  billingAddress: {
+                                    ...variables,
+                                    country: variables.country.value
+                                  }
                                 }
                               })
                             }

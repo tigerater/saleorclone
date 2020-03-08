@@ -1,15 +1,19 @@
 import gql from "graphql-tag";
 
 import { TypedMutation } from "../mutations";
-import { productTypeDetailsFragment } from "./queries";
+import { attributeFragment, productTypeDetailsFragment } from "./queries";
 import {
-  AssignAttribute,
-  AssignAttributeVariables
-} from "./types/AssignAttribute";
+  AttributeCreate,
+  AttributeCreateVariables
+} from "./types/AttributeCreate";
 import {
-  ProductTypeAttributeReorder,
-  ProductTypeAttributeReorderVariables
-} from "./types/ProductTypeAttributeReorder";
+  AttributeDelete,
+  AttributeDeleteVariables
+} from "./types/AttributeDelete";
+import {
+  AttributeUpdate,
+  AttributeUpdateVariables
+} from "./types/AttributeUpdate";
 import {
   ProductTypeBulkDelete,
   ProductTypeBulkDeleteVariables
@@ -26,10 +30,6 @@ import {
   ProductTypeUpdate,
   ProductTypeUpdateVariables
 } from "./types/ProductTypeUpdate";
-import {
-  UnassignAttribute,
-  UnassignAttributeVariables
-} from "./types/UnassignAttribute";
 
 export const productTypeDeleteMutation = gql`
   mutation ProductTypeDelete($id: ID!) {
@@ -83,44 +83,6 @@ export const TypedProductTypeUpdateMutation = TypedMutation<
   ProductTypeUpdateVariables
 >(productTypeUpdateMutation);
 
-export const assignAttributeMutation = gql`
-  ${productTypeDetailsFragment}
-  mutation AssignAttribute($id: ID!, $operations: [AttributeAssignInput!]!) {
-    attributeAssign(productTypeId: $id, operations: $operations) {
-      errors {
-        field
-        message
-      }
-      productType {
-        ...ProductTypeDetailsFragment
-      }
-    }
-  }
-`;
-export const TypedAssignAttributeMutation = TypedMutation<
-  AssignAttribute,
-  AssignAttributeVariables
->(assignAttributeMutation);
-
-export const unassignAttributeMutation = gql`
-  ${productTypeDetailsFragment}
-  mutation UnassignAttribute($id: ID!, $ids: [ID]!) {
-    attributeUnassign(productTypeId: $id, attributeIds: $ids) {
-      errors {
-        field
-        message
-      }
-      productType {
-        ...ProductTypeDetailsFragment
-      }
-    }
-  }
-`;
-export const TypedUnassignAttributeMutation = TypedMutation<
-  UnassignAttribute,
-  UnassignAttributeVariables
->(unassignAttributeMutation);
-
 export const productTypeCreateMutation = gql`
   ${productTypeDetailsFragment}
   mutation ProductTypeCreate($input: ProductTypeInput!) {
@@ -140,18 +102,14 @@ export const TypedProductTypeCreateMutation = TypedMutation<
   ProductTypeCreateVariables
 >(productTypeCreateMutation);
 
-const productTypeAttributeReorder = gql`
+export const attributeCreateMutation = gql`
   ${productTypeDetailsFragment}
-  mutation ProductTypeAttributeReorder(
-    $move: ReorderInput!
-    $productTypeId: ID!
+  mutation AttributeCreate(
+    $id: ID!
+    $input: AttributeCreateInput!
     $type: AttributeTypeEnum!
   ) {
-    productTypeReorderAttributes(
-      moves: [$move]
-      productTypeId: $productTypeId
-      type: $type
-    ) {
+    attributeCreate(id: $id, input: $input, type: $type) {
       errors {
         field
         message
@@ -162,7 +120,45 @@ const productTypeAttributeReorder = gql`
     }
   }
 `;
-export const ProductTypeAttributeReorderMutation = TypedMutation<
-  ProductTypeAttributeReorder,
-  ProductTypeAttributeReorderVariables
->(productTypeAttributeReorder);
+export const TypedAttributeCreateMutation = TypedMutation<
+  AttributeCreate,
+  AttributeCreateVariables
+>(attributeCreateMutation);
+
+export const attributeUpdateMutation = gql`
+  ${attributeFragment}
+  mutation AttributeUpdate($id: ID!, $input: AttributeUpdateInput!) {
+    attributeUpdate(id: $id, input: $input) {
+      errors {
+        field
+        message
+      }
+      attribute {
+        ...AttributeFragment
+      }
+    }
+  }
+`;
+export const TypedAttributeUpdateMutation = TypedMutation<
+  AttributeUpdate,
+  AttributeUpdateVariables
+>(attributeUpdateMutation);
+
+export const attributeDeleteMutation = gql`
+  ${productTypeDetailsFragment}
+  mutation AttributeDelete($id: ID!) {
+    attributeDelete(id: $id) {
+      errors {
+        field
+        message
+      }
+      productType {
+        ...ProductTypeDetailsFragment
+      }
+    }
+  }
+`;
+export const TypedAttributeDeleteMutation = TypedMutation<
+  AttributeDelete,
+  AttributeDeleteVariables
+>(attributeDeleteMutation);

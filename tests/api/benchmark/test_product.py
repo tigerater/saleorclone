@@ -36,7 +36,7 @@ def test_product_details(product, api_client, count_queries):
               id
               name
             }
-            values {
+            value {
               id
               name
               value: name

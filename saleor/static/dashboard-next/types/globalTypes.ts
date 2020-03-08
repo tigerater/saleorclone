@@ -8,39 +8,33 @@
 
 export enum AddressTypeEnum {
   BILLING = "BILLING",
-  SHIPPING = "SHIPPING",
-}
-
-export enum AttributeInputTypeEnum {
-  DROPDOWN = "DROPDOWN",
-  MULTISELECT = "MULTISELECT",
+  SHIPPING = "SHIPPING"
 }
 
 export enum AttributeTypeEnum {
   PRODUCT = "PRODUCT",
-  VARIANT = "VARIANT",
-}
-
-export enum AttributeValueType {
-  COLOR = "COLOR",
-  GRADIENT = "GRADIENT",
-  STRING = "STRING",
-  URL = "URL",
+  VARIANT = "VARIANT"
 }
 
 export enum AuthorizationKeyType {
   FACEBOOK = "FACEBOOK",
-  GOOGLE_OAUTH2 = "GOOGLE_OAUTH2",
+  GOOGLE_OAUTH2 = "GOOGLE_OAUTH2"
 }
 
 export enum DiscountValueTypeEnum {
   FIXED = "FIXED",
-  PERCENTAGE = "PERCENTAGE",
+  PERCENTAGE = "PERCENTAGE"
 }
 
 export enum FulfillmentStatus {
   CANCELED = "CANCELED",
-  FULFILLED = "FULFILLED",
+  FULFILLED = "FULFILLED"
+}
+
+export enum RequirementsPickerEnum {
+  ORDER = "ORDER",
+  ITEM = "ITEM",
+  NONE = "NONE"
 }
 
 export enum LanguageCodeEnum {
@@ -86,14 +80,14 @@ export enum LanguageCodeEnum {
   UK = "UK",
   VI = "VI",
   ZH_HANS = "ZH_HANS",
-  ZH_HANT = "ZH_HANT",
+  ZH_HANT = "ZH_HANT"
 }
 
 export enum OrderAction {
   CAPTURE = "CAPTURE",
   MARK_AS_PAID = "MARK_AS_PAID",
   REFUND = "REFUND",
-  VOID = "VOID",
+  VOID = "VOID"
 }
 
 export enum OrderEventsEmailsEnum {
@@ -102,7 +96,7 @@ export enum OrderEventsEmailsEnum {
   ORDER_CONFIRMATION = "ORDER_CONFIRMATION",
   PAYMENT_CONFIRMATION = "PAYMENT_CONFIRMATION",
   SHIPPING_CONFIRMATION = "SHIPPING_CONFIRMATION",
-  TRACKING_UPDATED = "TRACKING_UPDATED",
+  TRACKING_UPDATED = "TRACKING_UPDATED"
 }
 
 export enum OrderEventsEnum {
@@ -126,7 +120,7 @@ export enum OrderEventsEnum {
   PLACED = "PLACED",
   PLACED_FROM_DRAFT = "PLACED_FROM_DRAFT",
   TRACKING_UPDATED = "TRACKING_UPDATED",
-  UPDATED_ADDRESS = "UPDATED_ADDRESS",
+  UPDATED_ADDRESS = "UPDATED_ADDRESS"
 }
 
 export enum OrderStatus {
@@ -134,7 +128,7 @@ export enum OrderStatus {
   DRAFT = "DRAFT",
   FULFILLED = "FULFILLED",
   PARTIALLY_FULFILLED = "PARTIALLY_FULFILLED",
-  UNFULFILLED = "UNFULFILLED",
+  UNFULFILLED = "UNFULFILLED"
 }
 
 export enum OrderStatusFilter {
@@ -143,7 +137,7 @@ export enum OrderStatusFilter {
   PARTIALLY_FULFILLED = "PARTIALLY_FULFILLED",
   READY_TO_CAPTURE = "READY_TO_CAPTURE",
   READY_TO_FULFILL = "READY_TO_FULFILL",
-  UNFULFILLED = "UNFULFILLED",
+  UNFULFILLED = "UNFULFILLED"
 }
 
 export enum PaymentChargeStatusEnum {
@@ -151,7 +145,7 @@ export enum PaymentChargeStatusEnum {
   FULLY_REFUNDED = "FULLY_REFUNDED",
   NOT_CHARGED = "NOT_CHARGED",
   PARTIALLY_CHARGED = "PARTIALLY_CHARGED",
-  PARTIALLY_REFUNDED = "PARTIALLY_REFUNDED",
+  PARTIALLY_REFUNDED = "PARTIALLY_REFUNDED"
 }
 
 export enum PermissionEnum {
@@ -166,22 +160,22 @@ export enum PermissionEnum {
   MANAGE_SHIPPING = "MANAGE_SHIPPING",
   MANAGE_STAFF = "MANAGE_STAFF",
   MANAGE_TRANSLATIONS = "MANAGE_TRANSLATIONS",
-  MANAGE_USERS = "MANAGE_USERS",
+  MANAGE_USERS = "MANAGE_USERS"
 }
 
 export enum SaleType {
   FIXED = "FIXED",
-  PERCENTAGE = "PERCENTAGE",
+  PERCENTAGE = "PERCENTAGE"
 }
 
 export enum ShippingMethodTypeEnum {
   PRICE = "PRICE",
-  WEIGHT = "WEIGHT",
+  WEIGHT = "WEIGHT"
 }
 
 export enum StockAvailability {
   IN_STOCK = "IN_STOCK",
-  OUT_OF_STOCK = "OUT_OF_STOCK",
+  OUT_OF_STOCK = "OUT_OF_STOCK"
 }
 
 export enum TaxRateType {
@@ -209,7 +203,7 @@ export enum TaxRateType {
   SOCIAL_HOUSING = "SOCIAL_HOUSING",
   STANDARD = "STANDARD",
   WATER = "WATER",
-  WINE = "WINE",
+  WINE = "WINE"
 }
 
 export enum VoucherTypeEnum {
@@ -219,14 +213,14 @@ export enum VoucherTypeEnum {
   PRODUCT = "PRODUCT",
   SHIPPING = "SHIPPING",
   SPECIFIC_PRODUCT = "SPECIFIC_PRODUCT",
-  VALUE = "VALUE",
+  VALUE = "VALUE"
 }
 
 export enum WeightUnitsEnum {
   G = "G",
   KG = "KG",
   LB = "LB",
-  OZ = "OZ",
+  OZ = "OZ"
 }
 
 export interface AddressInput {
@@ -243,23 +237,9 @@ export interface AddressInput {
   phone?: string | null;
 }
 
-export interface AttributeAssignInput {
-  id: string;
-  type: AttributeTypeEnum;
-}
-
 export interface AttributeCreateInput {
-  inputType?: AttributeInputTypeEnum | null;
   name: string;
-  slug?: string | null;
   values?: (AttributeValueCreateInput | null)[] | null;
-  valueRequired?: boolean | null;
-  isVariantOnly?: boolean | null;
-  visibleInStorefront?: boolean | null;
-  filterableInStorefront?: boolean | null;
-  filterableInDashboard?: boolean | null;
-  storefrontSearchPosition?: number | null;
-  availableInGrid?: boolean | null;
 }
 
 export interface AttributeInput {
@@ -269,16 +249,8 @@ export interface AttributeInput {
 
 export interface AttributeUpdateInput {
   name?: string | null;
-  slug?: string | null;
   removeValues?: (string | null)[] | null;
   addValues?: (AttributeValueCreateInput | null)[] | null;
-  valueRequired?: boolean | null;
-  isVariantOnly?: boolean | null;
-  visibleInStorefront?: boolean | null;
-  filterableInStorefront?: boolean | null;
-  filterableInDashboard?: boolean | null;
-  storefrontSearchPosition?: number | null;
-  availableInGrid?: boolean | null;
 }
 
 export interface AttributeValueCreateInput {
@@ -287,10 +259,8 @@ export interface AttributeValueCreateInput {
 }
 
 export interface AttributeValueInput {
-  id?: string | null;
-  name?: string | null;
-  slug?: string | null;
-  values: (string | null)[];
+  slug: string;
+  value: string;
 }
 
 export interface AuthorizationKeyInput {
@@ -385,12 +355,12 @@ export interface FulfillmentUpdateTrackingInput {
 }
 
 export interface MenuCreateInput {
-  name: string;
+  name?: string | null;
   items?: (MenuItemInput | null)[] | null;
 }
 
 export interface MenuItemCreateInput {
-  name: string;
+  name?: string | null;
   url?: string | null;
   category?: string | null;
   collection?: string | null;
@@ -501,11 +471,6 @@ export interface ProductVariantInput {
   quantity?: number | null;
   trackInventory?: boolean | null;
   weight?: any | null;
-}
-
-export interface ReorderInput {
-  id: string;
-  sortOrder?: number | null;
 }
 
 export interface SaleInput {

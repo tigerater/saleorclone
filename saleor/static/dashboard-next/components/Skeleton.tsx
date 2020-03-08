@@ -17,11 +17,6 @@ const styles = (theme: Theme) =>
         opacity: 1
       }
     },
-    primary: {
-      "&$skeleton": {
-        background: theme.palette.primary.main
-      }
-    },
     skeleton: {
       animation: "skeleton-animation .75s linear infinite forwards alternate",
       background: theme.palette.background.default,
@@ -34,18 +29,12 @@ const styles = (theme: Theme) =>
 
 interface SkeletonProps extends WithStyles<typeof styles> {
   className?: string;
-  primary?: boolean;
   style?: React.CSSProperties;
 }
 
 const Skeleton = withStyles(styles, { name: "Skeleton" })(
-  ({ className, classes, primary, style }: SkeletonProps) => (
-    <span
-      className={classNames(classes.skeleton, className, {
-        [classes.primary]: primary
-      })}
-      style={style}
-    >
+  ({ className, classes, style }: SkeletonProps) => (
+    <span className={classNames(classes.skeleton, className)} style={style}>
       &zwnj;
     </span>
   )

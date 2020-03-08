@@ -54,11 +54,12 @@ export interface Home_productTopToday_edges_node_attributes_value {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
+  sortOrder: number | null;
 }
 
 export interface Home_productTopToday_edges_node_attributes {
   __typename: "SelectedAttribute";
-  value: Home_productTopToday_edges_node_attributes_value | null;
+  value: Home_productTopToday_edges_node_attributes_value;
 }
 
 export interface Home_productTopToday_edges_node_product_thumbnail {

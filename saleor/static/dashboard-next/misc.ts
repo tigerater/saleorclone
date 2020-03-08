@@ -5,6 +5,7 @@ import urlJoin from "url-join";
 import { ConfirmButtonTransitionState } from "./components/ConfirmButton/ConfirmButton";
 import { APP_MOUNT_URI } from "./config";
 import { AddressType } from "./customers/types";
+import { ChangeEvent } from "./hooks/useForm";
 import i18n from "./i18n";
 import { PartialMutationProviderOutput, UserError } from "./types";
 import {
@@ -95,7 +96,10 @@ export const transformAddressToForm = (data: AddressType) => ({
   city: maybe(() => data.city, ""),
   cityArea: maybe(() => data.cityArea, ""),
   companyName: maybe(() => data.companyName, ""),
-  country: maybe(() => data.country.code, ""),
+  country: {
+    label: maybe(() => data.country.country, ""),
+    value: maybe(() => data.country.code, "")
+  },
   countryArea: maybe(() => data.countryArea, ""),
   firstName: maybe(() => data.firstName, ""),
   lastName: maybe(() => data.lastName, ""),
@@ -270,4 +274,15 @@ export function generateCode(charNum: number) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
+}
+
+export function onQueryChange(
+  event: ChangeEvent,
+  onFetch: (data: string) => void,
+  setQuery: (data: string) => void
+) {
+  const value = event.target.value;
+
+  onFetch(value);
+  setQuery(value);
 }

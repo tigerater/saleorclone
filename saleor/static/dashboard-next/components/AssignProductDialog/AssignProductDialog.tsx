@@ -17,10 +17,10 @@ import ConfirmButton, {
 } from "@saleor/components/ConfirmButton";
 import FormSpacer from "@saleor/components/FormSpacer";
 import TableCellAvatar from "@saleor/components/TableCellAvatar";
-import useSearchQuery from "@saleor/hooks/useSearchQuery";
+import { ChangeEvent } from "@saleor/hooks/useForm";
 import { SearchProducts_products_edges_node } from "../../containers/SearchProducts/types/SearchProducts";
 import i18n from "../../i18n";
-import { maybe } from "../../misc";
+import { maybe, onQueryChange } from "../../misc";
 import Checkbox from "../Checkbox";
 
 export interface FormData {
@@ -85,11 +85,13 @@ const AssignProductDialog = withStyles(styles, {
     onFetch,
     onSubmit
   }: AssignProductDialogProps) => {
-    const [query, onQueryChange] = useSearchQuery(onFetch);
+    const [query, setQuery] = React.useState("");
     const [selectedProducts, setSelectedProducts] = React.useState<
       SearchProducts_products_edges_node[]
     >([]);
 
+    const handleQueryChange = (event: ChangeEvent) =>
+      onQueryChange(event, onFetch, setQuery);
     const handleSubmit = () => onSubmit(selectedProducts);
 
     return (
@@ -105,7 +107,7 @@ const AssignProductDialog = withStyles(styles, {
           <TextField
             name="query"
             value={query}
-            onChange={onQueryChange}
+            onChange={handleQueryChange}
             label={i18n.t("Search Products", {
               context: "product search input label"
             })}

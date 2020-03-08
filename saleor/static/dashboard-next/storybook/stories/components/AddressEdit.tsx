@@ -22,13 +22,8 @@ storiesOf("Generics / AddressEdit", module)
         <AddressEdit
           errors={{}}
           data={transformAddressToForm(customer.defaultBillingAddress)}
-          countries={countries.map(c => ({
-            label: c.label,
-            value: c.code
-          }))}
-          countryDisplayValue={customer.defaultBillingAddress.country.country}
+          countries={countries}
           onChange={undefined}
-          onCountryChange={() => undefined}
         />
       </CardContent>
     </Card>

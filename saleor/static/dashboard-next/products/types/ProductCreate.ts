@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { AttributeValueInput, SeoInput, AttributeInputTypeEnum } from "./../../types/globalTypes";
+import { AttributeValueInput, SeoInput } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ProductCreate
@@ -58,7 +58,6 @@ export interface ProductCreate_productCreate_product_purchaseCost {
 
 export interface ProductCreate_productCreate_product_attributes_attribute_values {
   __typename: "AttributeValue";
-  id: string;
   name: string | null;
   slug: string | null;
 }
@@ -68,12 +67,10 @@ export interface ProductCreate_productCreate_product_attributes_attribute {
   id: string;
   slug: string | null;
   name: string | null;
-  inputType: AttributeInputTypeEnum | null;
-  valueRequired: boolean;
   values: (ProductCreate_productCreate_product_attributes_attribute_values | null)[] | null;
 }
 
-export interface ProductCreate_productCreate_product_attributes_values {
+export interface ProductCreate_productCreate_product_attributes_value {
   __typename: "AttributeValue";
   id: string;
   name: string | null;
@@ -83,7 +80,7 @@ export interface ProductCreate_productCreate_product_attributes_values {
 export interface ProductCreate_productCreate_product_attributes {
   __typename: "SelectedAttribute";
   attribute: ProductCreate_productCreate_product_attributes_attribute;
-  values: (ProductCreate_productCreate_product_attributes_values | null)[];
+  value: ProductCreate_productCreate_product_attributes_value;
 }
 
 export interface ProductCreate_productCreate_product_pricing_priceRange_start_net {

@@ -8,23 +8,18 @@ import {
   WithStyles
 } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 
 import CardTitle from "@saleor/components/CardTitle";
-import Checkbox from "@saleor/components/Checkbox";
 import Skeleton from "@saleor/components/Skeleton";
-import {
-  SortableTableBody,
-  SortableTableRow
-} from "@saleor/components/SortableTable";
-import TableHead from "@saleor/components/TableHead";
-import i18n from "@saleor/i18n";
-import { maybe, renderCollection, stopPropagation } from "@saleor/misc";
-import { ListActions, ReorderAction } from "@saleor/types";
-import { AttributeTypeEnum } from "@saleor/types/globalTypes";
+import i18n from "../../../i18n";
+import { maybe, renderCollection } from "../../../misc";
+import { AttributeTypeEnum } from "../../../types/globalTypes";
 import {
   ProductTypeDetails_productType_productAttributes,
   ProductTypeDetails_productType_variantAttributes
@@ -32,15 +27,11 @@ import {
 
 const styles = (theme: Theme) =>
   createStyles({
-    colName: {},
-    colSlug: {
-      width: 300
-    },
     iconCell: {
       "&:last-child": {
         paddingRight: 0
       },
-      width: 48 + theme.spacing.unit * 1.5
+      width: 48 + theme.spacing.unit / 2
     },
     link: {
       cursor: "pointer"
@@ -50,16 +41,14 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface ProductTypeAttributesProps extends ListActions {
+interface ProductTypeAttributesProps extends WithStyles<typeof styles> {
   attributes:
     | ProductTypeDetails_productType_productAttributes[]
     | ProductTypeDetails_productType_variantAttributes[];
-  disabled: boolean;
-  type: string;
-  onAttributeAssign: (type: AttributeTypeEnum) => void;
-  onAttributeClick: (id: string) => void;
-  onAttributeReorder: ReorderAction;
-  onAttributeUnassign: (id: string) => void;
+  type: AttributeTypeEnum;
+  onAttributeAdd: (type: AttributeTypeEnum) => void;
+  onAttributeDelete: (id: string, event: React.MouseEvent<any>) => void;
+  onAttributeUpdate: (id: string) => void;
 }
 
 const ProductTypeAttributes = withStyles(styles, {
@@ -68,18 +57,11 @@ const ProductTypeAttributes = withStyles(styles, {
   ({
     attributes,
     classes,
-    disabled,
-    isChecked,
-    selected,
-    toggle,
-    toggleAll,
-    toolbar,
     type,
-    onAttributeAssign,
-    onAttributeClick,
-    onAttributeReorder,
-    onAttributeUnassign
-  }: ProductTypeAttributesProps & WithStyles<typeof styles>) => (
+    onAttributeAdd,
+    onAttributeDelete,
+    onAttributeUpdate
+  }: ProductTypeAttributesProps) => (
     <Card>
       <CardTitle
         title={
@@ -91,79 +73,55 @@ const ProductTypeAttributes = withStyles(styles, {
           <Button
             color="primary"
             variant="text"
-            onClick={() => onAttributeAssign(AttributeTypeEnum[type])}
+            onClick={() => onAttributeAdd(type)}
           >
-            {i18n.t("Assign attribute", { context: "button" })}
+            {i18n.t("Add attribute", { context: "button" })}
           </Button>
         }
       />
       <Table>
-        <TableHead
-          disabled={disabled}
-          dragRows
-          selected={selected}
-          items={attributes}
-          toggleAll={toggleAll}
-          toolbar={toolbar}
-        >
-          <TableCell className={classes.colName}>
-            {i18n.t("Attribute name")}
-          </TableCell>
-          <TableCell className={classes.colName}>{i18n.t("Slug")}</TableCell>
-          <TableCell />
+        <TableHead>
+          <TableRow>
+            <TableCell>{i18n.t("Attribute name")}</TableCell>
+            <TableCell className={classes.textLeft}>
+              {i18n.t("Values")}
+            </TableCell>
+            <TableCell />
+          </TableRow>
         </TableHead>
-        <SortableTableBody onSortEnd={onAttributeReorder}>
+        <TableBody>
           {renderCollection(
             attributes,
-            (attribute, attributeIndex) => {
-              const isSelected = attribute ? isChecked(attribute.id) : false;
-
-              return (
-                <SortableTableRow
-                  selected={isSelected}
-                  className={!!attribute ? classes.link : undefined}
-                  hover={!!attribute}
-                  onClick={
-                    !!attribute
-                      ? () => onAttributeClick(attribute.id)
-                      : undefined
-                  }
-                  key={maybe(() => attribute.id)}
-                  index={attributeIndex || 0}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isSelected}
-                      disabled={disabled}
-                      onChange={() => toggle(attribute.id)}
-                    />
-                  </TableCell>
-                  <TableCell className={classes.colName}>
-                    {maybe(() => attribute.name) ? (
-                      attribute.name
-                    ) : (
-                      <Skeleton />
-                    )}
-                  </TableCell>
-                  <TableCell className={classes.colSlug}>
-                    {maybe(() => attribute.slug) ? (
-                      attribute.slug
-                    ) : (
-                      <Skeleton />
-                    )}
-                  </TableCell>
-                  <TableCell className={classes.iconCell}>
-                    <IconButton
-                      onClick={stopPropagation(() =>
-                        onAttributeUnassign(attribute.id)
-                      )}
-                    >
-                      <DeleteIcon color="primary" />
-                    </IconButton>
-                  </TableCell>
-                </SortableTableRow>
-              );
-            },
+            attribute => (
+              <TableRow
+                className={!!attribute ? classes.link : undefined}
+                hover={!!attribute}
+                onClick={
+                  !!attribute
+                    ? () => onAttributeUpdate(attribute.id)
+                    : undefined
+                }
+                key={maybe(() => attribute.id)}
+              >
+                <TableCell>
+                  {maybe(() => attribute.name) ? attribute.name : <Skeleton />}
+                </TableCell>
+                <TableCell className={classes.textLeft}>
+                  {maybe(() => attribute.values) !== undefined ? (
+                    attribute.values.map(value => value.name).join(", ")
+                  ) : (
+                    <Skeleton />
+                  )}
+                </TableCell>
+                <TableCell className={classes.iconCell}>
+                  <IconButton
+                    onClick={event => onAttributeDelete(attribute.id, event)}
+                  >
+                    <DeleteIcon color="primary" />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ),
             () => (
               <TableRow>
                 <TableCell colSpan={2}>
@@ -172,7 +130,7 @@ const ProductTypeAttributes = withStyles(styles, {
               </TableRow>
             )
           )}
-        </SortableTableBody>
+        </TableBody>
       </Table>
     </Card>
   )

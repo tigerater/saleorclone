@@ -26,7 +26,6 @@ export interface VariantCreate_productVariantCreate_productVariant_attributes_at
   id: string;
   name: string | null;
   slug: string | null;
-  valueRequired: boolean;
   values: (VariantCreate_productVariantCreate_productVariant_attributes_attribute_values | null)[] | null;
 }
 
@@ -40,7 +39,7 @@ export interface VariantCreate_productVariantCreate_productVariant_attributes_va
 export interface VariantCreate_productVariantCreate_productVariant_attributes {
   __typename: "SelectedAttribute";
   attribute: VariantCreate_productVariantCreate_productVariant_attributes_attribute;
-  value: VariantCreate_productVariantCreate_productVariant_attributes_value | null;
+  value: VariantCreate_productVariantCreate_productVariant_attributes_value;
 }
 
 export interface VariantCreate_productVariantCreate_productVariant_costPrice {

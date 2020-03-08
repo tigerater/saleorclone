@@ -8,7 +8,6 @@ import Form from "@saleor/components/Form";
 import Grid from "@saleor/components/Grid";
 import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
-import createSingleAutocompleteSelectHandler from "@saleor/utils/handlers/singleAutocompleteSelectChangeHandler";
 import i18n from "../../../i18n";
 import { UserError } from "../../../types";
 import { AddressTypeInput } from "../../types";
@@ -28,7 +27,10 @@ const initialForm: CustomerCreatePageFormData = {
   city: "",
   cityArea: "",
   companyName: "",
-  country: "",
+  country: {
+    label: "",
+    value: ""
+  },
   countryArea: "",
   customerFirstName: "",
   customerLastName: "",
@@ -58,69 +60,46 @@ const CustomerCreatePage: React.StatelessComponent<CustomerCreatePageProps> = ({
   saveButtonBar,
   onBack,
   onSubmit
-}: CustomerCreatePageProps) => {
-  const [countryDisplayName, setCountryDisplayName] = React.useState("");
-  const countryChoices = countries.map(country => ({
-    label: country.country,
-    value: country.code
-  }));
-
-  return (
-    <Form
-      initial={initialForm}
-      onSubmit={onSubmit}
-      errors={errors}
-      confirmLeave
-    >
-      {({ change, data, errors: formErrors, hasChanged, submit }) => {
-        const handleCountrySelect = createSingleAutocompleteSelectHandler(
-          change,
-          setCountryDisplayName,
-          countryChoices
-        );
-
-        return (
-          <Container>
-            <AppHeader onBack={onBack}>{i18n.t("Customers")}</AppHeader>
-            <PageHeader title={i18n.t("Add customer")} />
-            <Grid>
-              <div>
-                <CustomerCreateDetails
-                  data={data}
-                  disabled={disabled}
-                  errors={formErrors}
-                  onChange={change}
-                />
-                <CardSpacer />
-                <CustomerCreateAddress
-                  countries={countryChoices}
-                  countryDisplayName={countryDisplayName}
-                  data={data}
-                  disabled={disabled}
-                  errors={formErrors}
-                  onChange={change}
-                  onCountryChange={handleCountrySelect}
-                />
-                <CardSpacer />
-                <CustomerCreateNote
-                  data={data}
-                  disabled={disabled}
-                  errors={formErrors}
-                  onChange={change}
-                />
-              </div>
-            </Grid>
-            <SaveButtonBar
-              disabled={disabled || !hasChanged}
-              state={saveButtonBar}
-              onSave={submit}
-              onCancel={onBack}
+}: CustomerCreatePageProps) => (
+  <Form initial={initialForm} onSubmit={onSubmit} errors={errors} confirmLeave>
+    {({ change, data, errors: formErrors, hasChanged, submit }) => (
+      <Container>
+        <AppHeader onBack={onBack}>{i18n.t("Customers")}</AppHeader>
+        <PageHeader title={i18n.t("Add customer")} />
+        <Grid>
+          <div>
+            <CustomerCreateDetails
+              data={data}
+              disabled={disabled}
+              errors={formErrors}
+              onChange={change}
             />
-          </Container>
-        );
-      }}
-    </Form>
-  );
-};
+            <CardSpacer />
+            <CustomerCreateAddress
+              countries={countries}
+              data={data}
+              disabled={disabled}
+              errors={formErrors}
+              onChange={change}
+            />
+            <CardSpacer />
+            <CustomerCreateNote
+              data={data}
+              disabled={disabled}
+              errors={formErrors}
+              onChange={change}
+            />
+          </div>
+        </Grid>
+        <SaveButtonBar
+          disabled={disabled || !hasChanged}
+          state={saveButtonBar}
+          onSave={submit}
+          onCancel={onBack}
+        />
+      </Container>
+    )}
+  </Form>
+);
 CustomerCreatePage.displayName = "CustomerCreatePage";
 export default CustomerCreatePage;

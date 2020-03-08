@@ -7,9 +7,7 @@ import placeholderImg from "../../../images/placeholder255x255.png";
 import i18n from "../../i18n";
 import { decimal, getMutationState, maybe } from "../../misc";
 import ProductVariantDeleteDialog from "../components/ProductVariantDeleteDialog";
-import ProductVariantPage, {
-  ProductVariantPageSubmitData
-} from "../components/ProductVariantPage";
+import ProductVariantPage from "../components/ProductVariantPage";
 import ProductVariantOperations from "../containers/ProductVariantOperations";
 import { TypedProductVariantQuery } from "../queries";
 import { VariantUpdate } from "../types/VariantUpdate";
@@ -24,6 +22,18 @@ interface ProductUpdateProps {
   variantId: string;
   productId: string;
   params: ProductVariantEditUrlQueryParams;
+}
+
+interface FormData {
+  id: string;
+  attributes?: Array<{
+    slug: string;
+    value: string;
+  }>;
+  costPrice?: string;
+  priceOverride?: string;
+  quantity: number;
+  sku: string;
 }
 
 export const ProductVariant: React.StatelessComponent<ProductUpdateProps> = ({
@@ -117,13 +127,15 @@ export const ProductVariant: React.StatelessComponent<ProductUpdateProps> = ({
                       )
                     }
                     onImageSelect={handleImageSelect}
-                    onSubmit={(data: ProductVariantPageSubmitData) => {
+                    onSubmit={(data: FormData) => {
                       if (variant) {
                         updateVariant.mutate({
-                          attributes: data.attributes.map(attribute => ({
-                            id: attribute.id,
-                            values: [attribute.value]
-                          })),
+                          attributes: data.attributes
+                            ? data.attributes.map(attribute => ({
+                                slug: attribute.slug,
+                                value: attribute.value
+                              }))
+                            : null,
                           costPrice: decimal(data.costPrice),
                           id: variantId,
                           priceOverride: decimal(data.priceOverride),

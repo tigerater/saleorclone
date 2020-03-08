@@ -11,12 +11,12 @@ import Grid from "@saleor/components/Grid";
 import PageHeader from "@saleor/components/PageHeader";
 import SaveButtonBar from "@saleor/components/SaveButtonBar";
 import { Tab, TabContainer } from "@saleor/components/Tab";
-import { RequirementsPicker } from "@saleor/discounts/types";
 import i18n from "../../../i18n";
 import { maybe, splitDateTime } from "../../../misc";
 import { ListProps, TabListActions, UserError } from "../../../types";
 import {
   DiscountValueTypeEnum,
+  RequirementsPickerEnum,
   VoucherTypeEnum
 } from "../../../types/globalTypes";
 import { VoucherDetails_voucher } from "../../types/VoucherDetails";
@@ -56,7 +56,7 @@ export interface FormData {
   hasUsageLimit: boolean;
   minAmountSpent: string;
   minCheckoutItemsQuantity: string;
-  requirementsPicker: RequirementsPicker;
+  requirementsPicker: RequirementsPickerEnum;
   startDate: string;
   startTime: string;
   type: VoucherTypeEnum;
@@ -130,11 +130,11 @@ const VoucherDetailsPage: React.StatelessComponent<VoucherDetailsPageProps> = ({
 }) => {
   let requirementsPickerInitValue;
   if (maybe(() => voucher.minAmountSpent.amount) > 0) {
-    requirementsPickerInitValue = RequirementsPicker.ORDER;
+    requirementsPickerInitValue = RequirementsPickerEnum.ORDER;
   } else if (maybe(() => voucher.minCheckoutItemsQuantity) > 0) {
-    requirementsPickerInitValue = RequirementsPicker.ITEM;
+    requirementsPickerInitValue = RequirementsPickerEnum.ITEM;
   } else {
-    requirementsPickerInitValue = RequirementsPicker.NONE;
+    requirementsPickerInitValue = RequirementsPickerEnum.NONE;
   }
 
   const initialForm: FormData = {

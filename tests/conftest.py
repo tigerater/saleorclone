@@ -425,11 +425,6 @@ def permission_manage_plugins():
 
 
 @pytest.fixture
-def permission_manage_service_accounts():
-    return Permission.objects.get(codename="manage_service_account")
-
-
-@pytest.fixture
 def product_type(color_attribute, size_attribute):
     product_type = ProductType.objects.create(
         name="Default Type", has_variants=True, is_shipping_required=True
@@ -756,7 +751,8 @@ def order_line(order, variant):
     net = variant.get_price()
     gross = Money(amount=net.amount * Decimal(1.23), currency=net.currency)
     return order.lines.create(
-        product_name=variant.display_product(),
+        product_name=str(variant.product),
+        variant_name=str(variant),
         product_sku=variant.sku,
         is_shipping_required=variant.is_shipping_required(),
         quantity=3,
@@ -812,7 +808,8 @@ def order_with_lines(order, product_type, category, shipping_zone):
     net = variant.get_price()
     gross = Money(amount=net.amount * Decimal(1.23), currency=net.currency)
     order.lines.create(
-        product_name=variant.display_product(),
+        product_name=str(variant.product),
+        variant_name=str(variant),
         product_sku=variant.sku,
         is_shipping_required=variant.is_shipping_required(),
         quantity=3,
@@ -838,7 +835,8 @@ def order_with_lines(order, product_type, category, shipping_zone):
     net = variant.get_price()
     gross = Money(amount=net.amount * Decimal(1.23), currency=net.currency)
     order.lines.create(
-        product_name=variant.display_product(),
+        product_name=str(variant.product),
+        variant_name=str(variant),
         product_sku=variant.sku,
         is_shipping_required=variant.is_shipping_required(),
         quantity=2,

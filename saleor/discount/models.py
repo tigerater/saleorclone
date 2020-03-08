@@ -188,16 +188,12 @@ class VoucherCustomer(models.Model):
 
 
 class SaleQueryset(models.QuerySet):
-    def active(self, date=None):
-        if date is None:
-            date = timezone.now()
+    def active(self, date):
         return self.filter(
             Q(end_date__isnull=True) | Q(end_date__gte=date), start_date__lte=date
         )
 
-    def expired(self, date=None):
-        if date is None:
-            date = timezone.now()
+    def expired(self, date):
         return self.filter(end_date__lt=date, start_date__lt=date)
 
 

@@ -498,7 +498,7 @@ LOGOUT_ON_PASSWORD_CHANGE = False
 # SEARCH CONFIGURATION
 DB_SEARCH_ENABLED = True
 
-# support deployment-dependant elastic environment variable
+# support deployment-dependant elastic enviroment variable
 ES_URL = (
     os.environ.get("ELASTICSEARCH_URL")
     or os.environ.get("SEARCHBOX_URL")
@@ -659,17 +659,6 @@ PAYMENT_GATEWAYS = {
             "connection_params": {
                 "public_key": os.environ.get("STRIPE_PUBLIC_KEY"),
                 "secret_key": os.environ.get("STRIPE_SECRET_KEY"),
-                "store_name": os.environ.get("STRIPE_STORE_NAME", "Saleor"),
-                "store_image": os.environ.get("STRIPE_STORE_IMAGE", None),
-                "prefill": get_bool_from_env("STRIPE_PREFILL", True),
-                "remember_me": os.environ.get("STRIPE_REMEMBER_ME", True),
-                "locale": os.environ.get("STRIPE_LOCALE", "auto"),
-                "enable_billing_address": os.environ.get(
-                    "STRIPE_ENABLE_BILLING_ADDRESS", False
-                ),
-                "enable_shipping_address": os.environ.get(
-                    "STRIPE_ENABLE_SHIPPING_ADDRESS", False
-                ),
             },
         },
     },

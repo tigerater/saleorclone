@@ -26,7 +26,6 @@ class StockAvailability(graphene.Enum):
 class ProductOrderField(graphene.Enum):
     NAME = "name"
     PRICE = "price"
-    MINIMAL_PRICE = "minimal_variant_price"
     DATE = "updated_at"
 
     @property
@@ -35,8 +34,6 @@ class ProductOrderField(graphene.Enum):
             return "Sort products by name."
         if self == ProductOrderField.PRICE:
             return "Sort products by price."
-        if self == ProductOrderField.MINIMAL_PRICE:
-            return "Sort products by a minimal price of a product's variant."
         if self == ProductOrderField.DATE:
             return "Sort products by update date."
         raise ValueError("Unsupported enum value: %s" % self.value)

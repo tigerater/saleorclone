@@ -7,11 +7,7 @@ from django.template.defaultfilters import slugify
 from graphene.types import InputObjectType
 
 from ....product import models
-from ....product.tasks import (
-    update_product_minimal_variant_price_task,
-    update_products_minimal_variant_prices_of_catalogues_task,
-    update_variants_names,
-)
+from ....product.tasks import update_variants_names
 from ....product.thumbnails import (
     create_category_background_image_thumbnails,
     create_collection_background_image_thumbnails,
@@ -291,11 +287,10 @@ class CollectionAddProducts(BaseMutation):
             info, collection_id, field="collection_id", only_type=Collection
         )
         products = cls.get_nodes_or_error(products, "products", Product)
-        collection.products.add(*products)
-        if collection.sale_set.exists():
-            # Updated the db entries, recalculating discounts of affected products
-            update_products_minimal_variant_prices_of_catalogues_task.delay(
-                product_ids=[p.pk for p in products]
+
+        for product in products:
+            models.CollectionProduct.objects.create(
+                collection=collection, product=product
             )
         return CollectionAddProducts(collection=collection)
 
@@ -324,11 +319,6 @@ class CollectionRemoveProducts(BaseMutation):
         )
         products = cls.get_nodes_or_error(products, "products", only_type=Product)
         collection.products.remove(*products)
-        if collection.sale_set.exists():
-            # Updated the db entries, recalculating discounts of affected products
-            update_products_minimal_variant_prices_of_catalogues_task.delay(
-                product_ids=[p.pk for p in products]
-            )
         return CollectionRemoveProducts(collection=collection)
 
 
@@ -499,9 +489,6 @@ class ProductCreate(ModelMutation):
         price = data.get("base_price", data.get("price"))
         if price is not None:
             cleaned_input["price"] = price
-            if instance.minimal_variant_price is None:
-                # Set the default "minimal_variant_price" to the "price"
-                cleaned_input["minimal_variant_price"] = price
 
         # FIXME  tax_rate logic should be dropped after we remove tax_rate from input
         tax_rate = cleaned_input.pop("tax_rate", "")
@@ -605,8 +592,6 @@ class ProductUpdate(ProductCreate):
                 update_fields.append("sku")
             if update_fields:
                 variant.save(update_fields=update_fields)
-        # Recalculate the "minimal variant price"
-        update_product_minimal_variant_price_task.delay(instance.pk)
 
 
 class ProductDelete(ModelDeleteMutation):
@@ -756,8 +741,6 @@ class ProductVariantCreate(ModelMutation):
         )
         instance.name = get_name_from_attributes(instance, attributes)
         instance.save()
-        # Recalculate the "minimal variant price" for the parent product
-        update_product_minimal_variant_price_task.delay(instance.product_id)
 
 
 class ProductVariantUpdate(ProductVariantCreate):
@@ -785,12 +768,6 @@ class ProductVariantDelete(ModelDeleteMutation):
         description = "Deletes a product variant."
         model = models.ProductVariant
         permissions = ("product.manage_products",)
-
-    @classmethod
-    def success_response(cls, instance):
-        # Update the "minimal_variant_prices" of the parent product
-        update_product_minimal_variant_price_task.delay(instance.product_id)
-        return super().success_response(instance)
 
 
 class ProductVariantUpdateMeta(UpdateMetaBaseMutation):

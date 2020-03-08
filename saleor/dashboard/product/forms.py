@@ -23,10 +23,7 @@ from ...product.models import (
     ProductVariant,
     VariantImage,
 )
-from ...product.tasks import (
-    update_product_minimal_variant_price_task,
-    update_variants_names,
-)
+from ...product.tasks import update_variants_names
 from ...product.thumbnails import create_product_thumbnails
 from ...product.utils.attributes import get_name_from_attributes
 from ..forms import ModelChoiceOrCreationField, OrderedModelMultipleChoiceField
@@ -259,13 +256,7 @@ class ProductForm(forms.ModelForm, AttributesMixin):
 
     class Meta:
         model = Product
-        exclude = [
-            "attributes",
-            "product_type",
-            "updated_at",
-            "description_json",
-            "minimal_variant_price",
-        ]
+        exclude = ["attributes", "product_type", "updated_at", "description_json"]
         labels = {
             "name": pgettext_lazy("Item name", "Name"),
             "price": pgettext_lazy("Currency amount", "Price"),
@@ -336,7 +327,6 @@ class ProductForm(forms.ModelForm, AttributesMixin):
         instance.collections.clear()
         for collection in self.cleaned_data["collections"]:
             instance.collections.add(collection)
-        update_product_minimal_variant_price_task.delay(instance.pk)
         return instance
 
 
@@ -421,9 +411,7 @@ class ProductVariantForm(forms.ModelForm, AttributesMixin):
             "values__translations"
         )
         self.instance.name = get_name_from_attributes(self.instance, attrs)
-        instance = super().save(commit=commit)
-        update_product_minimal_variant_price_task.delay(instance.product_id)
-        return instance
+        return super().save(commit=commit)
 
 
 class CachingModelChoiceIterator(ModelChoiceIterator):

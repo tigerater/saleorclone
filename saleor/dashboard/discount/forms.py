@@ -11,7 +11,6 @@ from ...core.utils.promo_code import generate_promo_code
 from ...discount import DiscountValueType
 from ...discount.models import Sale, Voucher
 from ...product.models import Category, Product
-from ...product.tasks import update_products_minimal_variant_prices_of_discount_task
 from ..forms import AjaxSelect2MultipleChoiceField
 
 MinAmountSpent = MoneyField(
@@ -76,11 +75,6 @@ class SaleForm(forms.ModelForm):
                 )
             )
         return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=commit)
-        update_products_minimal_variant_prices_of_discount_task.delay(instance.pk)
-        return instance
 
 
 class VoucherForm(forms.ModelForm):

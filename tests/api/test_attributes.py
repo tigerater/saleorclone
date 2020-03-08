@@ -401,10 +401,8 @@ def test_attributes_in_category_query(user_api_client, product):
     assert len(attributes_data) == Attribute.objects.count()
 
 
-def test_attributes_in_collection_query(user_api_client, collection):
-    product_types = set(
-        collection.products.all().values_list("product_type_id", flat=True)
-    )
+def test_attributes_in_collection_query(user_api_client, sale):
+    product_types = set(sale.products.all().values_list("product_type_id", flat=True))
     expected_attrs = Attribute.objects.filter(
         Q(attributeproduct__product_type_id__in=product_types)
         | Q(attributevariant__product_type_id__in=product_types)
@@ -423,7 +421,7 @@ def test_attributes_in_collection_query(user_api_client, collection):
         }
     }
     """ % {
-        "collection_id": graphene.Node.to_global_id("Collection", collection.pk)
+        "collection_id": graphene.Node.to_global_id("Collection", sale.id)
     }
     response = user_api_client.post_graphql(query)
     content = get_graphql_content(response)

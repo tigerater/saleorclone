@@ -78,10 +78,7 @@ def automatically_fulfill_digital_lines(order: Order):
             fulfillment=fulfillment, order_line=line, quantity=quantity
         )
         fulfill_order_line(order_line=line, quantity=quantity)
-    emails.send_fulfillment_confirmation_to_customer(
-        order, fulfillment, user=order.user
-    )
-    update_order_status(order)
+    emails.send_fulfillment_confirmation.delay(order.pk, fulfillment.pk)
 
 
 def check_order_status(func):

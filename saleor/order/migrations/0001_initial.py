@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import django.core.validators
 import django.db.models.deletion
 import django.utils.timezone
+import django_prices.models
 from django.conf import settings
 from django.db import migrations, models
 
@@ -48,10 +49,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "shipping_price",
-                    models.DecimalField(
+                    django_prices.models.MoneyField(
                         decimal_places=4,
                         default=0,
                         editable=False,
+                        currency=b"USD",
                         max_digits=12,
                         verbose_name="shipping price",
                     ),

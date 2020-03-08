@@ -1,7 +1,8 @@
+from decimal import Decimal
+
 import pytest
 from django.urls import reverse
 from elasticsearch_dsl.connections import connections
-from prices import Money
 
 from saleor.account.models import User
 from saleor.order.models import Order
@@ -52,7 +53,7 @@ def indexed_products(product_type, category):
         product = Product.objects.create(
             pk=object_id,
             name="Test product " + str(object_id),
-            price=Money(10, "USD"),
+            price=Decimal(10.0),
             product_type=product_type,
             category=category,
         )

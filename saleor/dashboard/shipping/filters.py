@@ -4,7 +4,6 @@ from django_filters import CharFilter, ChoiceFilter, OrderingFilter, RangeFilter
 from ...core.filters import SortedFilterSet
 from ...core.i18n import COUNTRY_CODE_CHOICES
 from ...shipping.models import ShippingZone
-from ..widgets import MoneyRangeWidget
 
 SORT_BY_FIELDS = {"name": pgettext_lazy("Group list sorting option", "name")}
 
@@ -16,8 +15,7 @@ class ShippingZoneFilter(SortedFilterSet):
     )
     price = RangeFilter(
         label=pgettext_lazy("Shipping zones list filter label", "Price range"),
-        widget=MoneyRangeWidget,
-        field_name="shipping_methods__price_amount",
+        field_name="shipping_methods__price",
     )
     country = ChoiceFilter(
         label=pgettext_lazy("Shipping zones filter label", "Country"),

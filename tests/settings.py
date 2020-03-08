@@ -45,5 +45,3 @@ USE_JSON_CONTENT = False
 
 PASSWORD_HASHERS = ["tests.dummy_password_hasher.DummyHasher"]
 EXTENSIONS_MANAGER = "saleor.extensions.manager.ExtensionsManager"
-
-PLUGINS = []

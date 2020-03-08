@@ -2,13 +2,12 @@ import operator
 from functools import reduce
 
 from django.db.models.query_utils import Q
-from prices import Money
 
 from ...discount.utils import fetch_active_discounts
 from ..models import Product
 
 
-def _get_product_minimal_variant_price(product, discounts) -> Money:
+def _get_product_minimal_variant_price(product, discounts):
     # Start with the product's price as the minimal one
     minimal_variant_price = product.price
     for variant in product.variants.all():
@@ -22,9 +21,9 @@ def update_product_minimal_variant_price(product, discounts=None, save=True):
         discounts = fetch_active_discounts()
     minimal_variant_price = _get_product_minimal_variant_price(product, discounts)
     if product.minimal_variant_price != minimal_variant_price:
-        product.minimal_variant_price_amount = minimal_variant_price.amount
+        product.minimal_variant_price = minimal_variant_price
         if save:
-            product.save(update_fields=["minimal_variant_price_amount"])
+            product.save(update_fields=["minimal_variant_price"])
     return product
 
 
@@ -41,9 +40,7 @@ def update_products_minimal_variant_prices(products, discounts=None):
         if updated_product.minimal_variant_price != old_minimal_variant_price:
             changed_products_to_update.append(updated_product)
     # Bulk update the changed products
-    Product.objects.bulk_update(
-        changed_products_to_update, ["minimal_variant_price_amount"]
-    )
+    Product.objects.bulk_update(changed_products_to_update, ["minimal_variant_price"])
 
 
 def update_products_minimal_variant_prices_of_catalogues(

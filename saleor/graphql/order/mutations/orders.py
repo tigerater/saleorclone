@@ -154,10 +154,9 @@ class OrderUpdateShipping(BaseMutation):
             order.shipping_method_name = None
             order.save(
                 update_fields=[
-                    "currency",
                     "shipping_method",
-                    "shipping_price_net_amount",
-                    "shipping_price_gross_amount",
+                    "shipping_price_net",
+                    "shipping_price_gross",
                     "shipping_method_name",
                 ]
             )
@@ -177,11 +176,10 @@ class OrderUpdateShipping(BaseMutation):
         order.shipping_method_name = method.name
         order.save(
             update_fields=[
-                "currency",
                 "shipping_method",
                 "shipping_method_name",
-                "shipping_price_net_amount",
-                "shipping_price_gross_amount",
+                "shipping_price_net",
+                "shipping_price_gross",
             ]
         )
         # Post-process the results

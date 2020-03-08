@@ -1,15 +1,11 @@
 from django import forms
-from django.conf import settings
 from django.utils.translation import pgettext_lazy
-from django_prices.forms import MoneyField
 
 from ...account.i18n import COUNTRY_CHOICES
-from ...core.taxes import zero_money
 from ...core.weight import WeightField
 from ...shipping import ShippingMethodType
 from ...shipping.models import ShippingMethod, ShippingZone
 from ...site.models import SiteSettings
-from ..forms import MoneyModelForm
 
 
 def currently_used_countries(zone_pk=None):
@@ -133,13 +129,7 @@ class ShippingZoneForm(forms.ModelForm):
         return data
 
 
-class ShippingMethodForm(MoneyModelForm):
-    price = MoneyField(
-        required=False,
-        label=pgettext_lazy("Currency amount", "Price"),
-        available_currencies=settings.AVAILABLE_CURRENCIES,
-    )
-
+class ShippingMethodForm(forms.ModelForm):
     class Meta:
         model = ShippingMethod
         fields = ["name", "price"]
@@ -155,27 +145,7 @@ class ShippingMethodForm(MoneyModelForm):
         }
 
 
-class PriceShippingMethodForm(MoneyModelForm):
-    price = MoneyField(
-        required=False,
-        label=pgettext_lazy("Currency amount", "Price"),
-        available_currencies=settings.AVAILABLE_CURRENCIES,
-    )
-    minimum_order_price = MoneyField(
-        required=False,
-        label=pgettext_lazy(
-            "Minimum order price to use this shipping method", "Minimum order price"
-        ),
-        available_currencies=settings.AVAILABLE_CURRENCIES,
-    )
-    maximum_order_price = MoneyField(
-        required=False,
-        label=pgettext_lazy(
-            "Maximum order price to use this order", "Maximum order price"
-        ),
-        available_currencies=settings.AVAILABLE_CURRENCIES,
-    )
-
+class PriceShippingMethodForm(forms.ModelForm):
     class Meta(ShippingMethodForm.Meta):
         labels = {
             "minimum_order_price": pgettext_lazy(
@@ -189,11 +159,6 @@ class PriceShippingMethodForm(MoneyModelForm):
         fields = ["name", "price", "minimum_order_price", "maximum_order_price"]
 
     def __init__(self, *args, **kwargs):
-        instance = kwargs["instance"]
-        initial = kwargs.setdefault("initial", {})
-        initial.setdefault("price", instance.price)
-        initial.setdefault("minimum_order_price", instance.minimum_order_price)
-        initial.setdefault("maximum_order_price", instance.maximum_order_price)
         super().__init__(*args, **kwargs)
         self.fields["maximum_order_price"].widget.attrs["placeholder"] = pgettext_lazy(
             "Placeholder for maximum order price set to unlimited", "No limit"
@@ -201,9 +166,7 @@ class PriceShippingMethodForm(MoneyModelForm):
         self.fields["minimum_order_price"].widget.attrs["placeholder"] = "0"
 
     def clean_minimum_order_price(self):
-        return self.cleaned_data["minimum_order_price"] or zero_money(
-            self.instance.currency
-        )
+        return self.cleaned_data["minimum_order_price"] or 0
 
     def clean(self):
         data = super().clean()
@@ -221,7 +184,7 @@ class PriceShippingMethodForm(MoneyModelForm):
         return data
 
 
-class WeightShippingMethodForm(MoneyModelForm):
+class WeightShippingMethodForm(forms.ModelForm):
     minimum_order_weight = WeightField(
         required=False,
         label=pgettext_lazy(
@@ -233,9 +196,6 @@ class WeightShippingMethodForm(MoneyModelForm):
         label=pgettext_lazy(
             "Maximum order weight to use this shipping method", "Maximum order weight"
         ),
-    )
-    price = MoneyField(
-        required=False, available_currencies=settings.AVAILABLE_CURRENCIES
     )
 
     class Meta(ShippingMethodForm.Meta):

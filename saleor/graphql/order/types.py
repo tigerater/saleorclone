@@ -326,9 +326,6 @@ class Order(CountableDjangoObjectType):
     is_shipping_required = graphene.Boolean(
         description="Returns True, if order requires shipping.", required=True
     )
-    discount_amount = graphene.Field(
-        Money, deprecation_reason="Deprecated: use discount instead.", required=True
-    )
 
     class Meta:
         description = "Represents an order in the shop."
@@ -338,7 +335,7 @@ class Order(CountableDjangoObjectType):
             "billing_address",
             "created",
             "customer_note",
-            "discount",
+            "discount_amount",
             "discount_name",
             "display_gross_prices",
             "gift_cards",
@@ -471,7 +468,3 @@ class Order(CountableDjangoObjectType):
     @staticmethod
     def resolve_gift_cards(root: models.Order, _info):
         return root.gift_cards.all()
-
-    @staticmethod
-    def resolve_discount_amount(root: models.Order, _info):
-        return root.discount

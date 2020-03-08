@@ -64,8 +64,8 @@ class AccountUpdate(BaseCustomerCreate):
         model = models.User
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -90,8 +90,8 @@ class AccountRequestDeletion(BaseMutation):
         )
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -117,8 +117,8 @@ class AccountDelete(ModelDeleteMutation):
         model = models.User
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def clean_instance(cls, info, instance):
@@ -167,18 +167,18 @@ class AccountAddressCreate(ModelMutation):
         model = models.Address
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
         success_response = super().perform_mutation(root, info, **data)
         address_type = data.get("type", None)
+        user = info.context.user
+        success_response.user = user
         if address_type:
-            user = info.context.user
             instance = success_response.address
             utils.change_user_default_address(user, instance, address_type)
-            success_response.user = user
         return success_response
 
     @classmethod
@@ -213,8 +213,8 @@ class AccountSetDefaultAddress(BaseMutation):
         description = "Sets a default address for the authenticated user."
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):

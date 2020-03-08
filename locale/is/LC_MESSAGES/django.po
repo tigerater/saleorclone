@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-20 10:01-0500\n"
+"POT-Creation-Date: 2019-07-17 04:57-0500\n"
 "PO-Revision-Date: 2017-02-08 11:00+0000\n"
 "Last-Translator: Samúel Jón Gunnarsson <samuel.jon.gunnarsson@gmail.com>, 2019\n"
 "Language-Team: Icelandic (https://www.transifex.com/mirumee/teams/34782/is/)\n"
@@ -29,27 +29,27 @@ msgstr ""
 #: saleor/account/__init__.py:35
 msgctxt "Event from a customer that got the password reset link sent by email"
 msgid "Password reset link was sent to the customer"
-msgstr "Endursetningarhlekkur var sendur á viðskiptavin"
+msgstr ""
 
 #: saleor/account/__init__.py:42
 msgctxt "Event from a customer that reset their password"
 msgid "The account password was reset"
-msgstr "Lykilorð fyrir aðgang var endursett"
+msgstr ""
 
 #: saleor/account/__init__.py:48
 msgctxt "Event from a customer that placed an order"
 msgid "An order was placed"
-msgstr "Pöntun var framkvæmd"
+msgstr ""
 
 #: saleor/account/__init__.py:55
 msgctxt "Event from a customer that added a note to one of their orders"
 msgid "A note was added"
-msgstr "Athugasemd var bætt við"
+msgstr ""
 
 #: saleor/account/__init__.py:62
 msgctxt "Event from a customer that downloaded an ordered digital good"
 msgid "A digital good was downloaded"
-msgstr "Stafrænni vöru var niðurhalað"
+msgstr ""
 
 #: saleor/account/__init__.py:69
 msgctxt "Event from a staff user that deleted a customer"
@@ -69,7 +69,7 @@ msgstr "Netfang viðskiptavinar var breytt"
 #: saleor/account/__init__.py:90
 msgctxt "Event from a staff user assigned a new email address to a customer"
 msgid "A note was added to the customer"
-msgstr "Athugasemd var bætt við viðskiptavin"
+msgstr ""
 
 #: saleor/account/forms.py:71
 msgctxt "Form field"
@@ -154,7 +154,7 @@ msgstr ""
 #: saleor/account/i18n.py:27
 msgctxt "Address field"
 msgid "Parish"
-msgstr "Sókn"
+msgstr ""
 
 #: saleor/account/i18n.py:28
 msgctxt "Address field"
@@ -179,7 +179,7 @@ msgstr ""
 #: saleor/account/i18n.py:32
 msgctxt "Address field"
 msgid "State"
-msgstr "Fylki"
+msgstr ""
 
 #: saleor/account/i18n.py:33
 msgctxt "Address field"
@@ -254,29 +254,29 @@ msgstr "Símanúmer"
 #: saleor/account/i18n.py:109
 msgctxt "Address"
 msgid "Street address, P.O. box, company name"
-msgstr "Götunafn, pósthólf, nafn fyrirtækis "
+msgstr ""
 
 #: saleor/account/i18n.py:112
 msgctxt "Address"
 msgid "Apartment, suite, unit, building, floor, etc"
-msgstr "Íbúð, eining, bygging, hæð, osfrv."
+msgstr ""
 
 #: saleor/account/i18n.py:179
 msgctxt "Address form"
 msgid "This value is invalid for selected country"
 msgstr ""
 
-#: saleor/account/models.py:163
+#: saleor/account/models.py:164
 msgctxt "Permission description"
 msgid "Manage customers."
 msgstr ""
 
-#: saleor/account/models.py:165
+#: saleor/account/models.py:166
 msgctxt "Permission description"
 msgid "Manage staff."
 msgstr ""
 
-#: saleor/account/models.py:168
+#: saleor/account/models.py:169
 msgctxt "Permission description"
 msgid "Impersonate customers."
 msgstr ""
@@ -285,7 +285,7 @@ msgstr ""
 #, python-format
 msgctxt "Address data"
 msgid "%(first_name)s %(last_name)s"
-msgstr "%(first_name)s %(last_name)s"
+msgstr ""
 
 #: saleor/account/templatetags/i18n_address_tags.py:16
 #, python-format
@@ -294,8 +294,6 @@ msgid ""
 "%(street_address_1)s\n"
 "%(street_address_2)s"
 msgstr ""
-"%(street_address_1)s\n"
-"%(street_address_2)s"
 
 #: saleor/account/validators.py:15
 msgid "The phone number entered is not valid."
@@ -351,33 +349,33 @@ msgctxt "Type of address used to fulfill order"
 msgid "Shipping"
 msgstr ""
 
-#: saleor/checkout/forms.py:43
+#: saleor/checkout/forms.py:44
 msgctxt "Add to checkout form field label"
 msgid "Quantity"
 msgstr "Magn"
 
-#: saleor/checkout/forms.py:48
+#: saleor/checkout/forms.py:49
 msgctxt "Add to checkout form error"
 msgid "Sorry. This product is currently not available."
 msgstr ""
 
-#: saleor/checkout/forms.py:52
+#: saleor/checkout/forms.py:53
 msgctxt "Add to checkout form error"
 msgid "Sorry. This product is currently out of stock."
 msgstr ""
 
-#: saleor/checkout/forms.py:56
+#: saleor/checkout/forms.py:57
 #, python-format
 msgctxt "Add to checkout form error"
 msgid "Sorry. You can't add more than %d times this item."
 msgstr ""
 
-#: saleor/checkout/forms.py:59
+#: saleor/checkout/forms.py:60
 msgctxt "Add to checkout form error"
 msgid "Oops. We could not find that product."
-msgstr "Úps, við fundum ekki þessa tilteknu vöru."
+msgstr ""
 
-#: saleor/checkout/forms.py:63
+#: saleor/checkout/forms.py:64
 #, python-format
 msgctxt "Add to checkout form error"
 msgid "Only %d remaining in stock."
@@ -385,37 +383,37 @@ msgid_plural "Only %d remaining in stock."
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/checkout/forms.py:188
+#: saleor/checkout/forms.py:189
 msgctxt "Country form field label"
 msgid "Country"
 msgstr "Land"
 
-#: saleor/checkout/forms.py:217 saleor/checkout/forms.py:230
+#: saleor/checkout/forms.py:218 saleor/checkout/forms.py:231
 msgctxt "Address form field label"
 msgid "Email"
 msgstr "Netfang"
 
-#: saleor/checkout/forms.py:245
+#: saleor/checkout/forms.py:246
 msgctxt "Shipping addresses form choice"
 msgid "Enter a new address"
 msgstr "Sláðu inn nýtt heimilisfang"
 
-#: saleor/checkout/forms.py:250
+#: saleor/checkout/forms.py:251
 msgctxt "Shipping addresses form field label"
 msgid "Address"
 msgstr "Heimilisfang"
 
-#: saleor/checkout/forms.py:271
+#: saleor/checkout/forms.py:272
 msgctxt "Billing addresses form choice"
 msgid "Enter a new address"
 msgstr "Sláðu inn nýtt heimilisfang"
 
-#: saleor/checkout/forms.py:275
+#: saleor/checkout/forms.py:276
 msgctxt "Billing addresses form choice"
 msgid "Same as shipping"
 msgstr "Sama og afhendingarstaður"
 
-#: saleor/checkout/forms.py:280
+#: saleor/checkout/forms.py:281
 msgctxt "Billing addresses form field label"
 msgid "Address"
 msgstr "Heimilisfang"
@@ -425,52 +423,52 @@ msgctxt "Shipping method form field label"
 msgid "Shipping method"
 msgstr "Sendingaraðferð"
 
-#: saleor/checkout/forms.py:363
+#: saleor/checkout/forms.py:361
 msgctxt "Voucher form error"
 msgid "Discount code incorrect or expired"
 msgstr ""
 
-#: saleor/checkout/forms.py:376
+#: saleor/checkout/forms.py:374
 msgctxt "Checkout discount form label for voucher field"
 msgid "Gift card or discount code"
 msgstr "Gjafakort eða afsláttarkóði"
 
-#: saleor/checkout/utils.py:215
+#: saleor/checkout/utils.py:212
 msgctxt "Checkout warning message"
 msgid ""
 "Sorry. We don't have that many items in stock. Quantity was set to maximum "
 "available for now."
 msgstr ""
 
-#: saleor/checkout/utils.py:776
+#: saleor/checkout/utils.py:753
 msgctxt "Voucher not applicable"
 msgid "Your order does not require shipping."
 msgstr ""
 
-#: saleor/checkout/utils.py:782
+#: saleor/checkout/utils.py:759
 msgctxt "Voucher not applicable"
 msgid "Please select a shipping method first."
 msgstr ""
 
-#: saleor/checkout/utils.py:790
+#: saleor/checkout/utils.py:767
 msgctxt "Voucher not applicable"
 msgid "This offer is not valid in your country."
 msgstr ""
 
-#: saleor/checkout/utils.py:818
+#: saleor/checkout/utils.py:795
 msgctxt "Voucher not applicable"
 msgid "This offer is only valid for selected items."
 msgstr ""
 
-#: saleor/checkout/utils.py:1037
+#: saleor/checkout/utils.py:986
 msgctxt "Voucher not applicable"
 msgid "Voucher expired in meantime. Order placement aborted."
 msgstr ""
 
-#: saleor/checkout/utils.py:1101
+#: saleor/checkout/utils.py:1050
 msgctxt "Gift card not applicable"
 msgid "Gift card has expired. Order placement cancelled."
-msgstr "Gjafakort er útrunnið. Hætt var við pöntun."
+msgstr ""
 
 #: saleor/checkout/views/discount.py:67
 msgctxt "Checkout warning"
@@ -486,12 +484,6 @@ msgstr ""
 #, python-format
 msgctxt "Checkout warning"
 msgid "Unable to calculate taxes - %s"
-msgstr "Ekki tókst að reikna skatt - %s"
-
-#: saleor/core/fields.py:12
-msgid ""
-"A JSON field that runs a given sanitization method before saving into the "
-"database."
 msgstr ""
 
 #: saleor/core/filters.py:27
@@ -507,7 +499,132 @@ msgctxt "Country choice"
 msgid "Any Country"
 msgstr ""
 
-#: saleor/core/views.py:51
+#: saleor/core/taxes/vatlayer/__init__.py:38
+msgctxt "VAT rate type"
+msgid "accommodation"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:41
+msgctxt "VAT rate type"
+msgid "admission to cultural events"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:45
+msgctxt "VAT rate type"
+msgid "admission to entertainment events"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:49
+msgctxt "VAT rate type"
+msgid "admission to sporting events"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:51
+msgctxt "VAT rate type"
+msgid "advertising"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:54
+msgctxt "VAT rate type"
+msgid "agricultural supplies"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:56
+msgctxt "VAT rate type"
+msgid "baby foodstuffs"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:57
+msgctxt "VAT rate type"
+msgid "bikes"
+msgstr "reiðhjól"
+
+#: saleor/core/taxes/vatlayer/__init__.py:58
+msgctxt "VAT rate type"
+msgid "books"
+msgstr "bækur"
+
+#: saleor/core/taxes/vatlayer/__init__.py:59
+msgctxt "VAT rate type"
+msgid "childrens clothing"
+msgstr "Barnaföt"
+
+#: saleor/core/taxes/vatlayer/__init__.py:60
+msgctxt "VAT rate type"
+msgid "domestic fuel"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:61
+msgctxt "VAT rate type"
+msgid "domestic services"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:62
+msgctxt "VAT rate type"
+msgid "e-books"
+msgstr "rafbækur"
+
+#: saleor/core/taxes/vatlayer/__init__.py:63
+msgctxt "VAT rate type"
+msgid "foodstuffs"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:64
+msgctxt "VAT rate type"
+msgid "hotels"
+msgstr "hótel"
+
+#: saleor/core/taxes/vatlayer/__init__.py:65
+msgctxt "VAT rate type"
+msgid "medical"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:66
+msgctxt "VAT rate type"
+msgid "newspapers"
+msgstr "fréttablöð"
+
+#: saleor/core/taxes/vatlayer/__init__.py:67
+msgctxt "VAT rate type"
+msgid "passenger transport"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:68
+msgctxt "VAT rate type"
+msgid "pharmaceuticals"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:69
+msgctxt "VAT rate type"
+msgid "property renovations"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:70
+msgctxt "VAT rate type"
+msgid "restaurants"
+msgstr "veitingastaðir"
+
+#: saleor/core/taxes/vatlayer/__init__.py:71
+msgctxt "VAT rate type"
+msgid "social housing"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:72
+msgctxt "VAT rate type"
+msgid "standard"
+msgstr ""
+
+#: saleor/core/taxes/vatlayer/__init__.py:73
+msgctxt "VAT rate type"
+msgid "water"
+msgstr "Vatn"
+
+#: saleor/core/taxes/vatlayer/__init__.py:74
+msgctxt "VAT rate type"
+msgid "wine"
+msgstr "Áfengi"
+
+#: saleor/core/views.py:50
 msgctxt "Impersonation message"
 msgid "You are now logged as {}"
 msgstr "Þú ert innskráð/ur sem {}"
@@ -576,7 +693,7 @@ msgstr "Frí sending"
 #, python-format
 msgctxt "Voucher type"
 msgid "%(discount)s off shipping"
-msgstr "%(discount)s af sendingu"
+msgstr ""
 
 #: saleor/discount/models.py:104
 #, python-format
@@ -600,7 +717,7 @@ msgstr ""
 #, python-format
 msgctxt "Voucher type"
 msgid "%(discount)s off"
-msgstr "%(discount)s af"
+msgstr ""
 
 #: saleor/discount/models.py:147
 #, python-format
@@ -622,206 +739,6 @@ msgstr ""
 msgctxt "Voucher not applicable"
 msgid "Discount not applicable for this product"
 msgstr ""
-
-#: saleor/extensions/__init__.py:28
-msgctxt "Type of the configuration field"
-msgid "Field is a String"
-msgstr ""
-
-#: saleor/extensions/__init__.py:31
-msgctxt "Type of the configuration field"
-msgid "Field is a Boolean"
-msgstr ""
-
-#: saleor/extensions/models.py:18
-msgctxt "Plugin description"
-msgid "Manage plugins"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/__init__.py:53
-msgctxt "Default tax error msg"
-msgid "We are not able to calculate taxes for your order. Please try later"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:43
-msgctxt "Plugin help text"
-msgid "Provide user or account details"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:45
-msgctxt "Plugin label"
-msgid "Username or account"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:50
-msgctxt "Plugin help text"
-msgid "Provide password or license details"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:52
-msgctxt "Plugin label"
-msgid "Password or license"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:58
-msgctxt "Plugin help text"
-msgid "Determines if Saleor should use Avatax sandbox API."
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:60
-msgctxt "Plugin label"
-msgid "Use sandbox"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:66
-msgctxt "Plugin help text"
-msgid ""
-"Avalara needs to receive company code. Some more complicated systems can use"
-" more than one company code, in that case, this variable should be changed "
-"based on data from Avalara's admin panel"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:71
-msgctxt "Plugin label"
-msgid "Company name"
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:77
-msgctxt "Plugin help text"
-msgid ""
-"Determines, if all transactions sent to Avalara should be committed by "
-"default."
-msgstr ""
-
-#: saleor/extensions/plugins/avatax/plugin.py:80
-msgctxt "Plugin label"
-msgid "Autocommit"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:36
-msgctxt "VAT rate type"
-msgid "accommodation"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:39
-msgctxt "VAT rate type"
-msgid "admission to cultural events"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:43
-msgctxt "VAT rate type"
-msgid "admission to entertainment events"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:47
-msgctxt "VAT rate type"
-msgid "admission to sporting events"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:49
-msgctxt "VAT rate type"
-msgid "advertising"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:52
-msgctxt "VAT rate type"
-msgid "agricultural supplies"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:54
-msgctxt "VAT rate type"
-msgid "baby foodstuffs"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:55
-msgctxt "VAT rate type"
-msgid "bikes"
-msgstr "reiðhjól"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:56
-msgctxt "VAT rate type"
-msgid "books"
-msgstr "bækur"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:57
-msgctxt "VAT rate type"
-msgid "childrens clothing"
-msgstr "Barnaföt"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:58
-msgctxt "VAT rate type"
-msgid "domestic fuel"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:59
-msgctxt "VAT rate type"
-msgid "domestic services"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:60
-msgctxt "VAT rate type"
-msgid "e-books"
-msgstr "rafbækur"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:61
-msgctxt "VAT rate type"
-msgid "foodstuffs"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:62
-msgctxt "VAT rate type"
-msgid "hotels"
-msgstr "hótel"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:63
-msgctxt "VAT rate type"
-msgid "medical"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:64
-msgctxt "VAT rate type"
-msgid "newspapers"
-msgstr "fréttablöð"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:65
-msgctxt "VAT rate type"
-msgid "passenger transport"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:66
-msgctxt "VAT rate type"
-msgid "pharmaceuticals"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:67
-msgctxt "VAT rate type"
-msgid "property renovations"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:68
-msgctxt "VAT rate type"
-msgid "restaurants"
-msgstr "veitingastaðir"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:69
-msgctxt "VAT rate type"
-msgid "social housing"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:70
-msgctxt "VAT rate type"
-msgid "standard"
-msgstr ""
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:71
-msgctxt "VAT rate type"
-msgid "water"
-msgstr "Vatn"
-
-#: saleor/extensions/plugins/vatlayer/__init__.py:72
-msgctxt "VAT rate type"
-msgid "wine"
-msgstr "Áfengi"
 
 #: saleor/giftcard/models.py:50
 msgctxt "Permission description"
@@ -894,7 +811,7 @@ msgstr ""
 #: saleor/order/__init__.py:41
 msgctxt "Status for a permanently canceled order"
 msgid "Canceled"
-msgstr "Hætt við"
+msgstr ""
 
 #: saleor/order/__init__.py:55
 msgctxt "Status for a group of products in an order marked as fulfilled"
@@ -905,7 +822,7 @@ msgstr ""
 msgctxt ""
 "Status for a fulfilled group of products in an order marked as canceled"
 msgid "Canceled"
-msgstr "Hætt við"
+msgstr ""
 
 #: saleor/order/__init__.py:108
 msgctxt "Event from a staff user that created a draft order"
@@ -1052,7 +969,7 @@ msgstr ""
 #: saleor/order/forms.py:16
 msgctxt "Payments form label"
 msgid "Payment Method"
-msgstr "Greiðslumáti"
+msgstr ""
 
 #: saleor/order/forms.py:36
 msgctxt "Payment delete form error"
@@ -1069,7 +986,7 @@ msgctxt "Permission description"
 msgid "Manage orders."
 msgstr ""
 
-#: saleor/order/models.py:398
+#: saleor/order/models.py:399
 #, python-format
 msgctxt "Fulfillment str"
 msgid "Fulfillment #%s"
@@ -1087,7 +1004,7 @@ msgctxt "storefront message"
 msgid "The order is now assigned to your account"
 msgstr ""
 
-#: saleor/page/models.py:37
+#: saleor/page/models.py:31
 msgctxt "Permission description"
 msgid "Manage pages."
 msgstr ""
@@ -1105,7 +1022,7 @@ msgstr ""
 #: saleor/payment/__init__.py:71
 msgctxt "transaction kind"
 msgid "Refund"
-msgstr "Endurgreiða"
+msgstr ""
 
 #: saleor/payment/__init__.py:72
 msgctxt "transaction kind"
@@ -1125,24 +1042,24 @@ msgstr ""
 #: saleor/payment/__init__.py:98
 msgctxt "payment status"
 msgid "Partially charged"
-msgstr "Greitt að hluta"
+msgstr ""
 
 #: saleor/payment/__init__.py:99
 msgctxt "payment status"
 msgid "Fully charged"
-msgstr "Greitt að fullu"
+msgstr ""
 
 #: saleor/payment/__init__.py:100
 msgctxt "payment status"
 msgid "Partially refunded"
-msgstr "Endurgreitt að hluta"
+msgstr ""
 
 #: saleor/payment/__init__.py:101
 msgctxt "payment status"
 msgid "Fully refunded"
-msgstr "Endurgreitt að fullu"
+msgstr ""
 
-#: saleor/payment/gateways/braintree/__init__.py:67
+#: saleor/payment/gateways/braintree/__init__.py:69
 #: saleor/payment/gateways/braintree/forms.py:33
 msgctxt "payment error"
 msgid "Unable to process transaction. Please try again in a moment"
@@ -1188,7 +1105,7 @@ msgstr "Greiða núna með Razorpay"
 #: saleor/payment/gateways/razorpay/forms.py:16
 msgctxt "Razorpay payment gateway secondary title"
 msgid "Total payment"
-msgstr "Heildargreiðsla"
+msgstr ""
 
 #: saleor/payment/gateways/stripe/errors.py:4
 msgctxt "Stripe payment error"
@@ -1203,9 +1120,9 @@ msgstr ""
 #: saleor/payment/gateways/stripe/forms.py:14
 msgctxt "Stripe payment gateway description"
 msgid "Total payment"
-msgstr "Heildargreiðsla"
+msgstr ""
 
-#: saleor/payment/utils.py:278
+#: saleor/payment/utils.py:279
 msgctxt "Mark order as paid validation error"
 msgid "Orders with payments can not be manually marked as paid."
 msgstr ""
@@ -1250,53 +1167,43 @@ msgctxt "Variant status"
 msgid "out of stock"
 msgstr "ekki á lager"
 
-#: saleor/product/__init__.py:51
-msgctxt "Attribute input type"
-msgid "Dropdown"
-msgstr ""
-
-#: saleor/product/__init__.py:52
-msgctxt "Attribute input type"
-msgid "Multi Select"
-msgstr ""
-
-#: saleor/product/filters.py:14
+#: saleor/product/filters.py:13
 msgctxt "Product list sorting option"
 msgid "name"
 msgstr "nafn"
 
-#: saleor/product/filters.py:15
+#: saleor/product/filters.py:14
 msgctxt "Product list sorting option"
 msgid "price"
 msgstr "verð"
 
-#: saleor/product/filters.py:16
+#: saleor/product/filters.py:15
 msgctxt "Product list sorting option"
 msgid "last updated"
 msgstr "síðast uppfært"
 
-#: saleor/product/filters.py:32
+#: saleor/product/filters.py:22
 msgctxt "Product list sorting form"
 msgid "Sort by"
 msgstr "Sía eftir"
 
-#: saleor/product/filters.py:36
+#: saleor/product/filters.py:26
 msgctxt "Currency amount"
 msgid "Price"
 msgstr "Verð"
 
-#: saleor/product/forms.py:27
+#: saleor/product/forms.py:26
 #, python-format
 msgctxt "Variant choice field label"
 msgid "%(variant_label)s - %(price)s"
 msgstr ""
 
-#: saleor/product/models.py:189
+#: saleor/product/models.py:153
 msgctxt "Permission description"
 msgid "Manage products."
 msgstr ""
 
-#: saleor/product/models.py:416
+#: saleor/product/models.py:369
 msgctxt "File as a digital product"
 msgid "digital_product"
 msgstr ""
@@ -1304,186 +1211,182 @@ msgstr ""
 #: saleor/search/forms.py:8
 msgctxt "Search form label"
 msgid "Query"
-msgstr "Fyrirspurn"
+msgstr ""
 
-#: saleor/settings.py:66
+#: saleor/settings.py:61
 msgid "Arabic"
 msgstr ""
 
-#: saleor/settings.py:67
+#: saleor/settings.py:62
 msgid "Azerbaijani"
 msgstr ""
 
-#: saleor/settings.py:68
+#: saleor/settings.py:63
 msgid "Bulgarian"
 msgstr ""
 
-#: saleor/settings.py:69
+#: saleor/settings.py:64
 msgid "Bengali"
 msgstr ""
 
-#: saleor/settings.py:70
+#: saleor/settings.py:65
 msgid "Catalan"
 msgstr ""
 
-#: saleor/settings.py:71
+#: saleor/settings.py:66
 msgid "Czech"
 msgstr ""
 
-#: saleor/settings.py:72
+#: saleor/settings.py:67
 msgid "Danish"
-msgstr "Danska"
+msgstr ""
 
-#: saleor/settings.py:73
+#: saleor/settings.py:68
 msgid "German"
-msgstr "Þýska"
+msgstr ""
 
-#: saleor/settings.py:74
-msgid "Greek"
-msgstr "Gríska"
-
-#: saleor/settings.py:75
+#: saleor/settings.py:69
 msgid "English"
 msgstr ""
 
-#: saleor/settings.py:76
+#: saleor/settings.py:70
 msgid "Spanish"
 msgstr ""
 
-#: saleor/settings.py:77
+#: saleor/settings.py:71
 msgid "Colombian Spanish"
 msgstr ""
 
-#: saleor/settings.py:78
+#: saleor/settings.py:72
 msgid "Estonian"
 msgstr ""
 
-#: saleor/settings.py:79
+#: saleor/settings.py:73
 msgid "Persian"
 msgstr ""
 
-#: saleor/settings.py:80
+#: saleor/settings.py:74
 msgid "French"
 msgstr ""
 
-#: saleor/settings.py:81
+#: saleor/settings.py:75
 msgid "Hindi"
 msgstr ""
 
-#: saleor/settings.py:82
+#: saleor/settings.py:76
 msgid "Hungarian"
-msgstr "Ungverska"
+msgstr ""
 
-#: saleor/settings.py:83
+#: saleor/settings.py:77
 msgid "Armenian"
 msgstr ""
 
-#: saleor/settings.py:84
+#: saleor/settings.py:78
 msgid "Indonesian"
 msgstr ""
 
-#: saleor/settings.py:85
+#: saleor/settings.py:79
 msgid "Icelandic"
-msgstr "Íslenska"
+msgstr ""
 
-#: saleor/settings.py:86
+#: saleor/settings.py:80
 msgid "Italian"
 msgstr ""
 
-#: saleor/settings.py:87
+#: saleor/settings.py:81
 msgid "Japanese"
 msgstr ""
 
-#: saleor/settings.py:88
+#: saleor/settings.py:82
 msgid "Korean"
 msgstr ""
 
-#: saleor/settings.py:89
+#: saleor/settings.py:83
 msgid "Lithuanian"
 msgstr ""
 
-#: saleor/settings.py:90
+#: saleor/settings.py:84
 msgid "Mongolian"
 msgstr ""
 
-#: saleor/settings.py:91
+#: saleor/settings.py:85
 msgid "Norwegian"
 msgstr ""
 
-#: saleor/settings.py:92
+#: saleor/settings.py:86
 msgid "Dutch"
 msgstr ""
 
-#: saleor/settings.py:93
+#: saleor/settings.py:87
 msgid "Polish"
-msgstr "Pólska"
+msgstr ""
 
-#: saleor/settings.py:94
+#: saleor/settings.py:88
 msgid "Portuguese"
-msgstr "Portúgalska"
+msgstr ""
 
-#: saleor/settings.py:95
+#: saleor/settings.py:89
 msgid "Brazilian Portuguese"
-msgstr "Brasilísk portúgalska"
+msgstr ""
 
-#: saleor/settings.py:96
+#: saleor/settings.py:90
 msgid "Romanian"
 msgstr ""
 
-#: saleor/settings.py:97
+#: saleor/settings.py:91
 msgid "Russian"
-msgstr "Rússneska"
+msgstr ""
 
-#: saleor/settings.py:98
+#: saleor/settings.py:92
 msgid "Slovak"
 msgstr ""
 
-#: saleor/settings.py:99
+#: saleor/settings.py:93
 msgid "Albanian"
 msgstr ""
 
-#: saleor/settings.py:100
+#: saleor/settings.py:94
 msgid "Serbian"
 msgstr ""
 
-#: saleor/settings.py:101
+#: saleor/settings.py:95
 msgid "Swahili"
 msgstr ""
 
-#: saleor/settings.py:102
+#: saleor/settings.py:96
 msgid "Swedish"
 msgstr ""
 
-#: saleor/settings.py:103
+#: saleor/settings.py:97
 msgid "Thai"
 msgstr ""
 
-#: saleor/settings.py:104
+#: saleor/settings.py:98
 msgid "Turkish"
 msgstr ""
 
-#: saleor/settings.py:105
+#: saleor/settings.py:99
 msgid "Ukrainian"
 msgstr ""
 
-#: saleor/settings.py:106
+#: saleor/settings.py:100
 msgid "Vietnamese"
 msgstr ""
 
-#: saleor/settings.py:107
+#: saleor/settings.py:101
 msgid "Simplified Chinese"
 msgstr ""
 
-#: saleor/settings.py:108
+#: saleor/settings.py:102
 msgid "Traditional Chinese"
 msgstr ""
 
-#: saleor/settings.py:354
+#: saleor/settings.py:336
 msgctxt "Name of political and economical union of european countries"
 msgid "European Union"
 msgstr ""
 
-#: saleor/settings.py:611
+#: saleor/settings.py:594
 msgctxt "Payment method name"
 msgid "Dummy gateway"
 msgstr ""
@@ -1498,39 +1401,39 @@ msgctxt "Type of shipping"
 msgid "Weight based shipping"
 msgstr ""
 
-#: saleor/shipping/models.py:49
-#, python-format
-msgctxt "Applies to orders more expensive than the min value"
-msgid "%(min_price)s and up"
-msgstr ""
-
-#: saleor/shipping/models.py:53
-#, python-format
-msgctxt "Applies to order valued within this price range"
-msgid "%(min_price)s to %(max_price)s"
-msgstr ""
-
-#: saleor/shipping/models.py:67
-#, python-format
-msgctxt "Applies to orders heavier than the threshold"
-msgid "%(min_weight)s and up"
-msgstr ""
-
-#: saleor/shipping/models.py:71
-#, python-format
-msgctxt "Applies to orders of total weight within this range"
-msgid "%(min_weight)s to %(max_weight)s"
-msgstr ""
-
-#: saleor/shipping/models.py:94
+#: saleor/shipping/models.py:43
 #, python-format
 msgctxt "Number of countries shipping zone apply to"
 msgid "%(num_of_countries)d countries"
 msgstr ""
 
-#: saleor/shipping/models.py:111
+#: saleor/shipping/models.py:60
 msgctxt "Permission description"
 msgid "Manage shipping."
+msgstr ""
+
+#: saleor/shipping/utils.py:51
+#, python-format
+msgctxt "Applies to orders more expensive than the min value"
+msgid "%(min_price)s and up"
+msgstr ""
+
+#: saleor/shipping/utils.py:55
+#, python-format
+msgctxt "Applies to order valued within this price range"
+msgid "%(min_price)s to %(max_price)s"
+msgstr ""
+
+#: saleor/shipping/utils.py:69
+#, python-format
+msgctxt "Applies to orders heavier than the threshold"
+msgid "%(min_weight)s and up"
+msgstr ""
+
+#: saleor/shipping/utils.py:73
+#, python-format
+msgctxt "Applies to orders of total weight within this range"
+msgid "%(min_weight)s to %(max_weight)s"
 msgstr ""
 
 #: saleor/site/models.py:49
@@ -1606,8 +1509,8 @@ msgstr ""
 #: templates/account/address_edit.html:16 templates/account/details.html:16
 #: templates/account/password_change.html:7 templates/checkout/index.html:11
 #: templates/order/details.html:18 templates/order/payment.html:18
-#: templates/order/payment/details.html:12 templates/page/details.html:28
-#: templates/product/details.html:46
+#: templates/order/payment/details.html:12 templates/page/details.html:27
+#: templates/product/details.html:45
 msgctxt "Main navigation item"
 msgid "Home"
 msgstr "Heim"
@@ -1662,7 +1565,7 @@ msgstr ""
 #: templates/account/details.html:30
 msgctxt "User profile tab"
 msgid "Recent Orders"
-msgstr "Nýlegar pantanir"
+msgstr ""
 
 #: templates/account/details.html:36
 msgctxt "User profile tab"
@@ -1781,7 +1684,7 @@ msgstr "Innskrá"
 #, python-format
 msgctxt "Already logged in warning message"
 msgid "You are already logged in as %(user)s."
-msgstr "Þú ert núþegar innskráð/ur sem %(user)s."
+msgstr ""
 
 #: templates/account/partials/login_form.html:16
 msgctxt "Login form primary action"
@@ -1995,7 +1898,7 @@ msgstr ""
 #: templates/base.html:221
 msgctxt "Main navigation item"
 msgid "Style guide"
-msgstr "Stílsnið"
+msgstr ""
 
 #: templates/category/index.html:7
 msgctxt "Category breadcrumbs home"
@@ -2027,7 +1930,7 @@ msgstr ""
 #: templates/checkout/details.html:7
 msgctxt "Checkout page title"
 msgid "Checkout"
-msgstr "Ganga frá pöntun"
+msgstr ""
 
 #: templates/checkout/details.html:12
 msgctxt "Checkout top message"
@@ -2037,7 +1940,7 @@ msgstr "Einfalt og öruggt!"
 #: templates/checkout/details.html:20
 msgctxt "Checkout title"
 msgid "Checkout"
-msgstr "Ganga frá pöntun"
+msgstr ""
 
 #: templates/checkout/details.html:35
 msgctxt "Order review title"
@@ -2107,7 +2010,7 @@ msgstr "Verð"
 #: templates/checkout/index.html:81
 msgctxt "Checkout primary action"
 msgid "Checkout"
-msgstr "Ganga frá pöntun"
+msgstr ""
 
 #: templates/checkout/index.html:84
 msgctxt "checkout page: secondary action, empty the checkout"
@@ -2152,7 +2055,7 @@ msgstr ""
 #: templates/checkout/payment.html:9
 msgctxt "Checkout payment title"
 msgid "Payment"
-msgstr "Greiðsla"
+msgstr ""
 
 #: templates/checkout/payment.html:13
 msgctxt "Checkout payment primary action"
@@ -2238,7 +2141,7 @@ msgstr ""
 #: templates/checkout/summary.html:16
 msgctxt "Checkout summary primary action"
 msgid "Order & Pay"
-msgstr "Panta og greiða"
+msgstr ""
 
 #: templates/checkout/summary_without_shipping.html:8
 msgctxt "Checkout summary without shipping title"
@@ -2268,7 +2171,7 @@ msgstr ""
 #: templates/checkout_dropdown.html:57
 msgctxt "Checkout dropdown primary action"
 msgid "Checkout"
-msgstr "Ganga frá pöntun"
+msgstr ""
 
 #: templates/collection/index.html:7
 msgctxt "Site breadcrumbs home"
@@ -2306,7 +2209,7 @@ msgstr ""
 #: templates/dashboard/base.html:47
 msgctxt "Dashboard top navigation action"
 msgid "Style guide"
-msgstr "Stílsnið"
+msgstr ""
 
 #: templates/dashboard/base.html:52
 msgctxt "Dashboard top navigation action"
@@ -2361,7 +2264,7 @@ msgstr "Afslættir"
 #: templates/dashboard/base.html:131
 msgctxt "Dashboard sales (discounts) list"
 msgid "Sales"
-msgstr "Útsölur"
+msgstr ""
 
 #: templates/dashboard/base.html:136
 #: templates/dashboard/discount/voucher/form.html:12
@@ -2375,7 +2278,7 @@ msgstr ""
 #: templates/dashboard/base.html:145
 msgctxt "Dashboard sales. `Sales' is noun of to sell"
 msgid "Sales"
-msgstr "Útsölur"
+msgstr ""
 
 #: templates/dashboard/base.html:151
 #: templates/dashboard/order/address_form.html:7
@@ -2421,7 +2324,7 @@ msgstr ""
 #: templates/dashboard/product/product_type/list.html:28
 msgctxt "Dashboard product types list"
 msgid "Product types"
-msgstr "Vörugerðir"
+msgstr ""
 
 #: templates/dashboard/base.html:193
 #: templates/dashboard/product/attribute/form.html:29
@@ -2466,7 +2369,7 @@ msgstr "Síður"
 #: templates/dashboard/base.html:234
 msgctxt "Dashboard software version"
 msgid "Release:"
-msgstr "Útgáfa:"
+msgstr ""
 
 #: templates/dashboard/base_modal.html:33
 #: templates/dashboard/category/form.html:114
@@ -2527,7 +2430,7 @@ msgstr "Undirflokkar"
 
 #: templates/dashboard/category/detail.html:109
 #: templates/dashboard/includes/_menu_items.html:14
-#: templates/dashboard/product/attribute/detail.html:72
+#: templates/dashboard/product/attribute/detail.html:68
 #: templates/dashboard/product/detail.html:93
 #: templates/dashboard/shipping/methods/_shipping_methods_table.html:13
 #: templates/dashboard/sites/detail.html:79
@@ -2727,7 +2630,7 @@ msgstr ""
 #: templates/dashboard/collection/detail.html:41
 msgctxt "Collection action"
 msgid "View on site"
-msgstr "Skoða á vefnum"
+msgstr ""
 
 #: templates/dashboard/collection/detail.html:70
 msgctxt "Collection form card title: availability sub form"
@@ -2787,7 +2690,7 @@ msgstr ""
 #: templates/dashboard/collection/list.html:46
 msgctxt "Collections list table header"
 msgid "Visibility"
-msgstr "Sýnileiki"
+msgstr ""
 
 #: templates/dashboard/collection/list.html:58
 msgid "Products in collection:"
@@ -2848,7 +2751,7 @@ msgstr ""
 #: templates/dashboard/customer/detail.html:95
 msgctxt "Customer recent orders table title"
 msgid "Recent orders"
-msgstr "Nýlegar pantanir"
+msgstr ""
 
 #: templates/dashboard/customer/detail.html:104
 msgctxt "Customer orders table header"
@@ -3027,7 +2930,7 @@ msgstr ""
 #: templates/dashboard/discount/sale/list.html:18
 msgctxt "Dashboard sales (discounts) list."
 msgid "Sales"
-msgstr "Útsölur"
+msgstr ""
 
 #: templates/dashboard/discount/sale/form.html:32
 msgctxt "Sale (discount) action"
@@ -3041,7 +2944,7 @@ msgstr ""
 
 #: templates/dashboard/discount/sale/list.html:9
 msgid "Sales"
-msgstr "Útsölur"
+msgstr ""
 
 #: templates/dashboard/discount/sale/list.html:27
 msgctxt "Sale (discount) list add button text"
@@ -3194,12 +3097,12 @@ msgstr ""
 #: templates/dashboard/includes/_collection_availability.html:13
 msgctxt "Collection availability status"
 msgid "Hidden"
-msgstr "Falið"
+msgstr ""
 
 #: templates/dashboard/includes/_filters.html:10
 msgctxt "Dashboard card title"
 msgid "Filters"
-msgstr "Afmarkanir"
+msgstr ""
 
 #: templates/dashboard/includes/_filters.html:43
 msgctxt "Category page filters"
@@ -3209,7 +3112,7 @@ msgstr "Hreinsa"
 #: templates/dashboard/includes/_filters.html:47
 msgctxt "Category price filter"
 msgid "Filter"
-msgstr "Afmörkun"
+msgstr ""
 
 #: templates/dashboard/includes/_google_preview.html:5
 msgctxt "Title of the box showing preview from the search engine perspective"
@@ -3270,7 +3173,7 @@ msgstr "Birt"
 #: templates/dashboard/includes/_page_availability.html:19
 msgctxt "Page availability status"
 msgid "Hidden"
-msgstr "Falið"
+msgstr ""
 
 #: templates/dashboard/includes/_page_availability.html:13
 #, python-format
@@ -3381,7 +3284,7 @@ msgstr ""
 #: templates/dashboard/index.html:172
 msgctxt "Empty low stock table message"
 msgid "No products are low in stock."
-msgstr "Engar vörur með lága birgðastöðu"
+msgstr ""
 
 #: templates/dashboard/menu/detail.html:7 templates/dashboard/menu/list.html:9
 msgctxt "Menu list page title"
@@ -3537,6 +3440,11 @@ msgid ""
 "  "
 msgstr ""
 
+#: templates/dashboard/next.html:11
+msgctxt "Dashboard default page title"
+msgid "Dashboard - Saleor"
+msgstr ""
+
 #: templates/dashboard/order/address_form.html:7
 msgctxt ""
 msgid "Edit address"
@@ -3557,7 +3465,7 @@ msgstr "Greiðslustaður"
 #: templates/dashboard/order/detail.html:33
 msgctxt "Order detail action"
 msgid "Cancel Order"
-msgstr "Hætta við pöntun"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:40
 msgctxt "Order detail action"
@@ -3578,7 +3486,7 @@ msgstr ""
 #: templates/dashboard/order/detail.html:576
 msgctxt "Order detail tab"
 msgid "Payments"
-msgstr "Greiðslur"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:96
 #: templates/dashboard/order/detail.html:626
@@ -3589,7 +3497,7 @@ msgstr "Saga"
 #: templates/dashboard/order/detail.html:109
 msgctxt "Order summary card header"
 msgid "Payments"
-msgstr "Greiðslur"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:115
 msgctxt "Payment status not available"
@@ -3624,7 +3532,7 @@ msgstr ""
 #: templates/dashboard/order/detail.html:169
 msgctxt "Order summary card action"
 msgid "Refund"
-msgstr "Endurgreiða"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:174
 msgctxt "Order summary card action"
@@ -3634,7 +3542,7 @@ msgstr ""
 #: templates/dashboard/order/detail.html:179
 msgctxt "Order detail action"
 msgid "Mark as paid"
-msgstr "Merkja sem greitt"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:191
 msgctxt "Order details summary header"
@@ -3692,7 +3600,7 @@ msgstr ""
 #: templates/dashboard/order/pdf/packing_slip.html:58
 msgctxt "Order table header"
 msgid "Item"
-msgstr "Hlutur"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:284
 msgctxt "Order table header"
@@ -3722,7 +3630,7 @@ msgstr ""
 #: templates/dashboard/order/detail.html:322
 msgctxt "Order table row action"
 msgid "Change quantity"
-msgstr "Breyta magni"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:326
 #: templates/dashboard/order/detail.html:327
@@ -3794,7 +3702,7 @@ msgstr "Breyta afslætti"
 #: templates/dashboard/order/detail.html:414
 msgctxt "Order totals header"
 msgid "Grand total"
-msgstr "Samtals"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:437
 msgctxt "Order summary card action title"
@@ -3814,17 +3722,17 @@ msgstr ""
 #: templates/dashboard/order/detail.html:443
 msgctxt "Order summary card action"
 msgid "Add product"
-msgstr "Bæta við vöru"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:448
 msgctxt "Order summary card action title"
 msgid "Create order"
-msgstr "Stofna pöntun"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:449
 msgctxt "Order summary card action"
 msgid "Create order"
-msgstr "Stofna pöntun"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:455
 msgctxt "Order detail action"
@@ -3834,7 +3742,7 @@ msgstr "Reikningur"
 #: templates/dashboard/order/detail.html:458
 msgctxt "Order detail action"
 msgid "View on site"
-msgstr "Skoða á vefnum"
+msgstr ""
 
 #: templates/dashboard/order/detail.html:467
 #, python-format
@@ -3949,7 +3857,7 @@ msgstr ""
 #: templates/dashboard/order/modal/cancel_line.html:25
 msgctxt "Modal remove order line table header"
 msgid "Item"
-msgstr "Hlutur"
+msgstr ""
 
 #: templates/dashboard/order/fulfillment.html:70
 #: templates/dashboard/order/modal/cancel_line.html:34
@@ -3961,7 +3869,7 @@ msgstr "Magn"
 #, python-format
 msgctxt "Fulfill order table quantity unfulfilled"
 msgid "of %(quantity_unfulfilled)s"
-msgstr "af %(quantity_unfulfilled)s"
+msgstr ""
 
 #: templates/dashboard/order/fulfillment.html:139
 msgctxt "Dashboard update action"
@@ -4039,7 +3947,7 @@ msgstr "Samtals"
 #: templates/dashboard/order/modal/cancel_order.html:11
 msgctxt "Modal cancel order title"
 msgid "Cancel order"
-msgstr "Hætta við pöntun"
+msgstr ""
 
 #: templates/dashboard/order/modal/cancel_order.html:16
 #, python-format
@@ -4055,7 +3963,7 @@ msgstr "Hætta við"
 #: templates/dashboard/order/modal/cancel_order.html:28
 msgctxt "Modal cancel order primary action"
 msgid "Cancel Order"
-msgstr "Hætta við pöntun"
+msgstr ""
 
 #: templates/dashboard/order/modal/capture.html:13
 msgctxt "Modal capture payment title"
@@ -4090,12 +3998,12 @@ msgstr ""
 #: templates/dashboard/order/modal/change_quantity.html:11
 msgctxt "Modal change quantity title"
 msgid "Change quantity"
-msgstr "Breyta magni"
+msgstr ""
 
 #: templates/dashboard/order/modal/create_order.html:11
 msgctxt "Modal create order title"
 msgid "Create order"
-msgstr "Stofna pöntun"
+msgstr ""
 
 #: templates/dashboard/order/modal/create_order.html:16
 #, python-format
@@ -4215,7 +4123,7 @@ msgstr "Hætta við"
 #: templates/dashboard/order/modal/mark_as_paid.html:27
 msgctxt "Modal mark order as paid primary action"
 msgid "Mark as paid"
-msgstr "Merkja sem greitt"
+msgstr ""
 
 #: templates/dashboard/order/modal/refund.html:14
 msgctxt "Modal refund payment title"
@@ -4245,7 +4153,7 @@ msgstr ""
 #: templates/dashboard/order/modal/refund.html:36
 msgctxt "Modal refund payment primary action"
 msgid "Refund"
-msgstr "Endurgreiða"
+msgstr ""
 
 #: templates/dashboard/order/modal/remove_order.html:13
 msgctxt "Modal remove order title"
@@ -4323,7 +4231,7 @@ msgstr ""
 #: templates/dashboard/order/pdf/invoice.html:54
 msgctxt "Shipment order table header"
 msgid "Item"
-msgstr "Hlutur"
+msgstr ""
 
 #: templates/dashboard/order/pdf/invoice.html:58
 msgctxt "Shipment order table header"
@@ -4382,7 +4290,7 @@ msgstr "Afsláttur"
 #: templates/dashboard/order/pdf/invoice.html:143
 msgctxt "Order total price header"
 msgid "Grand total"
-msgstr "Samtals"
+msgstr ""
 
 #: templates/dashboard/order/pdf/packing_slip.html:8
 #, python-format
@@ -4454,17 +4362,17 @@ msgstr ""
 #: templates/dashboard/page/detail.html:49
 msgctxt "Page action"
 msgid "Edit page"
-msgstr "Breyta síðu"
+msgstr ""
 
 #: templates/dashboard/page/detail.html:52
 msgctxt "Page action"
 msgid "Remove page"
-msgstr "Fjarlægja síðu"
+msgstr ""
 
 #: templates/dashboard/page/detail.html:55
 msgctxt "Page action"
 msgid "View on site"
-msgstr "Skoða á vefnum"
+msgstr ""
 
 #: templates/dashboard/page/form.html:8
 msgctxt "Page form page title"
@@ -4474,7 +4382,7 @@ msgstr "Breyta"
 #: templates/dashboard/page/form.html:10
 msgctxt "Page form page title"
 msgid "Add new page"
-msgstr "Bæta við nýrri síðu"
+msgstr ""
 
 #: templates/dashboard/page/form.html:26
 msgctxt "Dashboard pages list"
@@ -4484,7 +4392,7 @@ msgstr "Síður"
 #: templates/dashboard/page/form.html:41
 msgctxt "Page form breadcrumbs"
 msgid "Add new page"
-msgstr "Bæta við nýrri síðu"
+msgstr ""
 
 #: templates/dashboard/page/form.html:48
 msgctxt "Page form breadcrumbs"
@@ -4506,7 +4414,7 @@ msgstr "Stofna"
 #: templates/dashboard/page/list.html:17
 msgctxt "Page list add button text"
 msgid "Add page"
-msgstr "Bæta við síðu"
+msgstr ""
 
 #: templates/dashboard/page/list.html:25
 msgid "Pages"
@@ -4525,12 +4433,12 @@ msgstr "SLÓÐ"
 #: templates/dashboard/page/list.html:46
 msgctxt "Pages table header"
 msgid "Visibility"
-msgstr "Sýnileiki"
+msgstr ""
 
 #: templates/dashboard/page/list.html:76
 msgctxt "Empty pages list message"
 msgid "No pages found."
-msgstr "Engar síður fundust."
+msgstr ""
 
 #: templates/dashboard/page/modal_delete.html:12
 #, python-format
@@ -4546,7 +4454,7 @@ msgstr ""
 
 #: templates/dashboard/page/zero_page.html:5
 msgid "No pages found."
-msgstr "Engar síður fundust."
+msgstr ""
 
 #: templates/dashboard/page/zero_page.html:8
 #, python-format
@@ -4563,39 +4471,39 @@ msgid "Attributes"
 msgstr ""
 
 #: templates/dashboard/product/attribute/detail.html:46
-msgid "Product types"
-msgstr "Vörugerðir"
+msgid "Product type"
+msgstr "Gerð vöru"
 
-#: templates/dashboard/product/attribute/detail.html:57
+#: templates/dashboard/product/attribute/detail.html:53
 msgctxt "Attribute detail action"
 msgid "Edit attribute"
 msgstr ""
 
-#: templates/dashboard/product/attribute/detail.html:60
+#: templates/dashboard/product/attribute/detail.html:56
 msgctxt "Attribute detail action"
 msgid "Remove attribute"
 msgstr ""
 
-#: templates/dashboard/product/attribute/detail.html:68
+#: templates/dashboard/product/attribute/detail.html:64
 msgid "Attribute values"
 msgstr ""
 
-#: templates/dashboard/product/attribute/detail.html:81
+#: templates/dashboard/product/attribute/detail.html:77
 msgid "Display name"
 msgstr "Birta nafn"
 
-#: templates/dashboard/product/attribute/detail.html:96
+#: templates/dashboard/product/attribute/detail.html:92
 #: templates/dashboard/shipping/methods/_shipping_methods_table.html:39
 msgctxt "Attribute value edit action"
 msgid "Edit"
 msgstr "Breyta"
 
-#: templates/dashboard/product/attribute/detail.html:99
+#: templates/dashboard/product/attribute/detail.html:95
 msgctxt "Attribute value edit action"
 msgid "Remove"
 msgstr "Fjarlægja"
 
-#: templates/dashboard/product/attribute/detail.html:105
+#: templates/dashboard/product/attribute/detail.html:101
 msgctxt "Empty list of attribute values"
 msgid "No attribute values"
 msgstr ""
@@ -4635,9 +4543,9 @@ msgid "Name"
 msgstr "Nafn"
 
 #: templates/dashboard/product/attribute/list.html:44
-msgctxt "Name of product types related to the attribute"
-msgid "Product types"
-msgstr "Vörugerðir"
+msgctxt "Name of product type related to the attribute"
+msgid "Product type"
+msgstr "Gerð vöru"
 
 #: templates/dashboard/product/attribute/list.html:46
 msgctxt "Dashboard attributes list table header values"
@@ -4723,7 +4631,7 @@ msgstr ""
 #: templates/dashboard/product/detail.html:83
 msgctxt "Product action"
 msgid "View on site"
-msgstr "Skoða á vefnum"
+msgstr ""
 
 #: templates/dashboard/product/detail.html:90
 msgid "Variant"
@@ -4843,11 +4751,11 @@ msgstr ""
 #: templates/dashboard/product/product_image/list.html:7
 #: templates/dashboard/product/product_image/list.html:41
 msgid "Images"
-msgstr "Myndir"
+msgstr ""
 
 #: templates/dashboard/product/detail.html:271
 msgid "Edit images"
-msgstr "Breyta myndum"
+msgstr ""
 
 #: templates/dashboard/product/form.html:8
 msgctxt "Dashboard products list"
@@ -4857,12 +4765,12 @@ msgstr "Breyta"
 #: templates/dashboard/product/form.html:10
 msgctxt "Product form page title"
 msgid "Add new product"
-msgstr "Bæta við nýrri vöru"
+msgstr ""
 
 #: templates/dashboard/product/form.html:43
 msgctxt "Product form breadcrumbs"
 msgid "Add new product"
-msgstr "Bæta við nýrri vöru"
+msgstr ""
 
 #: templates/dashboard/product/form.html:50
 msgctxt "Product form breadcrumbs"
@@ -4892,7 +4800,7 @@ msgstr ""
 #: templates/dashboard/product/list.html:25
 msgctxt "Product list add button text"
 msgid "Add product"
-msgstr "Bæta við vöru"
+msgstr ""
 
 #: templates/dashboard/product/list.html:61
 msgctxt "Products list table header"
@@ -4907,7 +4815,7 @@ msgstr "Verð"
 #: templates/dashboard/product/list.html:101
 msgctxt "Empty product list message"
 msgid "No products found."
-msgstr "Engar vörur fundust."
+msgstr ""
 
 #: templates/dashboard/product/modal/confirm_delete.html:12
 #, python-format
@@ -4939,7 +4847,7 @@ msgstr ""
 #: templates/dashboard/product/product_image/form.html:10
 msgctxt "Image form text"
 msgid "Add image"
-msgstr "Bæta við mynd"
+msgstr ""
 
 #: templates/dashboard/product/product_image/form.html:38
 msgctxt "Image form text"
@@ -4954,23 +4862,23 @@ msgstr "Breyta"
 #: templates/dashboard/product/product_image/form.html:49
 msgctxt "Image form breadcrumbs"
 msgid "Add image"
-msgstr "Bæta við mynd"
+msgstr ""
 
 #: templates/dashboard/product/product_image/form.html:52
 #, python-format
 msgctxt "Image form breadcrumbs"
 msgid "Add image for %(product)s"
-msgstr "Bæta við mynd fyrir %(product)s"
+msgstr ""
 
 #: templates/dashboard/product/product_image/list.html:19
 msgctxt "Add image button text"
 msgid "Add image"
-msgstr "Bæta við mynd"
+msgstr ""
 
 #: templates/dashboard/product/product_image/list.html:73
 msgctxt "Image card text"
 msgid "No description"
-msgstr "Engin lýsing"
+msgstr ""
 
 #: templates/dashboard/product/product_image/list.html:87
 #: templates/dashboard/product/product_image/list.html:131
@@ -4981,22 +4889,22 @@ msgstr "Fjarlægja"
 #: templates/dashboard/product/product_image/list.html:101
 msgctxt "Image gallery upload box text"
 msgid "Drop images here to upload"
-msgstr "Slepptu myndum hér til að hlaða upp"
+msgstr ""
 
 #: templates/dashboard/product/product_image/list.html:120
 msgctxt "Empty image gallery message"
 msgid "No description"
-msgstr "Engin lýsing"
+msgstr ""
 
 #: templates/dashboard/product/product_image/modal/confirm_delete.html:12
 msgctxt "Modal remove image text"
 msgid "Remove product image"
-msgstr "Fjarlægja vörumynd"
+msgstr ""
 
 #: templates/dashboard/product/product_image/modal/confirm_delete.html:20
 msgctxt "Modal remove image text"
 msgid "Are you sure you want to remove product image?"
-msgstr "Ertu viss um að þú viljir fjarlægja vörumyndina?"
+msgstr ""
 
 #: templates/dashboard/product/product_image/versatile_image.html:7
 msgid "Primary Point of Interest"
@@ -5010,17 +4918,17 @@ msgstr ""
 #: templates/dashboard/product/product_type/form.html:10
 msgctxt "Product type page title"
 msgid "Add new product type"
-msgstr "Bæta við nýrri vörugerð"
+msgstr ""
 
 #: templates/dashboard/product/product_type/form.html:41
 msgctxt "Product type breadcrumbs"
 msgid "Add new product type"
-msgstr "Bæta við nýrri vörugerð"
+msgstr ""
 
 #: templates/dashboard/product/product_type/form.html:57
 msgctxt "Product type action"
 msgid "Remove product type"
-msgstr "Fjarlægja vörugerð"
+msgstr ""
 
 #: templates/dashboard/product/product_type/form.html:95
 msgid "Taxes"
@@ -5118,12 +5026,12 @@ msgstr ""
 
 #: templates/dashboard/product/product_variant/detail.html:183
 msgid "No images"
-msgstr "Engar myndir"
+msgstr ""
 
 #: templates/dashboard/product/product_variant/detail.html:190
 msgctxt "Dashboard action"
 msgid "Select images"
-msgstr "Veldu myndir"
+msgstr ""
 
 #: templates/dashboard/product/product_variant/form.html:8
 msgctxt "Variant form page title"
@@ -5187,7 +5095,7 @@ msgstr "Vista"
 
 #: templates/dashboard/product/zero_page.html:5
 msgid "No products found."
-msgstr "Engar vörur fundust."
+msgstr ""
 
 #: templates/dashboard/product/zero_page.html:10
 #, python-format
@@ -5208,12 +5116,12 @@ msgstr ""
 #: templates/dashboard/search/results.html:9 templates/search/results.html:6
 msgctxt "Search page title"
 msgid "Search results"
-msgstr "Leitarniðurstöður"
+msgstr ""
 
 #: templates/dashboard/search/results.html:14
 msgctxt "Dashboard search"
 msgid "Search results"
-msgstr "Leitarniðurstöður"
+msgstr ""
 
 #: templates/dashboard/search/results.html:25
 msgctxt "Search results list products"
@@ -5246,13 +5154,13 @@ msgstr ""
 #: templates/dashboard/search/results.html:76
 msgctxt "Search results list users"
 msgid "Users"
-msgstr "Notendur"
+msgstr ""
 
 #: templates/dashboard/search/results.html:83
 #, python-format
 msgctxt "Dashboard user"
 msgid "User %(full_name)s"
-msgstr "Notandi %(full_name)s"
+msgstr ""
 
 #: templates/dashboard/search/results.html:100
 #, python-format
@@ -5761,7 +5669,7 @@ msgstr ""
 #: templates/dashboard/taxes/list.html:29
 msgctxt "Taxes table header"
 msgid "Country code"
-msgstr "Landsnúmer"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:33
 msgctxt "Taxes table header"
@@ -5786,12 +5694,12 @@ msgstr ""
 #: templates/dashboard/taxes/list.html:84
 msgctxt "Include taxes in prices setting description"
 msgid "Yes"
-msgstr "Já"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:86
 msgctxt "Include taxes in prices setting description"
 msgid "No"
-msgstr "Nei"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:94
 msgctxt "Site settings field"
@@ -5801,12 +5709,12 @@ msgstr ""
 #: templates/dashboard/taxes/list.html:98
 msgctxt "Show customers gross prices setting description"
 msgid "Yes"
-msgstr "Já"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:100
 msgctxt "Show customers gross prices setting description"
 msgid "No"
-msgstr "Nei"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:108
 msgctxt "Site settings field"
@@ -5816,12 +5724,12 @@ msgstr ""
 #: templates/dashboard/taxes/list.html:112
 msgctxt "Charge taxes on shipping rates setting description"
 msgid "Yes"
-msgstr "Já"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:114
 msgctxt "Charge taxes on shipping rates setting description"
 msgid "No"
-msgstr "Nei"
+msgstr ""
 
 #: templates/dashboard/taxes/list.html:122
 msgctxt "Site settings configure taxes action"
@@ -5891,13 +5799,13 @@ msgstr ""
 #: templates/materializecssform/field.html:423
 msgctxt "Dashboard form labels"
 msgid "(optional)"
-msgstr "(valkvæmt)"
+msgstr ""
 
 #: templates/materializecssform/field.html:215
 #: templates/materializecssform/field.html:247
 #: templates/materializecssform/field.html:281
 msgid "File"
-msgstr "Skrá"
+msgstr ""
 
 #: templates/materializecssform/field.html:402
 #, python-format
@@ -5976,7 +5884,7 @@ msgstr "Rakningarnúmer"
 #: templates/order/checkout_success_anonymous.html:8
 msgctxt "Checkout success page title"
 msgid "Thank you"
-msgstr "Takk fyrir"
+msgstr ""
 
 #: templates/order/checkout_success.html:16
 #: templates/order/checkout_success_anonymous.html:16
@@ -5998,7 +5906,7 @@ msgstr ""
 #: templates/order/checkout_success_anonymous.html:58
 msgctxt "Checkout secondary action"
 msgid "Continue shopping"
-msgstr "Halda áfram að versla"
+msgstr ""
 
 #: templates/order/checkout_success_anonymous.html:27
 msgctxt "Checkout text"
@@ -6049,7 +5957,7 @@ msgstr ""
 #: templates/order/details.html:60
 msgctxt "Order details primary action"
 msgid "Pay for order"
-msgstr "Greiða fyrir pöntun"
+msgstr ""
 
 #: templates/order/details.html:67
 msgctxt "Customer order note"
@@ -6070,7 +5978,7 @@ msgstr ""
 #, python-format
 msgctxt "Payment details page title"
 msgid "Pay for order %(order)s"
-msgstr "Greiða fyrir pöntun %(order)s"
+msgstr ""
 
 #: templates/order/payment.html:28
 #, python-format
@@ -6081,7 +5989,7 @@ msgstr ""
 #: templates/order/payment.html:44
 msgctxt "Payment details title"
 msgid "Payment pending"
-msgstr "Beðið eftir greiðslu"
+msgstr ""
 
 #: templates/order/payment.html:48
 msgctxt "Payment pending text"
@@ -6093,7 +6001,7 @@ msgstr ""
 #: templates/order/payment.html:52
 msgctxt "Payment status text"
 msgid "Current status:"
-msgstr "Núverandi staða:"
+msgstr ""
 
 #: templates/order/payment.html:58
 msgctxt "Payment pending text"
@@ -6113,11 +6021,11 @@ msgstr ""
 #, python-format
 msgctxt "Payment details title"
 msgid "Pay for order %(order)s"
-msgstr "Greiða fyrir pöntun %(order)s"
+msgstr ""
 
 #: templates/order/payment.html:77
 msgid "Choose payment method"
-msgstr "Veldu greiðslumáta"
+msgstr ""
 
 #: templates/order/payment.html:97
 msgctxt "Payment details primary action"
@@ -6133,22 +6041,22 @@ msgstr ""
 #: templates/order/payment/dummy.html:37
 msgctxt "Payment form primary action"
 msgid "Make payment"
-msgstr "Framkvæma greiðslu"
+msgstr ""
 
 #: templates/order/payment/details.html:4
 msgctxt "Payment form page title"
 msgid "Payment"
-msgstr "Greiðsla"
+msgstr ""
 
 #: templates/order/payment/details.html:28
 msgctxt "Payment form breadcrumb"
 msgid "Payment"
-msgstr "Greiðsla"
+msgstr ""
 
 #: templates/order/payment/details.html:39
 msgctxt "Payment form title"
 msgid "Payment"
-msgstr "Greiðsla"
+msgstr ""
 
 #: templates/order/payment/details.html:44
 msgctxt "Header of the order summary table"
@@ -6159,14 +6067,14 @@ msgstr ""
 #: templates/order/payment/stripe.html:11
 msgctxt "Payment form (Stripe) secondary action"
 msgid "Change payment"
-msgstr "Breyta greiðslu"
+msgstr ""
 
 #: templates/order/payment/razorpay.html:11
 msgctxt "Payment form (Razorpay) secondary action"
 msgid "Change payment"
-msgstr "Breyta greiðslu"
+msgstr ""
 
-#: templates/page/details.html:42
+#: templates/page/details.html:41
 msgctxt "Unavailable page detail text"
 msgid ""
 "\n"
@@ -6175,7 +6083,7 @@ msgid ""
 "      "
 msgstr ""
 
-#: templates/page/details.html:49
+#: templates/page/details.html:48
 #, python-format
 msgctxt "Unpublished page details text"
 msgid ""
@@ -6186,22 +6094,22 @@ msgstr ""
 #: templates/product/_filters.html:46
 msgctxt "Product price filter"
 msgid "from"
-msgstr "frá"
+msgstr ""
 
 #: templates/product/_filters.html:48
 msgctxt "Product price filter"
 msgid "to"
-msgstr "til"
+msgstr ""
 
 #: templates/product/_filters.html:56
 msgctxt "Product list page filters"
 msgid "Clear filters"
-msgstr "Hreinsa afmörkun"
+msgstr ""
 
 #: templates/product/_filters.html:59
 msgctxt "Apply filters button"
 msgid "Update results"
-msgstr "Uppfæra niðurstöður"
+msgstr ""
 
 #. Translators: Layout may break if character length is different than four.
 #: templates/product/_items.html:30
@@ -6212,9 +6120,9 @@ msgstr ""
 #: templates/product/_price_range.html:6
 msgctxt "product price range"
 msgid "from"
-msgstr "frá"
+msgstr ""
 
-#: templates/product/details.html:63
+#: templates/product/details.html:62
 #, python-format
 msgctxt "Product details text"
 msgid ""
@@ -6222,34 +6130,34 @@ msgid ""
 "visible on <strong>%(date)s</strong>."
 msgstr ""
 
-#: templates/product/details.html:125
+#: templates/product/details.html:124
 msgctxt "Product details link text"
 msgid "Edit in dashboard"
 msgstr ""
 
-#: templates/product/details.html:151
+#: templates/product/details.html:150
 #, python-format
 msgctxt "Product details page vat rate value"
 msgid "including %(tax_rate)s%% VAT"
 msgstr ""
 
-#: templates/product/details.html:155
+#: templates/product/details.html:154
 #, python-format
 msgctxt "Product details page vat rate value"
 msgid "excluding %(tax_rate)s%% VAT"
 msgstr ""
 
-#: templates/product/details.html:179
+#: templates/product/details.html:178
 msgctxt "Product details primary action"
 msgid "Add to cart"
 msgstr "Bæta við í körfu"
 
-#: templates/product/details.html:191
+#: templates/product/details.html:190
 msgctxt "Product details text"
 msgid "This product is currently <strong>unavailable</strong>."
 msgstr ""
 
-#: templates/product/details.html:195
+#: templates/product/details.html:194
 msgctxt "Product details title"
 msgid "Description"
 msgstr "Lýsing"
@@ -6257,7 +6165,7 @@ msgstr "Lýsing"
 #: templates/product/product_list_base.html:83
 msgctxt "Filter heading title"
 msgid "Filters"
-msgstr "Afmarkanir"
+msgstr ""
 
 #: templates/product/product_list_base.html:91
 msgid "Sort by: <b>name</b>"
@@ -6296,7 +6204,7 @@ msgstr ""
 
 #: templates/search/results.html:32
 msgid "Search:"
-msgstr "Leita:"
+msgstr ""
 
 #: templates/templated_email/account/account_delete.email:4
 msgctxt "Account delete reset e-mail subject"
@@ -6408,7 +6316,7 @@ msgstr ""
 #: templates/templated_email/order/confirm_order.email:17
 msgctxt "Order confirmation e-mail table header"
 msgid "Order summary"
-msgstr "Samantekt pöntunar"
+msgstr ""
 
 #: templates/templated_email/order/confirm_order.email:18
 msgctxt "Order confirmation e-mail table header"
@@ -6433,7 +6341,7 @@ msgstr ""
 #: templates/templated_email/order/confirm_order.email:21
 msgctxt "Order confirmation e-mail table header"
 msgid "Discount:"
-msgstr "Afsláttur:"
+msgstr ""
 
 #: templates/templated_email/order/confirm_order.email:22
 msgctxt "Order confirmation e-mail table header"
@@ -6509,7 +6417,7 @@ msgstr ""
 #, python-format
 msgctxt "Base email footer"
 msgid "Sincerely, %(site_name)s"
-msgstr "Virðingafyllst, %(site_name)s"
+msgstr ""
 
 #: templates/templated_email/shared/_header.email:2
 #: templates/templated_email/source/account_delete.mjml:13
@@ -6523,7 +6431,7 @@ msgstr "Virðingafyllst, %(site_name)s"
 #: templates/templated_email/source/update_fulfillment.mjml:13
 msgctxt "Standard e-mail greeting"
 msgid "Hi!"
-msgstr "Hæ!"
+msgstr ""
 
 #: templates/templated_email/source/account_delete.mjml:16
 #, python-format
@@ -6596,7 +6504,7 @@ msgstr "Samtals"
 #: templates/templated_email/source/partials/_order_lines.mjml:58
 msgctxt "Ordered item name"
 msgid "Item"
-msgstr "Hlutur"
+msgstr ""
 
 #: templates/templated_email/source/partials/_order_lines.mjml:59
 msgctxt "Quantity ordered of a product"

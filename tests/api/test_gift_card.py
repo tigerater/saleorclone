@@ -1,7 +1,6 @@
 from datetime import date
 
 import graphene
-
 from tests.api.utils import get_graphql_content
 
 from .utils import assert_no_permission

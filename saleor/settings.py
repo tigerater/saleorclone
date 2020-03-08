@@ -366,9 +366,9 @@ VATLAYER_USE_HTTPS = get_bool_from_env("VATLAYER_USE_HTTPS", False)
 # Avatax supports two ways of log in - username:password or account:license
 AVATAX_USERNAME_OR_ACCOUNT = os.environ.get("AVATAX_USERNAME_OR_ACCOUNT")
 AVATAX_PASSWORD_OR_LICENSE = os.environ.get("AVATAX_PASSWORD_OR_LICENSE")
-AVATAX_USE_SANDBOX = get_bool_from_env("AVATAX_USE_SANDBOX", DEBUG)
+AVATAX_USE_SANDBOX = os.environ.get("AVATAX_USE_SANDBOX", DEBUG)
 AVATAX_COMPANY_NAME = os.environ.get("AVATAX_COMPANY_NAME", "DEFAULT")
-AVATAX_AUTOCOMMIT = get_bool_from_env("AVATAX_AUTOCOMMIT", False)
+AVATAX_AUTOCOMMIT = os.environ.get("AVATAX_AUTOCOMMIT", False)
 
 ACCOUNT_ACTIVATION_DAYS = 3
 
@@ -659,6 +659,17 @@ PAYMENT_GATEWAYS = {
             "connection_params": {
                 "public_key": os.environ.get("STRIPE_PUBLIC_KEY"),
                 "secret_key": os.environ.get("STRIPE_SECRET_KEY"),
+                "store_name": os.environ.get("STRIPE_STORE_NAME", "Saleor"),
+                "store_image": os.environ.get("STRIPE_STORE_IMAGE", None),
+                "prefill": get_bool_from_env("STRIPE_PREFILL", True),
+                "remember_me": os.environ.get("STRIPE_REMEMBER_ME", True),
+                "locale": os.environ.get("STRIPE_LOCALE", "auto"),
+                "enable_billing_address": os.environ.get(
+                    "STRIPE_ENABLE_BILLING_ADDRESS", False
+                ),
+                "enable_shipping_address": os.environ.get(
+                    "STRIPE_ENABLE_SHIPPING_ADDRESS", False
+                ),
             },
         },
     },

@@ -10,6 +10,8 @@ import { ApolloProvider } from "react-apollo";
 import { render } from "react-dom";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
+import AttributeSection from "./attributes";
+import { attributeSection } from "./attributes/urls";
 import { getAuthToken, removeAuthToken } from "./auth";
 import AuthProvider from "./auth/AuthProvider";
 import LoginLoading from "./auth/components/LoginLoading/LoginLoading";
@@ -76,7 +78,10 @@ const linkOptions = {
   uri: API_URI
 };
 const uploadLink = createUploadLink(linkOptions);
-const batchLink = new BatchHttpLink(linkOptions);
+const batchLink = new BatchHttpLink({
+  batchInterval: 100,
+  ...linkOptions
+});
 
 const link = ApolloLink.split(
   operation => operation.getContext().useBatching,
@@ -193,6 +198,11 @@ const App: React.FC = () => {
                               permissions={[PermissionEnum.MANAGE_MENUS]}
                               path={navigationSection}
                               component={NavigationSection}
+                            />
+                            <SectionRoute
+                              permissions={[PermissionEnum.MANAGE_PRODUCTS]}
+                              path={attributeSection}
+                              component={AttributeSection}
                             />
                             {configurationMenu.filter(menuItem =>
                               hasPermission(menuItem.permission, user)

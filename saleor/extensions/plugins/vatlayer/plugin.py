@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 
 
 class VatlayerPlugin(BasePlugin):
-    PLUGIN_NAME = "Vatlayer"
     META_FIELD = "vatlayer"
     META_NAMESPACE = "taxes"
 
@@ -34,16 +33,8 @@ class VatlayerPlugin(BasePlugin):
         self._enabled = bool(settings.VATLAYER_ACCESS_KEY)
         self._cached_taxes = {}
 
-    def _initialize_plugin_configuration(self):
-        super()._initialize_plugin_configuration()
-
-        if not self._cached_config:
-            # This should be removed after we drop an Vatl's settings from Django
-            # settings file
-            self.active = bool(settings.VATLAYER_ACCESS_KEY)
-
     def _skip_plugin(self, previous_value: Union[TaxedMoney, TaxedMoneyRange]) -> bool:
-        if not self.active or not settings.VATLAYER_ACCESS_KEY:
+        if not self._enabled:
             return True
 
         # The previous plugin already calculated taxes so we can skip our logic
@@ -64,8 +55,6 @@ class VatlayerPlugin(BasePlugin):
         previous_value: TaxedMoney,
     ) -> TaxedMoney:
 
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -85,8 +74,6 @@ class VatlayerPlugin(BasePlugin):
         previous_value: TaxedMoney,
     ) -> TaxedMoney:
         """Calculate subtotal gross for checkout."""
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -124,8 +111,6 @@ class VatlayerPlugin(BasePlugin):
         previous_value: TaxedMoney,
     ) -> TaxedMoney:
         """Calculate shipping gross for checkout."""
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -141,8 +126,6 @@ class VatlayerPlugin(BasePlugin):
     def calculate_order_shipping(
         self, order: "Order", previous_value: TaxedMoney
     ) -> TaxedMoney:
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -160,8 +143,6 @@ class VatlayerPlugin(BasePlugin):
         discounts: List["DiscountInfo"],
         previous_value: TaxedMoney,
     ) -> TaxedMoney:
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -178,8 +159,6 @@ class VatlayerPlugin(BasePlugin):
     def calculate_order_line_unit(
         self, order_line: "OrderLine", previous_value: TaxedMoney
     ) -> TaxedMoney:
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -193,9 +172,7 @@ class VatlayerPlugin(BasePlugin):
     def get_tax_rate_type_choices(
         self, previous_value: List["TaxType"]
     ) -> List["TaxType"]:
-        self._initialize_plugin_configuration()
-
-        if not self.active:
+        if not self._enabled:
             return previous_value
 
         rate_types = get_tax_rate_types() + [DEFAULT_TAX_RATE_NAME]
@@ -206,24 +183,18 @@ class VatlayerPlugin(BasePlugin):
         return sorted(choices, key=lambda x: x.code)
 
     def show_taxes_on_storefront(self, previous_value: bool) -> bool:
-        self._initialize_plugin_configuration()
-
-        if not self.active:
+        if not self._enabled:
             return previous_value
         return True
 
     def taxes_are_enabled(self, previous_value: bool) -> bool:
-        self._initialize_plugin_configuration()
-
-        if not self.active:
+        if not self._enabled:
             return previous_value
         return True
 
     def apply_taxes_to_shipping_price_range(
         self, prices: MoneyRange, country: Country, previous_value: TaxedMoneyRange
     ) -> TaxedMoneyRange:
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -233,8 +204,6 @@ class VatlayerPlugin(BasePlugin):
     def apply_taxes_to_shipping(
         self, price: Money, shipping_address: "Address", previous_value: TaxedMoney
     ) -> TaxedMoney:
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
 
@@ -248,8 +217,6 @@ class VatlayerPlugin(BasePlugin):
         country: Country,
         previous_value: TaxedMoney,
     ) -> TaxedMoney:
-        self._initialize_plugin_configuration()
-
         if self._skip_plugin(previous_value):
             return previous_value
         return self.__apply_taxes_to_product(product, price, country)
@@ -271,9 +238,7 @@ class VatlayerPlugin(BasePlugin):
     def assign_tax_code_to_object_meta(
         self, obj: Union["Product", "ProductType"], tax_code: str, previous_value: Any
     ):
-        self._initialize_plugin_configuration()
-
-        if not self.active:
+        if not self._enabled:
             return previous_value
 
         if tax_code not in dict(TaxRateType.CHOICES):
@@ -293,9 +258,7 @@ class VatlayerPlugin(BasePlugin):
     def get_tax_code_from_object_meta(
         self, obj: Union["Product", "ProductType"], previous_value: "TaxType"
     ) -> "TaxType":
-        self._initialize_plugin_configuration()
-
-        if not self.active:
+        if not self._enabled:
             return previous_value
         return self.__get_tax_code_from_object_meta(obj)
 
@@ -309,9 +272,7 @@ class VatlayerPlugin(BasePlugin):
         self, obj: Union["Product", "ProductType"], country: Country, previous_value
     ) -> Decimal:
         """Return tax rate percentage value for given tax rate type in the country."""
-        self._initialize_plugin_configuration()
-
-        if not self.active:
+        if not self._enabled:
             return previous_value
         taxes = self._get_taxes_for_country(country)
         if not taxes:
@@ -319,13 +280,3 @@ class VatlayerPlugin(BasePlugin):
         rate_name = self.__get_tax_code_from_object_meta(obj).code
         tax = taxes.get(rate_name) or taxes.get(DEFAULT_TAX_RATE_NAME)
         return Decimal(tax["value"])
-
-    @classmethod
-    def _get_default_configuration(cls):
-        defaults = {
-            "name": cls.PLUGIN_NAME,
-            "description": "",
-            "active": bool(settings.VATLAYER_ACCESS_KEY),
-            "configuration": None,
-        }
-        return defaults

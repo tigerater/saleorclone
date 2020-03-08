@@ -1,28 +1,7 @@
-from django.contrib.postgres.fields import jsonb
-from django.core import exceptions
 from django.db import migrations, models
 
-
-def validate_attribute_json(value):
-    for k, values in value.items():
-        if not isinstance(k, str):
-            raise exceptions.ValidationError(
-                f"The key {k!r} should be of type str (got {type(k)})",
-                params={"k": k, "values": values},
-            )
-        if not isinstance(values, list):
-            raise exceptions.ValidationError(
-                f"The values of {k!r} should be of type list (got {type(values)})",
-                params={"k": k, "values": values},
-            )
-
-        for value_pk in values:
-            if not isinstance(value_pk, str):
-                raise exceptions.ValidationError(
-                    f"The values inside {value_pk!r} should be of type str "
-                    f"(got {type(value_pk)})",
-                    params={"k": k, "values": values, "value_pk": value_pk},
-                )
+from saleor.core.fields import FilterableJSONBField
+from saleor.product.models import validate_attribute_json
 
 
 def migrate_fk_to_m2m(product_type_related_field):
@@ -62,14 +41,14 @@ ATTRIBUTE_NEW_FIELDS = [
     migrations.AlterField(
         model_name="product",
         name="attributes",
-        field=jsonb.JSONField(
+        field=FilterableJSONBField(
             blank=True, default=dict, validators=[validate_attribute_json]
         ),
     ),
     migrations.AlterField(
         model_name="productvariant",
         name="attributes",
-        field=jsonb.JSONField(
+        field=FilterableJSONBField(
             blank=True, default=dict, validators=[validate_attribute_json]
         ),
     ),

@@ -1946,8 +1946,8 @@ type Mutations {
   checkoutClearMetadata(id: ID!, input: MetaPath!): CheckoutClearStoredMeta
   checkoutUpdatePrivateMetadata(id: ID!, input: MetaInput!): CheckoutUpdatePrivateMeta
   checkoutClearPrivateMetadata(id: ID!, input: MetaPath!): CheckoutClearStoredPrivateMeta
-  requestPasswordReset(email: String!, redirectUrl: String!): RequestPasswordReset
-  setPassword(token: String!, email: String!, password: String!): SetPassword
+  requestPasswordReset(email: String!): RequestPasswordReset
+  setPassword(id: ID!, input: SetPasswordInput!): SetPassword
   userUpdateMetadata(id: ID!, input: MetaInput!): UserUpdateMeta
   userClearStoredMetadata(id: ID!, input: MetaPath!): UserClearStoredMeta
   accountAddressCreate(input: AddressInput!, type: AddressTypeEnum): AccountAddressCreate
@@ -3089,9 +3089,13 @@ input SeoInput {
 }
 
 type SetPassword {
-  token: String
-  errors: [Error]!
+  errors: [Error!]
   user: User
+}
+
+input SetPasswordInput {
+  token: String!
+  password: String!
 }
 
 type ShippingMethod implements Node {

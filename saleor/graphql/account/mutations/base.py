@@ -1,12 +1,10 @@
-from urllib.parse import urlparse
-
 import graphene
 from django.conf import settings
-from django.contrib.auth import password_validation
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
-from django.http.request import validate_host
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from graphql_jwt.exceptions import PermissionDenied
 
 from ....account import emails, events as account_events, models
@@ -16,11 +14,9 @@ from ...account.types import Address, AddressInput, User
 from ...core.mutations import (
     BaseMutation,
     ClearMetaBaseMutation,
-    CreateToken,
     ModelDeleteMutation,
     ModelMutation,
     UpdateMetaBaseMutation,
-    validation_error_to_error_type,
 )
 
 BILLING_ADDRESS_FIELD = "default_billing_address"
@@ -28,11 +24,16 @@ SHIPPING_ADDRESS_FIELD = "default_shipping_address"
 INVALID_TOKEN = "Invalid or expired token."
 
 
-def send_user_password_reset_email(redirect_url, user):
-    token = default_token_generator.make_token(user)
-    emails.send_password_reset_email_with_url.delay(
-        redirect_url, user.email, token, user.pk
-    )
+def send_user_password_reset_email(user, site):
+    context = {
+        "email": user.email,
+        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+        "token": default_token_generator.make_token(user),
+        "site_name": site.name,
+        "domain": site.domain,
+        "protocol": "https" if settings.ENABLE_SSL else "http",
+    }
+    emails.send_password_reset_email.delay(context, user.email, user.pk)
 
 
 def can_edit_address(user, address):
@@ -48,12 +49,20 @@ def can_edit_address(user, address):
     )
 
 
-class SetPassword(CreateToken):
-    user = graphene.Field(User, description="An user instance with new password.")
+class SetPasswordInput(graphene.InputObjectType):
+    token = graphene.String(
+        description="A one-time token required to set the password.", required=True
+    )
+    password = graphene.String(description="Password", required=True)
 
+
+class SetPassword(ModelMutation):
     class Arguments:
-        token = graphene.String(
-            description="A one-time token required to set the password.", required=True
+        id = graphene.ID(
+            description="ID of a user to set password whom.", required=True
+        )
+        input = SetPasswordInput(
+            description="Fields required to set password.", required=True
         )
 
     class Meta:
@@ -61,35 +70,21 @@ class SetPassword(CreateToken):
             "Sets the user's password from the token sent by email "
             "using the RequestPasswordReset mutation."
         )
+        model = models.User
 
     @classmethod
-    def mutate(cls, root, info, **data):
-        email = data["email"]
-        password = data["password"]
-        token = data["token"]
-
-        try:
-            cls._set_password_for_user(email, password, token)
-        except ValidationError as e:
-            errors = validation_error_to_error_type(e)
-            return cls(errors=errors)
-        return super().mutate(root, info, **data)
-
-    @classmethod
-    def _set_password_for_user(cls, email, password, token):
-        try:
-            user = models.User.objects.get(email=email)
-        except ObjectDoesNotExist:
-            raise ValidationError({"email": "User doesn't exist"})
-        if not default_token_generator.check_token(user, token):
+    def clean_input(cls, info, instance, data):
+        cleaned_input = super().clean_input(info, instance, data)
+        token = cleaned_input.pop("token")
+        if not default_token_generator.check_token(instance, token):
             raise ValidationError({"token": INVALID_TOKEN})
-        try:
-            password_validation.validate_password(password, user)
-        except ValidationError as error:
-            raise ValidationError({"password": error.messages})
-        user.set_password(password)
-        user.save(update_fields=["password"])
-        account_events.customer_password_reset_event(user=user)
+        return cleaned_input
+
+    @classmethod
+    def save(cls, info, instance, cleaned_input):
+        instance.set_password(cleaned_input["password"])
+        instance.save(update_fields=["password"])
+        account_events.customer_password_reset_event(user=instance)
 
 
 class RequestPasswordReset(BaseMutation):
@@ -98,13 +93,6 @@ class RequestPasswordReset(BaseMutation):
             required=True,
             description="Email of the user that will be used for password recovery.",
         )
-        redirect_url = graphene.String(
-            required=True,
-            description=(
-                "Url of storefront view which allow user reset password, "
-                "sent by email. Url in RFC 1808 format.",
-            ),
-        )
 
     class Meta:
         description = "Sends an email with the account password modification link."
@@ -112,21 +100,12 @@ class RequestPasswordReset(BaseMutation):
     @classmethod
     def perform_mutation(cls, _root, info, **data):
         email = data["email"]
-        redirect_url = data["redirect_url"]
-
-        parsed_url = urlparse(redirect_url)
-        if not validate_host(parsed_url.netloc, settings.ALLOWED_STOREFRONT_HOSTS):
-            raise ValidationError(
-                {
-                    "redirectUrl": "%s this is not valid storefront address."
-                    % parsed_url.netloc
-                }
-            )
         try:
             user = models.User.objects.get(email=email)
         except ObjectDoesNotExist:
             raise ValidationError({"email": "User with this email doesn't exist"})
-        send_user_password_reset_email(redirect_url, user)
+        site = info.context.site
+        send_user_password_reset_email(user, site)
         return RequestPasswordReset()
 
 

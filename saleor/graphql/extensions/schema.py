@@ -1,7 +1,6 @@
 import graphene
 
-from ..core.fields import FilterInputConnectionField
-from .filters import PluginFilterInput
+from ..core.fields import PrefetchingConnectionField
 from ..decorators import permission_required
 from .mutations import PluginUpdate
 from .resolvers import resolve_plugin, resolve_plugins
@@ -14,9 +13,7 @@ class ExtensionsQueries(graphene.ObjectType):
         id=graphene.Argument(graphene.ID, required=True),
         description="Lookup a plugin by ID.",
     )
-    plugins = FilterInputConnectionField(
-        Plugin, filter=PluginFilterInput(), description="List of plugins"
-    )
+    plugins = PrefetchingConnectionField(Plugin, description="List of plugins")
 
     @permission_required("extensions.manage_plugins")
     def resolve_plugin(self, info, **data):

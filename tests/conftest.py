@@ -406,6 +406,11 @@ def permission_manage_orders():
 
 
 @pytest.fixture
+def permission_manage_plugins():
+    return Permission.objects.get(codename="manage_plugins")
+
+
+@pytest.fixture
 def product_type(color_attribute, size_attribute):
     product_type = ProductType.objects.create(
         name="Default Type", has_variants=True, is_shipping_required=True
@@ -1195,7 +1200,7 @@ def payment_dummy(db, settings, order_with_lines):
 
 
 @pytest.fixture
-def digital_content(category, media_root) -> DigitalContent:
+def digital_content(category, media_root):
     product_type = ProductType.objects.create(
         name="Digital Type",
         has_variants=True,

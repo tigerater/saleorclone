@@ -64,6 +64,11 @@ All notable, unreleased changes to this project will be documented in this file.
 - Drop deprecated fields from api - #4684 by @fowczarek
 - Distinguish OrderLine product name and variant name - #4702 by @fowczarek
 - Fix for Digital products - update order status after automatic fulfillment - #4709 by @korycins
+- Add redirectUrl to staff and user create mutations - #4717 by @fowczarek
+- Filtering: use search in a consistent way. Add sort by product type name and publication status to products query. - #4715 by @fowczarek
+- Migrated the old product attributes mapping to M2M - #4663 by @NyanKiyoshi
+- Add translations to countries in shop query - #4732 by @fowczarek
+- Added validations for minimum password length in settings - #4735 by @fowczarek
 
 ## 2.8.0
 

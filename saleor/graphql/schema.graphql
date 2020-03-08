@@ -407,52 +407,6 @@ enum AuthorizationKeyType {
   GOOGLE_OAUTH2
 }
 
-type Bot implements Node {
-  id: ID!
-  authToken: String!
-  created: DateTime
-  isActive: Boolean
-  permissions: [PermissionDisplay]
-  name: String
-}
-
-type BotCountableConnection {
-  pageInfo: PageInfo!
-  edges: [BotCountableEdge!]!
-  totalCount: Int
-}
-
-type BotCountableEdge {
-  node: Bot!
-  cursor: String!
-}
-
-type BotCreate {
-  errors: [Error!]
-  authToken: String
-  bot: Bot
-}
-
-type BotDelete {
-  errors: [Error!]
-  bot: Bot
-}
-
-input BotInput {
-  name: String
-  isActive: Boolean
-  permissions: [PermissionEnum]
-}
-
-type BotUpdate {
-  errors: [Error!]
-  bot: Bot
-}
-
-input BotUserInput {
-  search: String
-}
-
 input CatalogueInput {
   products: [ID]
   categories: [ID]
@@ -565,7 +519,8 @@ type Checkout implements Node {
   shippingAddress: Address
   shippingMethod: ShippingMethod
   note: String!
-  discountAmount: Money
+  discountAmount: Money @deprecated(reason: "Use discount instead.")
+  discount: Money
   discountName: String
   translatedDiscountName: String
   voucherCode: String
@@ -1957,7 +1912,7 @@ type Mutations {
   giftCardCreate(input: GiftCardCreateInput!): GiftCardCreate
   giftCardDeactivate(id: ID!): GiftCardDeactivate
   giftCardUpdate(id: ID!, input: GiftCardUpdateInput!): GiftCardUpdate
-  pluginConfigurationUpdate(id: ID!, input: PluginConfigurationUpdateInput!): PluginConfigurationUpdate
+  pluginUpdate(id: ID!, input: PluginUpdateInput!): PluginUpdate
   saleCreate(input: SaleInput!): SaleCreate
   saleDelete(id: ID!): SaleDelete
   saleBulkDelete(ids: [ID]!): SaleBulkDelete
@@ -2005,7 +1960,7 @@ type Mutations {
   accountSetDefaultAddress(id: ID!, type: AddressTypeEnum!): AccountSetDefaultAddress
   accountRegister(input: AccountRegisterInput!): AccountRegister
   accountUpdate(input: AccountInput!): AccountUpdate
-  accountRequestDeletion: AccountRequestDeletion
+  accountRequestDeletion(redirectUrl: String!): AccountRequestDeletion
   accountDelete(token: String!): AccountDelete
   customerPasswordReset(input: CustomerPasswordResetInput!): CustomerPasswordReset
   customerAddressCreate(input: AddressInput!, type: AddressTypeEnum): CustomerAddressCreate
@@ -2029,9 +1984,6 @@ type Mutations {
   userBulkSetActive(ids: [ID]!, isActive: Boolean!): UserBulkSetActive
   userUpdatePrivateMetadata(id: ID!, input: MetaInput!): UserUpdatePrivateMeta
   userClearStoredPrivateMetadata(id: ID!, input: MetaPath!): UserClearStoredPrivateMeta
-  botCreate(input: BotInput!): BotCreate
-  botUpdate(id: ID!, input: BotInput!): BotUpdate
-  botDelete(id: ID!): BotDelete
   passwordReset(email: String!): PasswordReset
 }
 
@@ -2063,12 +2015,12 @@ type Order implements Node {
   billingAddress: Address
   shippingAddress: Address
   shippingMethod: ShippingMethod
-  shippingPrice: TaxedMoney
   shippingMethodName: String
+  shippingPrice: TaxedMoney
   token: String!
   voucher: Voucher
   giftCards: [GiftCard]
-  discountAmount: Money
+  discount: Money
   discountName: String!
   translatedDiscountName: String!
   displayGrossPrices: Boolean!
@@ -2093,6 +2045,7 @@ type Order implements Node {
   totalBalance: Money!
   userEmail: String
   isShippingRequired: Boolean!
+  discountAmount: Money! @deprecated(reason: "Deprecated: use discount instead.")
 }
 
 enum OrderAction {
@@ -2484,7 +2437,6 @@ type PermissionDisplay {
 enum PermissionEnum {
   MANAGE_USERS
   MANAGE_STAFF
-  MANAGE_BOTS
   IMPERSONATE_USERS
   MANAGE_DISCOUNTS
   MANAGE_GIFT_CARD
@@ -2498,7 +2450,7 @@ enum PermissionEnum {
   MANAGE_TRANSLATIONS
 }
 
-type PluginConfiguration implements Node {
+type Plugin implements Node {
   name: String!
   description: String!
   active: Boolean!
@@ -2506,23 +2458,23 @@ type PluginConfiguration implements Node {
   id: ID!
 }
 
-type PluginConfigurationCountableConnection {
+type PluginCountableConnection {
   pageInfo: PageInfo!
-  edges: [PluginConfigurationCountableEdge!]!
+  edges: [PluginCountableEdge!]!
   totalCount: Int
 }
 
-type PluginConfigurationCountableEdge {
-  node: PluginConfiguration!
+type PluginCountableEdge {
+  node: Plugin!
   cursor: String!
 }
 
-type PluginConfigurationUpdate {
+type PluginUpdate {
   errors: [Error!]
-  pluginConfiguration: PluginConfiguration
+  plugin: Plugin
 }
 
-input PluginConfigurationUpdateInput {
+input PluginUpdateInput {
   active: Boolean
   configuration: [ConfigurationItemInput]
 }
@@ -3013,8 +2965,8 @@ type Query {
   menuItems(query: String, before: String, after: String, first: Int, last: Int): MenuItemCountableConnection
   giftCard(id: ID!): GiftCard
   giftCards(before: String, after: String, first: Int, last: Int): GiftCardCountableConnection
-  pluginConfiguration(id: ID!): PluginConfiguration
-  pluginConfigurations(before: String, after: String, first: Int, last: Int): PluginConfigurationCountableConnection
+  plugin(id: ID!): Plugin
+  plugins(before: String, after: String, first: Int, last: Int): PluginCountableConnection
   sale(id: ID!): Sale
   sales(filter: SaleFilterInput, query: String, before: String, after: String, first: Int, last: Int): SaleCountableConnection
   voucher(id: ID!): Voucher
@@ -3024,12 +2976,10 @@ type Query {
   checkouts(before: String, after: String, first: Int, last: Int): CheckoutCountableConnection
   checkoutLine(id: ID): CheckoutLine
   checkoutLines(before: String, after: String, first: Int, last: Int): CheckoutLineCountableConnection
-  addressValidationRules(countryCode: CountryCode, countryArea: String, cityArea: String): AddressValidationData
+  addressValidationRules(countryCode: CountryCode!, countryArea: String, city: String, cityArea: String): AddressValidationData
   customers(filter: CustomerFilterInput, query: String, before: String, after: String, first: Int, last: Int): UserCountableConnection
   me: User
   staffUsers(filter: StaffUserInput, query: String, before: String, after: String, first: Int, last: Int): UserCountableConnection
-  bots(filter: BotUserInput, before: String, after: String, first: Int, last: Int): BotCountableConnection
-  bot(id: ID!): Bot
   user(id: ID!): User
   node(id: ID!): Node
 }
@@ -3532,7 +3482,6 @@ type User implements Node {
   firstName: String!
   lastName: String!
   isStaff: Boolean!
-  token: UUID!
   isActive: Boolean!
   note: String
   dateJoined: DateTime!
@@ -3658,13 +3607,14 @@ type Voucher implements Node {
   applyOncePerCustomer: Boolean!
   discountValueType: DiscountValueTypeEnum!
   discountValue: Float!
-  minAmountSpent: Money
+  minSpent: Money
   minCheckoutItemsQuantity: Int
   categories(before: String, after: String, first: Int, last: Int): CategoryCountableConnection
   collections(before: String, after: String, first: Int, last: Int): CollectionCountableConnection
   products(before: String, after: String, first: Int, last: Int): ProductCountableConnection
   countries: [CountryDisplay]
   translation(languageCode: LanguageCodeEnum!): VoucherTranslation
+  minAmountSpent: Money @deprecated(reason: "Use the minSpent field instead.")
 }
 
 type VoucherAddCatalogues {

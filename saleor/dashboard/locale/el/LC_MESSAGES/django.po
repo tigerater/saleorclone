@@ -6,17 +6,15 @@
 # Translators:
 # Dimitris Papatheodoulou <dimitrispapatheodoulou@gmail.com>, 2019
 # Yiannis Inglessis <negtheone@gmail.com>, 2019
-# George Giannoulopoulos <vdotoree@yahoo.gr>, 2019
-# 1 2 <blydc@protonmail.ch>, 2019
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-29 11:49-0500\n"
+"POT-Creation-Date: 2019-07-03 05:42-0500\n"
 "PO-Revision-Date: 2017-02-09 15:43+0000\n"
-"Last-Translator: 1 2 <blydc@protonmail.ch>, 2019\n"
+"Last-Translator: Yiannis Inglessis <negtheone@gmail.com>, 2019\n"
 "Language-Team: Greek (https://www.transifex.com/mirumee/teams/34782/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,15 +52,15 @@ msgstr[1] "Βρέθηκαν %(counter)d σχετικές κατηγορίες"
 
 #: saleor/dashboard/category/forms.py:27
 #: saleor/dashboard/collection/forms.py:26
-#: saleor/dashboard/discount/forms.py:93 saleor/dashboard/product/forms.py:100
-#: saleor/dashboard/product/forms.py:267 saleor/dashboard/product/forms.py:508
+#: saleor/dashboard/discount/forms.py:93 saleor/dashboard/product/forms.py:112
+#: saleor/dashboard/product/forms.py:277 saleor/dashboard/product/forms.py:513
 #: saleor/dashboard/sites/forms.py:54
 msgctxt "Item name"
 msgid "Name"
 msgstr "Όνομα"
 
-#: saleor/dashboard/category/forms.py:28 saleor/dashboard/product/forms.py:249
-#: saleor/dashboard/product/forms.py:458 saleor/dashboard/sites/forms.py:29
+#: saleor/dashboard/category/forms.py:28 saleor/dashboard/product/forms.py:259
+#: saleor/dashboard/product/forms.py:463 saleor/dashboard/sites/forms.py:29
 msgctxt "Description"
 msgid "Description"
 msgstr "Περιγραφή"
@@ -554,42 +552,37 @@ msgctxt "Usage limit"
 msgid "Usage limit"
 msgstr "Όριο χρήσης"
 
-#: saleor/dashboard/discount/forms.py:97
-msgctxt "Voucher: discount with"
-msgid "Minimal quantity of products"
-msgstr "Ελάχιστη ποσότητα προϊόντων"
-
-#: saleor/dashboard/discount/forms.py:99
+#: saleor/dashboard/discount/forms.py:96
 msgctxt "Voucher date restrictions"
 msgid "Start date"
 msgstr "Ημερομηνία έναρξης"
 
-#: saleor/dashboard/discount/forms.py:100
+#: saleor/dashboard/discount/forms.py:97
 msgctxt "Voucher date restrictions"
 msgid "End date"
 msgstr "Ημερομηνία λήξης"
 
-#: saleor/dashboard/discount/forms.py:102
+#: saleor/dashboard/discount/forms.py:99
 msgctxt "Discount type of the voucher"
 msgid "Discount type"
 msgstr "Τύπος έκπτωσης"
 
-#: saleor/dashboard/discount/forms.py:105
+#: saleor/dashboard/discount/forms.py:102
 msgctxt "Discount value of the voucher"
 msgid "Discount value"
 msgstr "Αξία έκπτωσης"
 
-#: saleor/dashboard/discount/forms.py:125
+#: saleor/dashboard/discount/forms.py:122
 msgctxt "Text above the dropdown of countries"
 msgid "Limit countries that voucher should apply to"
 msgstr "Περιορίστε τις χώρες στις οποίες θα εφαρμοστεί το κουπόνι"
 
-#: saleor/dashboard/discount/forms.py:155
+#: saleor/dashboard/discount/forms.py:152
 msgctxt "Field label, apply discount value only once per order"
 msgid "Only apply once per order"
 msgstr "Εφαρμογή μόνο μία φορά ανά παραγγελία"
 
-#: saleor/dashboard/discount/forms.py:159
+#: saleor/dashboard/discount/forms.py:156
 msgctxt "Help text of checkbox for applying discount only once per order"
 msgid ""
 "If unchecked, discount value will be taken off each suitable item in an "
@@ -598,32 +591,32 @@ msgstr ""
 "Αν δεν επιλεχθεί, η αξία έκπτωσης θα αφαιρεθεί από κάθε σχετικό προϊόν στην "
 "παραγγελία "
 
-#: saleor/dashboard/discount/forms.py:171
+#: saleor/dashboard/discount/forms.py:168
 msgctxt "Products that can be discounted with the voucher"
 msgid "Products"
 msgstr "Προϊόντα"
 
-#: saleor/dashboard/discount/forms.py:178
+#: saleor/dashboard/discount/forms.py:175
 msgctxt "Categories that can be discounted with the voucher"
 msgid "Categories"
 msgstr "Κατηγορίες"
 
-#: saleor/dashboard/discount/forms.py:194
+#: saleor/dashboard/discount/forms.py:190
 msgctxt "Collections that can be discounted with the voucher"
 msgid "Collections"
 msgstr "Συλλογές"
 
-#: saleor/dashboard/discount/forms.py:211
+#: saleor/dashboard/discount/forms.py:207
 msgctxt "Product"
 msgid "Products"
 msgstr "Προϊόντα"
 
-#: saleor/dashboard/discount/forms.py:238
+#: saleor/dashboard/discount/forms.py:224
 msgctxt "Collections"
 msgid "Collections"
 msgstr "Συλλογές"
 
-#: saleor/dashboard/discount/forms.py:249
+#: saleor/dashboard/discount/forms.py:235
 msgctxt "Categories"
 msgid "Categories"
 msgstr "Κατηγορίες"
@@ -734,101 +727,96 @@ msgstr "URL"
 #: saleor/dashboard/menu/forms.py:73
 msgctxt "Menu item form error"
 msgid "Maximum nesting level for menu items equals to 2."
-msgstr "Το μέγιστο επίπεδο ένθεσης για τα στοιχεία μενού ισούται με 2."
+msgstr ""
 
 #: saleor/dashboard/menu/forms.py:83
 msgctxt "Menu item form error"
 msgid "A single menu item can't point to both an internal link and URL."
 msgstr ""
-"Ένα μεμονωμένο στοιχείο μενού δεν μπορεί να κατευθύνει σε εσωτερικό σύνδεσμο"
-" και σε διεύθυνση URL."
 
 #: saleor/dashboard/menu/forms.py:92
 msgctxt "Menu item form error"
 msgid "A single menu item must point to an internal link or URL."
 msgstr ""
-"Ένα μεμονωμένο στοιχείο μενού πρέπει να κατευθύνει σε εσωτερικό σύνδεσμο ή "
-"σε διεύθυνση URL."
 
-#: saleor/dashboard/menu/utils.py:11
+#: saleor/dashboard/menu/utils.py:110
 #, python-format
 msgctxt "Menu item page hidden status"
 msgid ""
 "%(menu_item_name)s is hidden (will become visible on %(available_on_date)s)"
 msgstr ""
-"%(menu_item_name)s είναι κρυφό (θα γίνει ορατό στις %(available_on_date)s)"
 
-#: saleor/dashboard/menu/utils.py:24
+#: saleor/dashboard/menu/utils.py:123
 #, python-format
 msgctxt "Menu item published status"
 msgid "%(menu_item_name)s (Not published)"
-msgstr "%(menu_item_name)s (Αδημοσίευτο)"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:35
+#: saleor/dashboard/menu/views.py:34
 msgctxt "Dashboard message"
 msgid "Updated storefront menus"
 msgstr ""
 
-#: saleor/dashboard/menu/views.py:54
+#: saleor/dashboard/menu/views.py:53
 #, python-format
 msgctxt "Dashboard message"
 msgid "Added menu %s"
-msgstr "Προστέθηκε το μενού %s"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:68
+#: saleor/dashboard/menu/views.py:67
 #, python-format
 msgctxt "Dashboard message"
 msgid "Updated menu %s"
-msgstr "Ενημερώθηκε το μενού %s"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:102
+#: saleor/dashboard/menu/views.py:101
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed menu %s"
-msgstr "Καταργήθηκε το μενού %s"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:123
+#: saleor/dashboard/menu/views.py:122
 #, python-format
 msgctxt "Dashboard message"
 msgid "Added menu item %s"
-msgstr "Προστέθηκε το στοιχείο μενού %s"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:145
+#: saleor/dashboard/menu/views.py:144
 #, python-format
 msgctxt "Dashboard message"
 msgid "Saved menu item %s"
-msgstr "Αποθηκεύτηκε το στοιχείο μενού %s"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:160
+#: saleor/dashboard/menu/views.py:159
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed menu item %s"
-msgstr "Καταργήθηκε το στοιχείο μενού %s"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:246
+#: saleor/dashboard/menu/views.py:245
 msgctxt "Link object type group description"
 msgid "Collection"
-msgstr "Συλλογή"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:252
+#: saleor/dashboard/menu/views.py:251
 msgctxt "Link object type group description"
 msgid "Category"
-msgstr "Κατηγορία"
+msgstr ""
 
-#: saleor/dashboard/menu/views.py:258
+#: saleor/dashboard/menu/views.py:257
 msgctxt "Link object type group description"
 msgid "Page"
-msgstr "Σελίδα"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:28
 msgctxt "Order list sorting option"
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:29
 msgctxt "Order list sorting option"
 msgid "payment"
-msgstr "πληρωμή"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:30
 msgctxt "Order list sorting option"
@@ -838,22 +826,22 @@ msgstr "ηλεκτρονικό ταχυδρομείο"
 #: saleor/dashboard/order/filters.py:31 saleor/dashboard/order/filters.py:32
 msgctxt "Order list sorting option"
 msgid "created"
-msgstr "δημιουργήθηκε"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:37
 msgctxt "Order list filter label"
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:39
 msgctxt "Order list filter label"
 msgid "Customer name or email"
-msgstr "Όνομα ή email πελάτη"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:43
 msgctxt "Order list filter label"
 msgid "Placed on"
-msgstr "Ημερομηνία παραγγελίας"
+msgstr ""
 
 #: saleor/dashboard/order/filters.py:48
 msgctxt "Order list filter label"
@@ -924,63 +912,63 @@ msgctxt "Shipping method form field label"
 msgid "Shipping method"
 msgstr "Τρόπος αποστολής"
 
-#: saleor/dashboard/order/forms.py:244
+#: saleor/dashboard/order/forms.py:243
 msgctxt "Order discount amount fixed value"
 msgid "Discount amount"
-msgstr "Ποσό έκπτωσης"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:260
+#: saleor/dashboard/order/forms.py:259
 msgctxt "Order voucher"
 msgid "Voucher"
-msgstr "Κουπόνι"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:289
+#: saleor/dashboard/order/forms.py:288
 msgctxt "Order note"
 msgid "Note"
 msgstr "Σημείωση"
 
-#: saleor/dashboard/order/forms.py:297
+#: saleor/dashboard/order/forms.py:296
 msgctxt "Payment management form (capture, refund, void)"
 msgid "Amount"
 msgstr "Ποσό"
 
-#: saleor/dashboard/order/forms.py:304
+#: saleor/dashboard/order/forms.py:303
 msgctxt "Payment form error"
 msgid "This payment action can not be performed."
-msgstr "Δεν είναι δυνατή η εκτέλεση αυτής της ενέργειας πληρωμής."
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:314
+#: saleor/dashboard/order/forms.py:313
 #, python-format
 msgctxt "Payment form error"
 msgid "Payment gateway error: %s"
 msgstr "Σφάλμα συστήματος πληρωμών: %s"
 
-#: saleor/dashboard/order/forms.py:336
+#: saleor/dashboard/order/forms.py:335
 msgctxt "Payment form error"
 msgid "Only pre-authorized payments can be captured"
 msgstr "Μόνο προεγκριμένες πληρωμές μπορούν να εκκαθαριστούν"
 
-#: saleor/dashboard/order/forms.py:352
+#: saleor/dashboard/order/forms.py:351
 msgctxt "Payment form error"
 msgid "Only confirmed payments can be refunded"
 msgstr "Μόνο επιβεβαιωμένες πληρωμές μπορούν να επιστραφούν "
 
-#: saleor/dashboard/order/forms.py:362
+#: saleor/dashboard/order/forms.py:361
 msgctxt "Payment form error"
 msgid "Manual payments can not be refunded"
-msgstr "Δεν είναι δυνατή η επιστροφή των μη αυτόματων πληρωμών"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:375
+#: saleor/dashboard/order/forms.py:374
 msgctxt "Payment form error"
 msgid "Only pre-authorized payments can be voided"
-msgstr "Μόνο οι προεγκεκριμένες πληρωμές μπορούν να ακυρωθούν"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:428
+#: saleor/dashboard/order/forms.py:427
 msgctxt "Integer number"
 msgid "Quantity"
 msgstr "Ποσότητα"
 
-#: saleor/dashboard/order/forms.py:448
+#: saleor/dashboard/order/forms.py:447
 #, python-format
 msgctxt "Change quantity form error"
 msgid "Only %(remaining)d remaining in stock."
@@ -988,7 +976,7 @@ msgid_plural "Only %(remaining)d remaining in stock."
 msgstr[0] "Μόνο %(remaining)d απομένει σε απόθεμα."
 msgstr[1] "Μόνο %(remaining)d απομένουν σε απόθεμα."
 
-#: saleor/dashboard/order/forms.py:481
+#: saleor/dashboard/order/forms.py:480
 #, python-format
 msgctxt "Cancel order form action"
 msgid "Restock %(quantity)d item"
@@ -996,12 +984,12 @@ msgid_plural "Restock %(quantity)d items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/dashboard/order/forms.py:490
+#: saleor/dashboard/order/forms.py:489
 msgctxt "Cancel order form error"
 msgid "This order can't be canceled"
-msgstr "Αυτή η παραγγελία δεν μπορεί να ακυρωθεί"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:511
+#: saleor/dashboard/order/forms.py:510
 #, python-format
 msgctxt "Cancel fulfillment form action"
 msgid "Restock %(quantity)d item"
@@ -1009,37 +997,37 @@ msgid_plural "Restock %(quantity)d items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/dashboard/order/forms.py:522
+#: saleor/dashboard/order/forms.py:521
 msgctxt "Cancel fulfillment form error"
 msgid "This fulfillment can't be canceled"
-msgstr "Αυτή η εκπλήρωση δεν μπορεί να ακυρωθεί"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:538
+#: saleor/dashboard/order/forms.py:537
 msgctxt "Send mail to customer"
 msgid "Send notification email to customer"
-msgstr "Αποστολή email ειδοποίησης στον πελάτη"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:546
+#: saleor/dashboard/order/forms.py:545
 msgctxt "Fulfillment record"
 msgid "Tracking number"
-msgstr "Αριθμός εντοπισμού"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:566
+#: saleor/dashboard/order/forms.py:565
 msgctxt "Remove voucher form error"
 msgid "This order has no voucher"
 msgstr "Η παραγγελία δεν έχει κουπόνι"
 
-#: saleor/dashboard/order/forms.py:580
+#: saleor/dashboard/order/forms.py:579
 msgctxt "Payment status field value"
 msgid "All"
 msgstr "Όλα"
 
-#: saleor/dashboard/order/forms.py:595
+#: saleor/dashboard/order/forms.py:594
 msgctxt "Order form: subform to add variant to order form: variant field"
 msgid "Variant"
-msgstr "Παραλλαγή"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:599
+#: saleor/dashboard/order/forms.py:598
 msgctxt "Add variant to order form label"
 msgid "Quantity"
 msgstr "Ποσότητα"
@@ -1050,22 +1038,22 @@ msgctxt "Add item form error"
 msgid "Could not add item. Only %(remaining)d remaining in stock."
 msgstr ""
 
-#: saleor/dashboard/order/forms.py:647
+#: saleor/dashboard/order/forms.py:649
 msgctxt "Order form: address subform - phone number input field"
 msgid "Phone number"
-msgstr "Τηλέφωνο"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:663
+#: saleor/dashboard/order/forms.py:665
 msgctxt "Send mail to customer"
 msgid "Send shipment details to your customer now"
-msgstr "Αποστολή στοιχείων αποστολής στον πελάτη σας τώρα"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:671
+#: saleor/dashboard/order/forms.py:673
 msgctxt "Order tracking number"
 msgid "Tracking number"
-msgstr "Αριθμός εντοπισμού"
+msgstr ""
 
-#: saleor/dashboard/order/forms.py:710
+#: saleor/dashboard/order/forms.py:712
 #, python-format
 msgctxt "Fulfill order line form error"
 msgid "%(quantity)d item remaining to fulfill."
@@ -1073,49 +1061,44 @@ msgid_plural "%(quantity)d items remaining to fulfill."
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/dashboard/order/utils.py:136
-msgctxt "Voucher not applicable"
-msgid "This offer is only valid for selected items."
-msgstr "Αυτή η προσφορά ισχύει μόνο για επιλεγμένα προϊόντα."
-
-#: saleor/dashboard/order/views.py:82
+#: saleor/dashboard/order/views.py:83
 msgctxt "Dashboard message related to an order"
 msgid "Draft order created"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:104
+#: saleor/dashboard/order/views.py:105
 msgctxt "Dashboard message related to an order"
 msgid "Order created from draft order"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:126
+#: saleor/dashboard/order/views.py:127
 msgctxt "Dashboard message"
 msgid "Draft order successfully removed"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:169
+#: saleor/dashboard/order/views.py:170
 msgctxt "Dashboard message related to an order"
 msgid "Added note"
 msgstr "Προστέθηκε σημείωση"
 
-#: saleor/dashboard/order/views.py:191
+#: saleor/dashboard/order/views.py:192
 #, python-format
 msgctxt "Dashboard message related to a payment"
 msgid "Captured %(amount)s"
 msgstr "Εκκαθαρίστηκαν %(amount)s"
 
-#: saleor/dashboard/order/views.py:218
+#: saleor/dashboard/order/views.py:219
 #, python-format
 msgctxt "Dashboard message related to a payment"
 msgid "Refunded %(amount)s"
 msgstr "Επεστράφησαν %(amount)s"
 
-#: saleor/dashboard/order/views.py:245
+#: saleor/dashboard/order/views.py:246
 msgctxt "Dashboard message"
 msgid "Voided payment"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:268
+#: saleor/dashboard/order/views.py:269
 #, python-format
 msgctxt "Dashboard message related to an order line"
 msgid ""
@@ -1123,92 +1106,92 @@ msgid ""
 "%(new_quantity)s"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:296
+#: saleor/dashboard/order/views.py:297
 #, python-format
 msgctxt "Dashboard message related to an order line"
 msgid "Canceled item %s"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:332
+#: saleor/dashboard/order/views.py:334
 #, python-format
 msgctxt "Dashboard message related to an order"
 msgid "Added %(quantity)d x %(variant)s"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:341
+#: saleor/dashboard/order/views.py:343
 #, python-format
 msgctxt "Dashboard message related to an order"
 msgid "Insufficient stock: could not add %(quantity)d x %(variant)s"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:361
+#: saleor/dashboard/order/views.py:363
 msgctxt "Dashboard message"
 msgid "Updated shipping address"
 msgstr "Ανανεωμένη διεύθυνση αποστολής"
 
-#: saleor/dashboard/order/views.py:365
+#: saleor/dashboard/order/views.py:367
 msgctxt "Dashboard message"
 msgid "Updated billing address"
 msgstr "Ανανεωμένη διεύθυνση τιμολόγησης"
 
-#: saleor/dashboard/order/views.py:396
+#: saleor/dashboard/order/views.py:398
 #, python-format
 msgctxt "Dashboard message"
 msgid "%s email assigned to an order"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:401
+#: saleor/dashboard/order/views.py:403
 #, python-format
 msgctxt "Dashboard message"
 msgid "%s user assigned to an order"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:405
+#: saleor/dashboard/order/views.py:407
 msgctxt "Dashboard message"
 msgid "Guest user assigned to an order"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:424
+#: saleor/dashboard/order/views.py:426
 msgctxt "Dashboard message"
 msgid "Customer removed from an order"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:438
+#: saleor/dashboard/order/views.py:441
 msgctxt "Dashboard message"
 msgid "Shipping updated"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:456
+#: saleor/dashboard/order/views.py:459
 msgctxt "Dashboard message"
 msgid "Shipping removed"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:470
+#: saleor/dashboard/order/views.py:473
 msgctxt "Dashboard message"
 msgid "Discount updated"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:489
+#: saleor/dashboard/order/views.py:492
 msgctxt "Dashboard message"
 msgid "Voucher updated"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:510
+#: saleor/dashboard/order/views.py:513
 msgctxt "Dashboard message"
 msgid "Order canceled"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:531
+#: saleor/dashboard/order/views.py:534
 msgctxt "Dashboard message"
 msgid "Removed voucher from order"
 msgstr "Αφαιρέθηκε κουπόνι από την παραγγελία"
 
-#: saleor/dashboard/order/views.py:563
+#: saleor/dashboard/order/views.py:566
 msgctxt "Dashboard message"
 msgid "Order manually marked as paid"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:638
+#: saleor/dashboard/order/views.py:641
 #, python-format
 msgctxt "Dashboard message related to an order"
 msgid "Fulfilled %(quantity_fulfilled)d item"
@@ -1216,18 +1199,18 @@ msgid_plural "Fulfilled %(quantity_fulfilled)d items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/dashboard/order/views.py:655
+#: saleor/dashboard/order/views.py:658
 msgctxt "Dashboard message related to an order"
 msgid "No items fulfilled"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:681
+#: saleor/dashboard/order/views.py:684
 #, python-format
 msgctxt "Dashboard message"
 msgid "Fulfillment #%(fulfillment)s canceled"
 msgstr ""
 
-#: saleor/dashboard/order/views.py:720
+#: saleor/dashboard/order/views.py:723
 #, python-format
 msgctxt "Dashboard message"
 msgid "Fulfillment #%(fulfillment)s tracking number updated"
@@ -1236,7 +1219,7 @@ msgstr ""
 #: saleor/dashboard/page/filters.py:8
 msgctxt "Page list sorting option"
 msgid "title"
-msgstr "τίτλος"
+msgstr ""
 
 #: saleor/dashboard/page/filters.py:9
 msgctxt "Page list sorting option"
@@ -1246,7 +1229,7 @@ msgstr ""
 #: saleor/dashboard/page/filters.py:15
 msgctxt "Page list title filter label"
 msgid "Title"
-msgstr "Τίτλος"
+msgstr ""
 
 #: saleor/dashboard/page/filters.py:19
 msgctxt "Page list url filter label"
@@ -1269,12 +1252,12 @@ msgstr[1] ""
 #: saleor/dashboard/page/forms.py:12
 msgctxt "Page form: page content field"
 msgid "Content"
-msgstr "Περιεχόμενο"
+msgstr ""
 
 #: saleor/dashboard/page/forms.py:20
 msgctxt "Page form: title field"
 msgid "Title"
-msgstr "Τίτλος"
+msgstr ""
 
 #: saleor/dashboard/page/forms.py:21
 msgctxt "Page form: slug field"
@@ -1310,7 +1293,7 @@ msgstr ""
 #: saleor/dashboard/product/__init__.py:11
 msgctxt "product bulk action"
 msgid "Publish"
-msgstr "Δημοσίευση"
+msgstr ""
 
 #: saleor/dashboard/product/__init__.py:12
 msgctxt "product bulk action"
@@ -1325,7 +1308,7 @@ msgstr "όνομα"
 #: saleor/dashboard/product/filters.py:17
 msgctxt "Product type list sorting option"
 msgid "price"
-msgstr "τιμή"
+msgstr ""
 
 #: saleor/dashboard/product/filters.py:21
 msgctxt "Product attribute list sorting option"
@@ -1345,7 +1328,7 @@ msgstr "Όνομα"
 #: saleor/dashboard/product/filters.py:40
 msgctxt "Product list filter label"
 msgid "Category"
-msgstr "Κατηγορία"
+msgstr ""
 
 #: saleor/dashboard/product/filters.py:45
 msgctxt "Product list filter label"
@@ -1421,217 +1404,217 @@ msgid_plural "Found %(counter)d matching product types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/dashboard/product/forms.py:46
+#: saleor/dashboard/product/forms.py:47
 msgctxt "Help text in rich-text editor field"
 msgid "Select text to enable text-formatting tools."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:63
+#: saleor/dashboard/product/forms.py:64
 msgctxt "Product type form label"
 msgid "Product type"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:71
+#: saleor/dashboard/product/forms.py:83
 msgctxt "Product type tax rate type"
 msgid "Tax rate"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:74 saleor/dashboard/product/forms.py:253
+#: saleor/dashboard/product/forms.py:86 saleor/dashboard/product/forms.py:263
 msgctxt "ProductType weight"
 msgid "Weight"
-msgstr "Βάρος"
+msgstr ""
 
-#: saleor/dashboard/product/forms.py:77
+#: saleor/dashboard/product/forms.py:89
 msgctxt "ProductVariant weight help text"
 msgid ""
 "Default weight that will be used for calculating shipping price for products"
 " of that type."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:85
+#: saleor/dashboard/product/forms.py:97
 msgctxt "Product type attributes"
 msgid "Attributes common to all variants."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:92
+#: saleor/dashboard/product/forms.py:104
 msgctxt "Product type attributes"
 msgid "Attributes specific to each variant."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:101
+#: saleor/dashboard/product/forms.py:113
 msgctxt "Enable variants"
 msgid "Enable variants"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:103
+#: saleor/dashboard/product/forms.py:115
 msgctxt "Shipping toggle"
 msgid "Require shipping"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:144
+#: saleor/dashboard/product/forms.py:154
 msgctxt "Product type form error"
 msgid "Product variants are disabled."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:150
+#: saleor/dashboard/product/forms.py:160
 msgctxt "Product type form error"
 msgid "A single attribute can't belong to both a product and its variant."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:171
+#: saleor/dashboard/product/forms.py:181
 msgctxt "Product type form error"
 msgid "Some products of this type have more than one variant."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:237
+#: saleor/dashboard/product/forms.py:247
 msgctxt "Product tax rate type"
 msgid "Tax rate"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:241
+#: saleor/dashboard/product/forms.py:251
 msgctxt "Category"
 msgid "Category"
-msgstr "Κατηγορία"
+msgstr ""
 
-#: saleor/dashboard/product/forms.py:246
+#: saleor/dashboard/product/forms.py:256
 msgctxt "Add to collection select"
 msgid "Collections"
 msgstr "Συλλογές"
 
-#: saleor/dashboard/product/forms.py:256
+#: saleor/dashboard/product/forms.py:266
 msgctxt "Product weight field help text"
 msgid ""
 "Weight will be used to calculate shipping price, if empty, equal to default "
 "value used on the ProductType."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:268
+#: saleor/dashboard/product/forms.py:278
 #: saleor/dashboard/shipping/forms.py:138
 msgctxt "Currency amount"
 msgid "Price"
 msgstr "Τιμή"
 
-#: saleor/dashboard/product/forms.py:270
+#: saleor/dashboard/product/forms.py:280
 msgctxt "Availability date"
 msgid "Publish product on"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:272
+#: saleor/dashboard/product/forms.py:282
 msgctxt "Product published toggle"
 msgid "Published"
 msgstr "Δημοσιευμένο"
 
-#: saleor/dashboard/product/forms.py:274
+#: saleor/dashboard/product/forms.py:284
 msgctxt "Charge taxes on product"
 msgid "Charge taxes on this product"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:306
+#: saleor/dashboard/product/forms.py:311
 msgctxt "Currency gross amount"
 msgid "Gross price"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:310
+#: saleor/dashboard/product/forms.py:315
 msgctxt "Currency net amount"
 msgid "Net price"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:342
+#: saleor/dashboard/product/forms.py:347
 msgctxt "ProductVariant weight"
 msgid "Weight"
-msgstr "Βάρος"
+msgstr ""
 
-#: saleor/dashboard/product/forms.py:345
+#: saleor/dashboard/product/forms.py:350
 msgctxt "ProductVariant weight help text"
 msgid ""
 "Weight will be used to calculate shipping price. If empty, weight from "
 "Product or ProductType will be used."
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:361
+#: saleor/dashboard/product/forms.py:366
 msgctxt "SKU"
 msgid "SKU"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:362
+#: saleor/dashboard/product/forms.py:367
 msgctxt "Override price"
 msgid "Selling price override"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:363
+#: saleor/dashboard/product/forms.py:368
 msgctxt "Integer number"
 msgid "Number in stock"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:364
+#: saleor/dashboard/product/forms.py:369
 msgctxt "Currency amount"
 msgid "Cost price"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:366
+#: saleor/dashboard/product/forms.py:371
 msgctxt "Track inventory field"
 msgid "Track inventory"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:372
+#: saleor/dashboard/product/forms.py:377
 msgctxt "product variant handle stock field help text"
 msgid "Automatically track this product's inventory"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:389
+#: saleor/dashboard/product/forms.py:394
 msgctxt "Override price"
 msgid "Selling gross price override"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:392
+#: saleor/dashboard/product/forms.py:397
 msgctxt "Currency amount"
 msgid "Cost gross price"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:396
+#: saleor/dashboard/product/forms.py:401
 msgctxt "Override price"
 msgid "Selling net price override"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:399
+#: saleor/dashboard/product/forms.py:404
 msgctxt "Currency amount"
 msgid "Cost net price"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:457 saleor/dashboard/product/forms.py:561
+#: saleor/dashboard/product/forms.py:462 saleor/dashboard/product/forms.py:566
 msgctxt "Product image"
 msgid "Image"
-msgstr "Εικόνα"
+msgstr ""
 
-#: saleor/dashboard/product/forms.py:498
+#: saleor/dashboard/product/forms.py:503
 msgctxt "Product display name"
 msgid "Display name"
 msgstr ""
 
-#: saleor/dashboard/product/forms.py:499
+#: saleor/dashboard/product/forms.py:504
 msgctxt "Product internal name"
 msgid "Internal name"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:142
+#: saleor/dashboard/product/views.py:138
 #, python-format
 msgctxt "Dashboard message"
 msgid "Added product %s"
 msgstr "Προστέθηκε προϊόν %s"
 
-#: saleor/dashboard/product/views.py:174
+#: saleor/dashboard/product/views.py:170
 #, python-format
 msgctxt "Dashboard message"
 msgid "Updated product %s"
 msgstr "Ανανεωμένο προϊόν %s"
 
-#: saleor/dashboard/product/views.py:187
+#: saleor/dashboard/product/views.py:183
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed product %s"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:205
+#: saleor/dashboard/product/views.py:201
 #, python-format
 msgctxt "Dashboard message"
 msgid "%(count)d product has been updated"
@@ -1639,81 +1622,81 @@ msgid_plural "%(count)d products have been updated"
 msgstr[0] ""
 msgstr[1] ""
 
-#: saleor/dashboard/product/views.py:262
+#: saleor/dashboard/product/views.py:258
 #, python-format
 msgctxt "Dashboard message"
 msgid "Added product type %s"
 msgstr "Προστέθηκε τύπος προϊόντων %s"
 
-#: saleor/dashboard/product/views.py:278
+#: saleor/dashboard/product/views.py:274
 #, python-format
 msgctxt "Dashboard message"
 msgid "Updated product type %s"
 msgstr "Αναμεωμένος τύπος προϊόντων %s"
 
-#: saleor/dashboard/product/views.py:293
+#: saleor/dashboard/product/views.py:289
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed product type %s"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:341 saleor/dashboard/product/views.py:358
+#: saleor/dashboard/product/views.py:335 saleor/dashboard/product/views.py:352
 #, python-format
 msgctxt "Dashboard message"
 msgid "Saved variant %s"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:374
+#: saleor/dashboard/product/views.py:368
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed variant %s"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:453
+#: saleor/dashboard/product/views.py:447
 #, python-format
 msgctxt "Dashboard message"
 msgid "Added image %s"
 msgstr "Προστέθηκε εικόνα %s"
 
-#: saleor/dashboard/product/views.py:472
+#: saleor/dashboard/product/views.py:466
 #, python-format
 msgctxt "Dashboard message"
 msgid "Updated image %s"
 msgstr "Ανανεωμένη εικόνα %s"
 
-#: saleor/dashboard/product/views.py:488
+#: saleor/dashboard/product/views.py:482
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed image %s"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:580
+#: saleor/dashboard/product/views.py:574
 msgctxt "Dashboard message"
 msgid "Added attribute"
 msgstr "Προστέθηκε χαρακτηριστικό"
 
-#: saleor/dashboard/product/views.py:594
+#: saleor/dashboard/product/views.py:588
 msgctxt "Dashboard message"
 msgid "Updated attribute"
 msgstr "Ανανεωμένο χαρακτηριστικό"
 
-#: saleor/dashboard/product/views.py:607
+#: saleor/dashboard/product/views.py:601
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed attribute %s"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:627
+#: saleor/dashboard/product/views.py:621
 msgctxt "Dashboard message"
 msgid "Added attribute's value"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:644
+#: saleor/dashboard/product/views.py:638
 msgctxt "Dashboard message"
 msgid "Updated attribute's value"
 msgstr ""
 
-#: saleor/dashboard/product/views.py:659
+#: saleor/dashboard/product/views.py:653
 #, python-format
 msgctxt "Dashboard message"
 msgid "Removed attribute's value %s"
@@ -1792,7 +1775,7 @@ msgstr ""
 #: saleor/dashboard/shipping/forms.py:54
 msgctxt "List of countries to pick from"
 msgid "Countries"
-msgstr "Χώρες"
+msgstr ""
 
 #: saleor/dashboard/shipping/forms.py:59
 msgctxt "Countries field help text"
@@ -1851,7 +1834,7 @@ msgstr ""
 #: saleor/dashboard/shipping/forms.py:164
 msgctxt "Placeholder for maximum order price set to unlimited"
 msgid "No limit"
-msgstr "Χωρίς περιορισμούς"
+msgstr ""
 
 #: saleor/dashboard/shipping/forms.py:180
 #: saleor/dashboard/shipping/forms.py:223
@@ -1872,7 +1855,7 @@ msgstr ""
 #: saleor/dashboard/shipping/forms.py:207
 msgctxt "Placeholder for maximum order weight set to unlimited"
 msgid "No limit"
-msgstr "Χωρίς περιορισμούς"
+msgstr ""
 
 #: saleor/dashboard/shipping/views.py:24
 msgctxt "Dashboard message"
@@ -1948,7 +1931,7 @@ msgstr ""
 #: saleor/dashboard/sites/forms.py:52
 msgctxt "Key for chosen authorization method"
 msgid "Key"
-msgstr "Κλειδί"
+msgstr ""
 
 #: saleor/dashboard/sites/forms.py:53
 msgctxt "Password"
@@ -1981,7 +1964,7 @@ msgstr ""
 #: saleor/dashboard/staff/filters.py:32
 msgctxt "Group list filter label"
 msgid "Permissions"
-msgstr "Δικαιώματα"
+msgstr ""
 
 #: saleor/dashboard/staff/filters.py:37
 msgctxt "Staff list filter label"
@@ -1999,7 +1982,7 @@ msgstr[1] ""
 #: saleor/dashboard/staff/forms.py:15
 msgctxt "Label above the permissions choicefield"
 msgid "Permissions"
-msgstr "Δικαιώματα"
+msgstr ""
 
 #: saleor/dashboard/staff/forms.py:35
 msgctxt "Email"
@@ -2042,7 +2025,7 @@ msgstr ""
 #: saleor/dashboard/taxes/filters.py:24
 msgctxt "Taxes list filter label"
 msgid "Country name"
-msgstr "Όνομα χώρας"
+msgstr ""
 
 #: saleor/dashboard/taxes/filters.py:29
 msgctxt "Taxes list sorting form"
@@ -2072,17 +2055,17 @@ msgctxt "Charge taxes on shipping rates"
 msgid "Charge taxes on shipping rates"
 msgstr ""
 
-#: saleor/dashboard/taxes/views.py:67
+#: saleor/dashboard/taxes/views.py:60
 msgctxt "Dashboard message"
 msgid "Updated taxes settings"
 msgstr ""
 
-#: saleor/dashboard/taxes/views.py:80
+#: saleor/dashboard/taxes/views.py:73
 msgctxt "Dashboard message"
 msgid "Tax rates updated successfully"
 msgstr ""
 
-#: saleor/dashboard/taxes/views.py:86
+#: saleor/dashboard/taxes/views.py:79
 msgctxt "Dashboard message"
 msgid ""
 "Could not fetch tax rates. Make sure you have supplied a valid API Access "
@@ -2098,13 +2081,13 @@ msgstr ""
 #, python-format
 msgctxt "Label of first value in range filter"
 msgid "From %(value)s"
-msgstr "Από %(value)s"
+msgstr ""
 
 #: saleor/dashboard/templatetags/chips.py:95
 #, python-format
 msgctxt "Label of second value in range filter"
 msgid "To %(value)s"
-msgstr "Έως %(value)s"
+msgstr ""
 
 #: saleor/dashboard/templatetags/orders.py:14
 msgctxt "Email type"

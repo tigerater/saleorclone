@@ -157,9 +157,6 @@ class BasePlugin:
         if "active" in cleaned_data:
             plugin_configuration.active = cleaned_data["active"]
         plugin_configuration.save()
-        if plugin_configuration.configuration:
-            # Let's add a translated descriptions and labels
-            cls._append_config_structure(plugin_configuration.configuration)
         return plugin_configuration
 
     @classmethod
@@ -169,7 +166,7 @@ class BasePlugin:
 
     @classmethod
     def _append_config_structure(cls, configuration):
-        config_structure = getattr(cls, "CONFIG_STRUCTURE") or {}
+        config_structure = getattr(cls, "CONFIG_STRUCTURE", {})
         for coniguration_field in configuration:
 
             structure_to_add = config_structure.get(coniguration_field.get("name"))

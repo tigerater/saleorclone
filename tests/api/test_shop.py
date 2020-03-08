@@ -1,5 +1,4 @@
 import graphene
-import pytest
 from django_countries import countries
 
 from saleor.core.permissions import MODELS_PERMISSIONS
@@ -31,45 +30,21 @@ def test_query_authorization_keys(
     assert data["authorizationKeys"][0]["key"] == authorization_key.key
 
 
-COUNTRIES_QUERY = """
+def test_query_countries(user_api_client):
+    query = """
     query {
         shop {
-            countries%(attributes)s {
+            countries {
                 code
                 country
             }
         }
     }
-"""
-
-
-def test_query_countries(user_api_client):
-    response = user_api_client.post_graphql(COUNTRIES_QUERY % {"attributes": ""})
+    """
+    response = user_api_client.post_graphql(query)
     content = get_graphql_content(response)
     data = content["data"]["shop"]
     assert len(data["countries"]) == len(countries)
-
-
-@pytest.mark.parametrize(
-    "language_code, expected_value",
-    (
-        ("", "Afghanistan"),
-        ("(languageCode: EN)", "Afghanistan"),
-        ("(languageCode: PL)", "Afganistan"),
-        ("(languageCode: DE)", "Afghanistan"),
-    ),
-)
-def test_query_countries_with_translation(
-    language_code, expected_value, user_api_client
-):
-    response = user_api_client.post_graphql(
-        COUNTRIES_QUERY % {"attributes": language_code}
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["shop"]
-    assert len(data["countries"]) == len(countries)
-    assert data["countries"][0]["code"] == "AF"
-    assert data["countries"][0]["country"] == expected_value
 
 
 def test_query_currencies(user_api_client, settings):

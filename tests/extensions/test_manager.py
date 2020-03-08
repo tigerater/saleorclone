@@ -8,11 +8,10 @@ from prices import Money, TaxedMoney
 from saleor.core.taxes import TaxType
 from saleor.extensions.base_plugin import BasePlugin
 from saleor.extensions.manager import ExtensionsManager, get_extensions_manager
-from saleor.extensions.models import PluginConfiguration
 
 
 class TestPlugin(BasePlugin):
-    PLUGIN_NAME = "Test Plugin"
+    """"""
 
     def calculate_checkout_total(self, checkout, discounts, previous_value):
         total = Money("1.0", currency=checkout.get_total().currency)
@@ -62,20 +61,6 @@ class TestPlugin(BasePlugin):
         self, obj: Union["Product", "ProductType"], country: Country, previous_value
     ) -> Decimal:
         return Decimal("15.0").quantize(Decimal("1."))
-
-    @classmethod
-    def _get_default_configuration(cls):
-        defaults = {
-            "name": "Test Plugin",
-            "description": "",
-            "active": True,
-            "configuration": None,
-        }
-        return defaults
-
-
-class TestPlugin1(BasePlugin):
-    PLUGIN_NAME = "Test Plugin1"
 
 
 def test_get_extensions_manager():
@@ -250,34 +235,3 @@ def test_manager_get_tax_rate_percentage_value(plugins, amount, product):
         product, country
     )
     assert tax_rate_value == Decimal(amount)
-
-
-def test_manager_get_plugin_configurations():
-    plugins = [
-        "tests.extensions.test_manager.TestPlugin",
-        "tests.extensions.test_manager.TestPlugin1",
-    ]
-    manager = ExtensionsManager(plugins=plugins)
-    configurations = manager.get_plugin_configurations()
-    assert len(configurations) == len(plugins)
-    assert set(configurations) == set(list(PluginConfiguration.objects.all()))
-
-
-def test_manager_get_plugin_configuration():
-    plugins = [
-        "tests.extensions.test_manager.TestPlugin",
-        "tests.extensions.test_manager.TestPlugin1",
-    ]
-    manager = ExtensionsManager(plugins=plugins)
-    configuration = manager.get_plugin_configuration(plugin_name="Test Plugin")
-    configuration_from_db = PluginConfiguration.objects.get(name="Test Plugin")
-    assert configuration == configuration_from_db
-
-
-def test_manager_save_plugin_configuration():
-    plugins = ["tests.extensions.test_manager.TestPlugin"]
-    manager = ExtensionsManager(plugins=plugins)
-    configuration = manager.get_plugin_configuration(plugin_name="Test Plugin")
-    manager.save_plugin_configuration("Test Plugin", {"active": False})
-    configuration.refresh_from_db()
-    assert not configuration.active

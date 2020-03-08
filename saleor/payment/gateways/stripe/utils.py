@@ -85,14 +85,10 @@ def get_payment_billing_fullname(payment_information: PaymentData) -> str:
 
 def shipping_to_stripe_dict(shipping: AddressData) -> Dict:
     return {
-        "name": shipping.first_name + " " + shipping.last_name,
-        "phone": shipping.phone,
-        "address": {
-            "line1": shipping.street_address_1,
-            "line2": shipping.street_address_2,
-            "city": shipping.city,
-            "state": shipping.country_area,
-            "postal_code": shipping.postal_code,
-            "country": dict(countries).get(shipping.country, ""),
-        },
+        "line1": shipping.street_address_1,
+        "line2": shipping.street_address_2,
+        "city": shipping.city,
+        "state": shipping.country_area,
+        "postal_code": shipping.postal_code,
+        "country": dict(countries).get(shipping.country, ""),
     }

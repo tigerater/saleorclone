@@ -39116,7 +39116,6 @@ exports[`Storyshots Views / HomePage default 1`] = `
   >
     <div
       class="HomeOrdersCard-headerContainer-id"
-      data-tc="home-header"
     >
       <h4
         class="MuiTypography-root-id MuiTypography-h4-id HomeOrdersCard-pageHeader-id"
@@ -39808,7 +39807,6 @@ exports[`Storyshots Views / HomePage loading 1`] = `
   >
     <div
       class="HomeOrdersCard-headerContainer-id"
-      data-tc="home-header"
     >
       <h4
         class="MuiTypography-root-id MuiTypography-h4-id HomeOrdersCard-pageHeader-id"
@@ -40227,7 +40225,6 @@ exports[`Storyshots Views / HomePage no data 1`] = `
   >
     <div
       class="HomeOrdersCard-headerContainer-id"
-      data-tc="home-header"
     >
       <h4
         class="MuiTypography-root-id MuiTypography-h4-id HomeOrdersCard-pageHeader-id"

@@ -14,7 +14,6 @@
 !.npmrc
 !.plop
 !.pylintrc
-!.testcafe
 !.travis*
 !.tx
 *.css

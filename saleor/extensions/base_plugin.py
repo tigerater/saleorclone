@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any, List, Union
 
+from django.db.models import QuerySet
 from django_countries.fields import Country
 from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
@@ -10,6 +11,7 @@ if TYPE_CHECKING:
     from ..product.models import Product
     from ..account.models import Address
     from ..order.models import OrderLine, Order
+    from .models import PluginConfiguration
 
 
 class BasePlugin:
@@ -19,6 +21,11 @@ class BasePlugin:
     previous_value contains a value calculated by the previous plugin in the queue.
     If the plugin is first, it will use default value calculated by the manager.
     """
+
+    PLUGIN_NAME = ""
+
+    def __str__(self):
+        return self.PLUGIN_NAME
 
     def calculate_checkout_total(
         self,
@@ -114,3 +121,37 @@ class BasePlugin:
         self, obj: Union["Product", "ProductType"], country: Country, previous_value
     ) -> Decimal:
         return NotImplemented
+
+    @classmethod
+    def _update_config_items(cls, configuration_to_update: dict, current_config: dict):
+        for config_item in current_config:
+            for config_item_to_update in configuration_to_update:
+                if config_item["name"] == config_item_to_update.get("name"):
+                    new_value = config_item_to_update.get("value")
+                    config_item.update([("value", new_value)])
+
+    @classmethod
+    def save_plugin_configuration(
+        cls, plugin_configuration: "PluginConfiguration", cleaned_data
+    ):
+        current_config = plugin_configuration.configuration
+        configuration_to_update = cleaned_data.get("configuration")
+        if configuration_to_update:
+            cls._update_config_items(configuration_to_update, current_config)
+        if "active" in cleaned_data:
+            plugin_configuration.active = cleaned_data["active"]
+        plugin_configuration.save()
+        return plugin_configuration
+
+    @classmethod
+    def _get_default_configuration(cls):
+        defaults = None
+        return defaults
+
+    @classmethod
+    def get_plugin_configuration(cls, queryset: QuerySet) -> "PluginConfiguration":
+        defaults = cls._get_default_configuration()
+        configuration = queryset.get_or_create(name=cls.PLUGIN_NAME, defaults=defaults)[
+            0
+        ]
+        return configuration

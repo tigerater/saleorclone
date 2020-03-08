@@ -4,7 +4,6 @@ from graphene import Node
 from prices import TaxedMoney
 
 from saleor.account.models import Address
-from saleor.checkout.error_codes import CheckoutErrorCode
 from saleor.checkout.models import Checkout
 from saleor.checkout.utils import add_variant_to_checkout
 from saleor.order.models import Order
@@ -113,14 +112,6 @@ def test_checkout_update_shipping_address(
 
     assert data["errors"] == [
         {"field": "shippingAddress", "message": "This checkout doesn't need shipping"}
-    ]
-
-    assert data["checkoutErrors"] == [
-        {
-            "field": "shippingAddress",
-            "message": "This checkout doesn't need shipping",
-            "code": CheckoutErrorCode.SHIPPING_NOT_REQUIRED.name,
-        }
     ]
 
     # Ensure the address was unchanged

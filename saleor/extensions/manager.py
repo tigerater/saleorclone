@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .base_plugin import BasePlugin
     from ..checkout.models import Checkout, CheckoutLine
     from ..product.models import Product
-    from ..account.models import Address
+    from ..account.models import Address, User
     from ..order.models import OrderLine, Order
 
 
@@ -178,6 +178,14 @@ class ExtensionsManager:
             "postprocess_order_creation", default_value, order
         )
 
+    def customer_created(self, customer: "User"):
+        default_value = None
+        return self.__run_method_on_plugins("customer_created", default_value, customer)
+
+    def order_fully_paid(self, order: "Order"):
+        default_value = None
+        return self.__run_method_on_plugins("order_fully_paid", default_value, order)
+
     # FIXME these methods should be more generic
     def assign_tax_code_to_object_meta(
         self, obj: Union["Product", "ProductType"], tax_code: str
@@ -218,14 +226,14 @@ class ExtensionsManager:
                 return plugin.get_plugin_configuration(plugin_configurations_qs)
 
     def get_plugin_configurations(self) -> List["PluginConfiguration"]:
-        plugin_configuration_ids = []
+        plugin_configurations = []
         plugin_configurations_qs = PluginConfiguration.objects.all()
         for plugin in self.plugins:
             plugin_configuration = plugin.get_plugin_configuration(
                 plugin_configurations_qs
             )
-            plugin_configuration_ids.append(plugin_configuration.pk)
-        return PluginConfiguration.objects.filter(pk__in=plugin_configuration_ids)
+            plugin_configurations.append(plugin_configuration)
+        return plugin_configurations
 
 
 def get_extensions_manager(

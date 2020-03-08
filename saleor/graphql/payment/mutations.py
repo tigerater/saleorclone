@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from ...core.taxes import zero_taxed_money
 from ...core.utils import get_client_ip
 from ...payment import PaymentError, models
-from ...payment.error_codes import PaymentErrorCode
 from ...payment.utils import (
     create_payment,
     gateway_capture,
@@ -18,7 +17,6 @@ from ..account.types import AddressInput
 from ..checkout.types import Checkout
 from ..core.mutations import BaseMutation
 from ..core.scalars import Decimal
-from ..core.types import common as common_types
 from ..core.utils import from_global_id_strict_type
 from .enums import PaymentGatewayEnum
 from .types import Payment
@@ -63,13 +61,11 @@ class CheckoutPaymentCreate(BaseMutation, I18nMixin):
 
     class Meta:
         description = "Create a new payment for given checkout."
-        error_type_class = common_types.PaymentError
-        error_type_field = "payment_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, **data):
         checkout_id = from_global_id_strict_type(
-            checkout_id, only_type=Checkout, field="checkout_id"
+            info, checkout_id, only_type=Checkout, field="checkout_id"
         )
         checkout = models.Checkout.objects.prefetch_related(
             "lines__variant__product__collections"
@@ -81,12 +77,7 @@ class CheckoutPaymentCreate(BaseMutation, I18nMixin):
             billing_address = cls.validate_address(data["billing_address"])
         if billing_address is None:
             raise ValidationError(
-                {
-                    "billing_address": ValidationError(
-                        "No billing address associated with this checkout.",
-                        code=PaymentErrorCode.BILLING_ADDRESS_NOT_SET,
-                    )
-                }
+                {"billing_address": "No billing address associated with this checkout."}
             )
 
         checkout_total = (
@@ -100,11 +91,8 @@ class CheckoutPaymentCreate(BaseMutation, I18nMixin):
         if amount < checkout_total.gross.amount:
             raise ValidationError(
                 {
-                    "amount": ValidationError(
-                        "Partial payments are not allowed, amount should be "
-                        "equal checkout's total.",
-                        code=PaymentErrorCode.PARTIAL_PAYMENT_NOT_ALLOWED,
-                    )
+                    "amount": "Partial payments are not allowed, amount should be "
+                    "equal checkout's total."
                 }
             )
 
@@ -134,8 +122,6 @@ class PaymentCapture(BaseMutation):
     class Meta:
         description = "Captures the authorized payment amount"
         permissions = ("order.manage_orders",)
-        error_type_class = common_types.PaymentError
-        error_type_field = "payment_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, payment_id, amount=None):
@@ -145,7 +131,7 @@ class PaymentCapture(BaseMutation):
         try:
             gateway_capture(payment, amount)
         except PaymentError as e:
-            raise ValidationError(str(e), code=PaymentErrorCode.PAYMENT_ERROR)
+            raise ValidationError(str(e))
         return PaymentCapture(payment=payment)
 
 
@@ -153,8 +139,6 @@ class PaymentRefund(PaymentCapture):
     class Meta:
         description = "Refunds the captured payment amount"
         permissions = ("order.manage_orders",)
-        error_type_class = common_types.PaymentError
-        error_type_field = "payment_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, payment_id, amount=None):
@@ -164,7 +148,7 @@ class PaymentRefund(PaymentCapture):
         try:
             gateway_refund(payment, amount=amount)
         except PaymentError as e:
-            raise ValidationError(str(e), code=PaymentErrorCode.PAYMENT_ERROR)
+            raise ValidationError(str(e))
         return PaymentRefund(payment=payment)
 
 
@@ -177,8 +161,6 @@ class PaymentVoid(BaseMutation):
     class Meta:
         description = "Voids the authorized payment"
         permissions = ("order.manage_orders",)
-        error_type_class = common_types.PaymentError
-        error_type_field = "payment_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, payment_id):
@@ -188,7 +170,7 @@ class PaymentVoid(BaseMutation):
         try:
             gateway_void(payment)
         except PaymentError as e:
-            raise ValidationError(str(e), code=PaymentErrorCode.PAYMENT_ERROR)
+            raise ValidationError(str(e))
         return PaymentVoid(payment=payment)
 
 
@@ -200,8 +182,6 @@ class PaymentSecureConfirm(BaseMutation):
 
     class Meta:
         description = "Confirms payment in two step process like 3D secure"
-        error_type_class = common_types.PaymentError
-        error_type_field = "payment_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, payment_id):
@@ -211,5 +191,5 @@ class PaymentSecureConfirm(BaseMutation):
         try:
             gateway_confirm(payment)
         except PaymentError as e:
-            raise ValidationError(str(e), code=PaymentErrorCode.PAYMENT_ERROR)
+            raise ValidationError(str(e))
         return PaymentSecureConfirm(payment=payment)

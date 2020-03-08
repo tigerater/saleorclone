@@ -1,18 +1,9 @@
 from django.core.exceptions import ValidationError
 
-from ...order.error_codes import OrderErrorCode
-
 
 def validate_total_quantity(order):
     if order.get_total_quantity() == 0:
-        raise ValidationError(
-            {
-                "lines": ValidationError(
-                    "Could not create order without any products.",
-                    code=OrderErrorCode.REQUIRED,
-                )
-            }
-        )
+        raise ValidationError({"lines": "Could not create order without any products."})
 
 
 def validate_shipping_method(order):
@@ -25,12 +16,7 @@ def validate_shipping_method(order):
     )  # noqa
     if shipping_not_valid:
         raise ValidationError(
-            {
-                "shipping": ValidationError(
-                    "Shipping method is not valid for chosen shipping address",
-                    code=OrderErrorCode.ORDER_INVALID_SHIPPING_METHOD,
-                )
-            }
+            {"shipping": "Shipping method is not valid for chosen shipping address"}
         )
 
 
@@ -38,12 +24,7 @@ def validate_order_lines(order):
     for line in order:
         if line.variant is None:
             raise ValidationError(
-                {
-                    "lines": ValidationError(
-                        "Could not create orders with non-existing products.",
-                        code=OrderErrorCode.NOT_FOUND,
-                    )
-                }
+                {"lines": "Could not create orders with non-existing products."}
             )
 
 

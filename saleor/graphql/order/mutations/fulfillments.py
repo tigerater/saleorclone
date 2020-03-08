@@ -4,10 +4,8 @@ from django.utils.translation import npgettext_lazy, pgettext_lazy
 
 from ....order import events, models
 from ....order.emails import send_fulfillment_confirmation_to_customer
-from ....order.error_codes import OrderErrorCode
 from ....order.utils import cancel_fulfillment, fulfill_order_line, update_order_status
 from ...core.mutations import BaseMutation
-from ...core.types.common import OrderError
 from ...order.types import Fulfillment, Order
 from ..types import OrderLine
 
@@ -55,8 +53,6 @@ class FulfillmentCreate(BaseMutation):
     class Meta:
         description = "Creates a new fulfillment for an order."
         permissions = ("order.manage_orders",)
-        error_type_class = OrderError
-        error_type_field = "order_errors"
 
     @classmethod
     def clean_lines(cls, order_lines, quantities):
@@ -71,13 +67,7 @@ class FulfillmentCreate(BaseMutation):
                     "quantity": order_line.quantity_unfulfilled,
                     "order_line": order_line,
                 }
-                raise ValidationError(
-                    {
-                        "order_line_id": ValidationError(
-                            msg, code=OrderErrorCode.FULFILL_ORDER_LINE
-                        )
-                    }
-                )
+                raise ValidationError({"order_line_id": msg})
 
     @classmethod
     def clean_input(cls, data):
@@ -91,14 +81,7 @@ class FulfillmentCreate(BaseMutation):
         cls.clean_lines(order_lines, quantities)
 
         if sum(quantities) <= 0:
-            raise ValidationError(
-                {
-                    "lines": ValidationError(
-                        "Total quantity must be larger than 0.",
-                        code=OrderErrorCode.ZERO_QUANTITY,
-                    )
-                }
-            )
+            raise ValidationError({"lines": "Total quantity must be larger than 0."})
 
         data["order_lines"] = order_lines
         data["quantities"] = quantities
@@ -158,8 +141,6 @@ class FulfillmentUpdateTracking(BaseMutation):
     class Meta:
         description = "Updates a fulfillment for an order."
         permissions = ("order.manage_orders",)
-        error_type_class = OrderError
-        error_type_field = "order_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -191,8 +172,6 @@ class FulfillmentCancel(BaseMutation):
         description = """Cancels existing fulfillment
         and optionally restocks items."""
         permissions = ("order.manage_orders",)
-        error_type_class = OrderError
-        error_type_field = "order_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -204,13 +183,7 @@ class FulfillmentCancel(BaseMutation):
                 "Cancel fulfillment mutation error",
                 "This fulfillment can't be canceled",
             )
-            raise ValidationError(
-                {
-                    "fulfillment": ValidationError(
-                        err_msg, code=OrderErrorCode.CANNOT_CANCEL_FULFILLMENT
-                    )
-                }
-            )
+            raise ValidationError({"fulfillment": err_msg})
 
         order = fulfillment.order
         cancel_fulfillment(info.context.user, fulfillment, restock)

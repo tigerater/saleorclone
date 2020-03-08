@@ -3,8 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 from phonenumber_field.phonenumber import to_python
 from phonenumbers.phonenumberutil import is_possible_number
 
-from .error_codes import AccountErrorCode
-
 
 def validate_possible_number(phone, country=None):
     phone_number = to_python(phone, country)
@@ -14,6 +12,6 @@ def validate_possible_number(phone, country=None):
         or not phone_number.is_valid()
     ):
         raise ValidationError(
-            _("The phone number entered is not valid."), code=AccountErrorCode.INVALID
+            _("The phone number entered is not valid."), code="invalid_phone_number"
         )
     return phone_number

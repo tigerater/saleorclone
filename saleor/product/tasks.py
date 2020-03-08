@@ -1,7 +1,7 @@
 from ..celeryconf import app
 from ..discount.models import Sale
 from .models import Attribute, Product, ProductType, ProductVariant
-from .utils.attributes import generate_name_for_variant
+from .utils.attributes import get_name_from_attributes
 from .utils.variant_prices import (
     update_product_minimal_variant_price,
     update_products_minimal_variant_prices,
@@ -25,10 +25,11 @@ def _update_variants_names(instance, saved_attributes):
         product__product_type__variant_attributes__in=attributes_changed,
     )
     variants_to_be_updated = variants_to_be_updated.prefetch_related(
-        "attributes__values__translations"
+        "product__product_type__variant_attributes__values"
     ).all()
+    attributes = instance.variant_attributes.prefetch_related("values__translations")
     for variant in variants_to_be_updated:
-        variant.name = generate_name_for_variant(variant)
+        variant.name = get_name_from_attributes(variant, attributes)
         variant.save(update_fields=["name"])
 
 

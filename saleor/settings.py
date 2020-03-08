@@ -41,8 +41,8 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-ALLOWED_CLIENT_HOSTS = get_list(
-    os.environ.get("ALLOWED_CLIENT_HOSTS", "localhost,127.0.0.1")
+ALLOWED_STOREFRONT_HOSTS = get_list(
+    os.environ.get("ALLOWED_STOREFRONT_HOSTS", "localhost,127.0.0.1")
 )
 
 INTERNAL_IPS = get_list(os.environ.get("INTERNAL_IPS", "127.0.0.1"))
@@ -254,6 +254,7 @@ INSTALLED_APPS = [
     "saleor.data_feeds",
     "saleor.page",
     "saleor.payment",
+    "saleor.webhook",
     # External apps
     "versatileimagefield",
     "django_babel",
@@ -344,13 +345,6 @@ LOGGING = {
 AUTH_USER_MODEL = "account.User"
 
 LOGIN_URL = "/account/login/"
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 8},
-    }
-]
 
 DEFAULT_COUNTRY = os.environ.get("DEFAULT_COUNTRY", "US")
 DEFAULT_CURRENCY = os.environ.get("DEFAULT_CURRENCY", "USD")
@@ -679,10 +673,7 @@ GRAPHENE = {
 
 EXTENSIONS_MANAGER = "saleor.extensions.manager.ExtensionsManager"
 
-PLUGINS = [
-    "saleor.extensions.plugins.avatax.plugin.AvataxPlugin",
-    "saleor.extensions.plugins.vatlayer.plugin.VatlayerPlugin",
-]
+PLUGINS = os.environ.get("PLUGINS", [])
 
 # Whether DraftJS should be used be used instead of HTML
 # True to use DraftJS (JSON based), for the 2.0 dashboard

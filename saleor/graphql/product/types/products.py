@@ -127,14 +127,9 @@ def resolve_attribute_list(
 
 class ProductOrder(graphene.InputObjectType):
     field = graphene.Argument(
-        ProductOrderField, description="Sort products by the selected field."
-    )
-    attribute_id = graphene.Argument(
-        graphene.ID,
-        description=(
-            "Sort product by the selected attribute's values.\n"
-            "Note: this doesn't take translations into account yet."
-        ),
+        ProductOrderField,
+        required=True,
+        description="Sort products by the selected field.",
     )
     direction = graphene.Argument(
         OrderDirection,

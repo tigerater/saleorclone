@@ -75,7 +75,7 @@ type AccountRegister {
 input AccountRegisterInput {
   email: String!
   password: String!
-  redirectUrl: String!
+  redirectUrl: String
 }
 
 type AccountRequestDeletion {
@@ -683,7 +683,6 @@ type CheckoutClearPrivateMeta {
 type CheckoutComplete {
   errors: [Error!]
   order: Order
-  confirmationNeeded: Boolean!
   checkoutErrors: [CheckoutError!]
 }
 

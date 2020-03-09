@@ -353,7 +353,22 @@ def customer_user(address):  # pylint: disable=W0613
 
 @pytest.fixture
 def user_checkout(customer_user):
-    return Checkout.objects.get_or_create(user=customer_user)[0]
+    checkout = Checkout.objects.create(
+        user=customer_user,
+        billing_address=customer_user.default_billing_address,
+        shipping_address=customer_user.default_shipping_address,
+        note="Test notes",
+    )
+    return checkout
+
+
+@pytest.fixture
+def user_checkout_with_items(user_checkout, product_list):
+    for product in product_list:
+        variant = product.variants.get()
+        add_variant_to_checkout(user_checkout, variant, 1)
+    user_checkout.refresh_from_db()
+    return user_checkout
 
 
 @pytest.fixture
@@ -1183,24 +1198,6 @@ def payment_txn_captured(order_with_lines, payment_dummy):
         kind=TransactionKind.CAPTURE,
         gateway_response={},
         is_success=True,
-    )
-    return payment
-
-
-@pytest.fixture
-def payment_txn_to_confirm(order_with_lines, payment_dummy):
-    order = order_with_lines
-    payment = payment_dummy
-    payment.order = order
-    payment.to_confirm = True
-    payment.save()
-
-    payment.transactions.create(
-        amount=payment.total,
-        kind=TransactionKind.CAPTURE,
-        gateway_response={},
-        is_success=True,
-        action_required=True,
     )
     return payment
 

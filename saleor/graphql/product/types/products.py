@@ -347,6 +347,8 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         )
         return VariantPricingInfo(**asdict(availability))
 
+    resolve_availability = resolve_pricing
+
     @staticmethod
     def resolve_is_available(root: models.ProductVariant, info):
         country = info.context.country
@@ -520,6 +522,8 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
             context.extensions,
         )
         return ProductPricingInfo(**asdict(availability))
+
+    resolve_availability = resolve_pricing
 
     @staticmethod
     @gql_optimizer.resolver_hints(prefetch_related=("variants"))

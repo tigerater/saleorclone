@@ -255,9 +255,7 @@ class OrderUpdateShipping(BaseMutation):
 
 
 class OrderAddNoteInput(graphene.InputObjectType):
-    message = graphene.String(
-        description="Note message.", name="message", required=True
-    )
+    message = graphene.String(description="Note message.", name="message")
 
 
 class OrderAddNote(BaseMutation):
@@ -281,27 +279,10 @@ class OrderAddNote(BaseMutation):
         error_type_field = "order_errors"
 
     @classmethod
-    def clean_input(cls, _info, _instance, data):
-        message = data["input"]["message"].strip()
-        if not message:
-            raise ValidationError(
-                {
-                    "message": ValidationError(
-                        "Message can't be empty.", code=OrderErrorCode.REQUIRED,
-                    )
-                }
-            )
-        data["input"]["message"] = message
-        return data
-
-    @classmethod
     def perform_mutation(cls, _root, info, **data):
         order = cls.get_node_or_error(info, data.get("id"), only_type=Order)
-        cleaned_input = cls.clean_input(info, order, data)
         event = events.order_note_added_event(
-            order=order,
-            user=info.context.user,
-            message=cleaned_input["input"]["message"],
+            order=order, user=info.context.user, message=data.get("input")["message"]
         )
         return OrderAddNote(order=order, event=event)
 

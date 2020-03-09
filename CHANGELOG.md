@@ -30,7 +30,6 @@ All notable, unreleased changes to this project will be documented in this file.
 - Made middleware path resolving lazy and refactored middleware names - #5041 by @NyanKiyoshi
 - Generate slug in attribute value save - #5055 by @fowczarek
 - Fix order status after order update - #5072 by @fowczarek
-- Remove gateways forms and templates - #5075 by @IKarbowiak
 
 ## 2.9.0
 

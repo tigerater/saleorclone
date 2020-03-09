@@ -39,7 +39,7 @@ class TaxedMoney(graphene.ObjectType):
 
     class Meta:
         description = """Represents a monetary value with taxes. In
-        cases where taxes were not applied, net and gross values will be equal.
+        case when taxes were not applied, net and gross values will be equal.
         """
 
 

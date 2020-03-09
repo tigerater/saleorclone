@@ -7,9 +7,9 @@ from graphene import relay
 from ....core.permissions import ProductPermissions
 from ....product import models
 from ...core.connection import CountableDjangoObjectType
+from ...core.resolvers import resolve_meta, resolve_private_meta
+from ...core.types import MetadataObjectType
 from ...decorators import permission_required
-from ...meta.deprecated.resolvers import resolve_meta, resolve_private_meta
-from ...meta.types import ObjectWithMetadata
 from ...translations.fields import TranslationField
 from ...translations.types import AttributeTranslation, AttributeValueTranslation
 from ..descriptions import AttributeDescriptions, AttributeValueDescriptions
@@ -58,7 +58,7 @@ class AttributeValue(CountableDjangoObjectType):
         return root.input_type
 
 
-class Attribute(CountableDjangoObjectType):
+class Attribute(CountableDjangoObjectType, MetadataObjectType):
     input_type = AttributeInputTypeEnum(description=AttributeDescriptions.INPUT_TYPE)
 
     name = graphene.String(description=AttributeDescriptions.NAME)
@@ -97,7 +97,7 @@ class Attribute(CountableDjangoObjectType):
             "variants at the product type level."
         )
         only_fields = ["id", "product_types", "product_variant_types"]
-        interfaces = [relay.Node, ObjectWithMetadata]
+        interfaces = [relay.Node]
         model = models.Attribute
 
     @staticmethod
@@ -106,11 +106,11 @@ class Attribute(CountableDjangoObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_private_meta(root: models.Attribute, _info):
+    def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
-    def resolve_meta(root: models.Attribute, _info):
+    def resolve_meta(root, _info):
         return resolve_meta(root, _info)
 
     @staticmethod

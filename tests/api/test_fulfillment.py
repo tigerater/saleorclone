@@ -405,7 +405,7 @@ def clear_meta_variables(fulfillment):
     fulfillment_id = graphene.Node.to_global_id("Fulfillment", fulfillment.id)
     return {
         "id": fulfillment_id,
-        "input": {"namespace": "", "clientName": "", "key": "foo"},
+        "input": {"namespace": "test", "clientName": "client1", "key": "foo"},
     }
 
 
@@ -415,9 +415,9 @@ def update_metadata_variables(staff_user, fulfillment):
     return {
         "id": fulfillment_id,
         "input": {
-            "namespace": "",
-            "clientName": "",
-            "key": str(staff_user),
+            "namespace": "test",
+            "clientName": str(staff_user),
+            "key": "foo",
             "value": "bar",
         },
     }
@@ -458,10 +458,10 @@ def test_fulfillment_update_metadata_user_has_permission(
     errors = content["data"]["orderFulfillmentUpdateMeta"]["errors"]
     assert len(errors) == 0
     fulfillment.refresh_from_db()
-    assert fulfillment.metadata == {str(staff_user): "bar"}
+    assert fulfillment.meta == {"test": {str(staff_user): {"foo": "bar"}}}
 
 
-def test_fulfillment_update_private_metadata_user_has_no_permission(
+def test_fulfillment_update_private_metadata_user_has_no_permision(
     staff_api_client,
     staff_user,
     update_private_metadata_mutation,
@@ -499,7 +499,7 @@ def test_fulfillment_update_private_metadata_user_has_permission(
     errors = content["data"]["orderFulfillmentUpdatePrivateMeta"]["errors"]
     assert len(errors) == 0
     fulfillment.refresh_from_db()
-    assert fulfillment.private_metadata == {str(staff_user): "bar"}
+    assert fulfillment.private_meta == {"test": {str(staff_user): {"foo": "bar"}}}
 
 
 def test_fulfillment_clear_meta_user_has_no_permission(
@@ -510,7 +510,7 @@ def test_fulfillment_clear_meta_user_has_no_permission(
     clear_metadata_mutation,
 ):
     assert not staff_user.has_perm(OrderPermissions.MANAGE_ORDERS)
-    fulfillment.store_value_in_metadata(items={"foo": "bar"})
+    fulfillment.store_meta(namespace="test", client=staff_user, item={"foo": "bar"})
     fulfillment.save()
     response = staff_api_client.post_graphql(
         clear_metadata_mutation, clear_meta_variables
@@ -528,7 +528,7 @@ def test_fulfillment_clear_meta_user_has_permission(
 ):
     staff_user.user_permissions.add(permission_manage_orders)
     assert staff_user.has_perm(OrderPermissions.MANAGE_ORDERS)
-    fulfillment.store_value_in_metadata(items={"foo": "bar"})
+    fulfillment.store_meta(namespace="test", client="client1", item={"foo": "bar"})
     fulfillment.save()
     fulfillment.refresh_from_db()
     response = staff_api_client.post_graphql(
@@ -538,7 +538,7 @@ def test_fulfillment_clear_meta_user_has_permission(
     content = get_graphql_content(response)
     assert content.get("errors") is None
     fulfillment.refresh_from_db()
-    assert not fulfillment.get_value_from_metadata(key="foo")
+    assert fulfillment.get_meta(namespace="test", client="client1") == {}
 
 
 def test_fulfillment_clear_private_meta_user_has_no_permission(
@@ -549,7 +549,9 @@ def test_fulfillment_clear_private_meta_user_has_no_permission(
     clear_private_metadata_mutation,
 ):
     assert not staff_user.has_perm(OrderPermissions.MANAGE_ORDERS)
-    fulfillment.store_value_in_private_metadata(items={"foo": "bar"})
+    fulfillment.store_private_meta(
+        namespace="test", client="client1", item={"foo": "bar"}
+    )
     fulfillment.save()
     response = staff_api_client.post_graphql(
         clear_private_metadata_mutation, clear_meta_variables
@@ -567,7 +569,9 @@ def test_fulfillment_clear_private_meta_user_has_permission(
 ):
     staff_user.user_permissions.add(permission_manage_orders)
     assert staff_user.has_perm(OrderPermissions.MANAGE_ORDERS)
-    fulfillment.store_value_in_private_metadata(items={"foo": "bar"})
+    fulfillment.store_private_meta(
+        namespace="test", client="client1", item={"foo": "bar"}
+    )
     fulfillment.save()
     fulfillment.refresh_from_db()
     response = staff_api_client.post_graphql(
@@ -577,4 +581,4 @@ def test_fulfillment_clear_private_meta_user_has_permission(
     content = get_graphql_content(response)
     assert content.get("errors") is None
     fulfillment.refresh_from_db()
-    assert not fulfillment.get_value_from_private_metadata(key="foo")
+    assert fulfillment.get_private_meta(namespace="test", client="client1") == {}

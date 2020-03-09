@@ -9,9 +9,3 @@ class ShopErrorCode(Enum):
     NOT_FOUND = "not_found"
     REQUIRED = "required"
     UNIQUE = "unique"
-
-
-class MetadataErrorCode(Enum):
-    GRAPHQL_ERROR = "graphql_error"
-    INVALID = "invalid"
-    NOT_FOUND = "not_found"

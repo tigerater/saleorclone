@@ -86,6 +86,14 @@ class PermissionGroupDelete(ModelDeleteMutation):
         error_type_field = "account_errors"
 
 
+class UsersInput(graphene.InputObjectType):
+    users = graphene.List(
+        graphene.NonNull(graphene.ID),
+        description="List of users to assign to this group.",
+        required=True,
+    )
+
+
 class PermissionGroupAssignUsers(ModelMutation):
     group = graphene.Field(Group, description="Group to which users were assigned.")
 
@@ -94,10 +102,8 @@ class PermissionGroupAssignUsers(ModelMutation):
             description="ID of the group to which users will be assigned.",
             required=True,
         )
-        users = graphene.List(
-            graphene.NonNull(graphene.ID),
-            description="List of users to assign to this group.",
-            required=True,
+        input = UsersInput(
+            description="Input fields required to perform mutation.", required=True
         )
 
     class Meta:
@@ -117,7 +123,8 @@ class PermissionGroupAssignUsers(ModelMutation):
 
     @classmethod
     def prepare_user_pks(cls, info, group, **data):
-        cleaned_input = cls.clean_input(info, group, data, Group)
+        input_data = data.get("input")
+        cleaned_input = cls.clean_input(info, group, input_data)
         user_ids: List[str] = cleaned_input["users"]
 
         user_pks = [
@@ -166,10 +173,8 @@ class PermissionGroupUnassignUsers(PermissionGroupAssignUsers):
             description="ID of group from which users will be unassigned.",
             required=True,
         )
-        users = graphene.List(
-            graphene.NonNull(graphene.ID),
-            description="List of users to assign to this group.",
-            required=True,
+        input = UsersInput(
+            description="Input fields required to perform mutation.", required=True
         )
 
     class Meta:

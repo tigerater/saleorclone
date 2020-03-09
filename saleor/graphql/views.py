@@ -1,9 +1,12 @@
 import json
 import logging
+import time
 import traceback
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+import opentracing
 from django.conf import settings
+from django.db import connection
 from django.http import HttpRequest, HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render_to_response
 from django.urls import reverse
@@ -24,6 +27,27 @@ API_PATH = SimpleLazyObject(lambda: reverse("api"))
 
 unhandled_errors_logger = logging.getLogger("saleor.graphql.errors.unhandled")
 handled_errors_logger = logging.getLogger("saleor.graphql.errors.handled")
+
+
+def tracing_wrapper(execute, sql, params, many, context):
+    if not settings.ENABLE_OPENTRACING:
+        return execute(sql, params, many, context)
+
+    start = time.time()
+    with opentracing.tracer.start_span(operation_name="query") as span:
+        span.set_tag("sql", sql)
+        span.set_tag("many", many)
+        try:
+            result = execute(sql, params, many, context)
+        except Exception as e:
+            span.set_tag("status", "error")
+            span.set_tag("exception", e)
+            raise
+        else:
+            span.set_tag("status", "ok")
+            return result
+        finally:
+            span.set_tag("duration", time.time() - start)
 
 
 class GraphQLView(View):
@@ -103,6 +127,19 @@ class GraphQLView(View):
     def get_response(
         self, request: HttpRequest, data: dict
     ) -> Tuple[Optional[Dict[str, List[Any]]], int]:
+        if settings.ENABLE_OPENTRACING:
+            with opentracing.tracer.start_span(operation_name="request") as span:
+                span.set_tag("method", request.method)
+                span.set_tag("path", request.path)
+                result, status_code = self._get_response(request, data)
+                span.set_tag("status_code", status_code)
+                print("tag set!")
+                return result, status_code
+        return self._get_response(request, data)
+
+    def _get_response(
+        self, request: HttpRequest, data: dict
+    ) -> Tuple[Optional[Dict[str, List[Any]]], int]:
         execution_result = self.execute_graphql_request(request, data)
         status_code = 200
         if execution_result:
@@ -164,14 +201,15 @@ class GraphQLView(View):
             # executor is not a valid argument in all backends
             extra_options["executor"] = self.executor
         try:
-            return document.execute(  # type: ignore
-                root=self.get_root_value(),
-                variables=variables,
-                operation_name=operation_name,
-                context=request,
-                middleware=self.middleware,
-                **extra_options,
-            )
+            with connection.execute_wrapper(tracing_wrapper):
+                return document.execute(  # type: ignore
+                    root=self.get_root_value(),
+                    variables=variables,
+                    operation_name=operation_name,
+                    context=request,
+                    middleware=self.middleware,
+                    **extra_options,
+                )
         except Exception as e:
             return ExecutionResult(errors=[e], invalid=True)
 

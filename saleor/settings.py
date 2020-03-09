@@ -254,7 +254,6 @@ INSTALLED_APPS = [
     "saleor.data_feeds",
     "saleor.page",
     "saleor.payment",
-    "saleor.webhook",
     # External apps
     "versatileimagefield",
     "django_babel",

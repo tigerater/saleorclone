@@ -266,7 +266,7 @@ class StaffDelete(StaffDeleteMixin, UserDelete):
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
-        if not cls.check_permissions(info.context):
+        if not cls.check_permissions(info.context.user):
             raise PermissionDenied()
 
         user_id = data.get("id")

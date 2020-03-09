@@ -36,12 +36,12 @@ class RazorpayGatewayPlugin(BasePlugin):
             "label": pgettext_lazy("Plugin label", "Template path"),
         },
         "Public API key": {
-            "type": ConfigurationTypeField.SECRET,
+            "type": ConfigurationTypeField.STRING,
             "help_text": pgettext_lazy("Plugin help text", "Provide  public API key"),
             "label": pgettext_lazy("Plugin label", "Public API key"),
         },
         "Secret API key": {
-            "type": ConfigurationTypeField.SECRET,
+            "type": ConfigurationTypeField.STRING,
             "help_text": pgettext_lazy(
                 "Plugin help text", "Provide Stripe secret API key"
             ),
@@ -83,13 +83,18 @@ class RazorpayGatewayPlugin(BasePlugin):
                 connection_params={
                     "public_key": configuration["Public API key"],
                     "private_key": configuration["Secret API key"],
-                    "prefill": True,
-                    "store_name": None,
-                    "store_image": None,
                 },
-                template_path=configuration["Template path"],
+                template_path="",
                 store_customer=configuration["Store customers card"],
             )
+
+    @classmethod
+    def _hide_secret_configuration_fields(cls, configuration):
+        secret_fields = ["Public API key", "Secret API key"]
+        for field in configuration:
+            # We don't want to share our secret data
+            if field.get("name") in secret_fields and field.get("value"):
+                field["value"] = cls.REDACTED_FORM
 
     @classmethod
     def _get_default_configuration(cls):
@@ -99,8 +104,8 @@ class RazorpayGatewayPlugin(BasePlugin):
             "active": False,
             "configuration": [
                 {"name": "Template path", "value": "order/payment/razorpay.html"},
-                {"name": "Public API key", "value": None},
-                {"name": "Secret API key", "value": None},
+                {"name": "Public API key", "value": ""},
+                {"name": "Secret API key", "value": ""},
                 {"name": "Store customers card", "value": False},
                 {"name": "Automatic payment capture", "value": True},
             ],
@@ -141,8 +146,3 @@ class RazorpayGatewayPlugin(BasePlugin):
             payment_information,
             connection_params=self._get_gateway_config().connection_params,
         )
-
-    @require_active_plugin
-    def get_payment_config(self, previous_value):
-        config = self._get_gateway_config()
-        return [{"field": "api_key", "value": config.connection_params["public_key"]}]

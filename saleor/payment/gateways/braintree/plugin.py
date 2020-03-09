@@ -46,21 +46,21 @@ class BraintreeGatewayPlugin(BasePlugin):
             "label": pgettext_lazy("Plugin label", "Template path"),
         },
         "Public API key": {
-            "type": ConfigurationTypeField.SECRET,
+            "type": ConfigurationTypeField.STRING,
             "help_text": pgettext_lazy(
                 "Plugin help text", "Provide Braintree public API key"
             ),
             "label": pgettext_lazy("Plugin label", "Public API key"),
         },
         "Secret API key": {
-            "type": ConfigurationTypeField.SECRET,
+            "type": ConfigurationTypeField.STRING,
             "help_text": pgettext_lazy(
                 "Plugin help text", "Provide Braintree secret API key"
             ),
             "label": pgettext_lazy("Plugin label", "Secret API key"),
         },
         "Merchant ID": {
-            "type": ConfigurationTypeField.SECRET,
+            "type": ConfigurationTypeField.STRING,
             "help_text": pgettext_lazy(
                 "Plugin help text", "Provide Braintree merchant ID"
             ),
@@ -132,6 +132,14 @@ class BraintreeGatewayPlugin(BasePlugin):
             )
 
     @classmethod
+    def _hide_secret_configuration_fields(cls, configuration):
+        secret_fields = ["Public API key", "Secret API key", "Merchant ID"]
+        for field in configuration:
+            # We don't want to share our secret data
+            if field.get("name") in secret_fields and field.get("value"):
+                field["value"] = cls.REDACTED_FORM
+
+    @classmethod
     def _get_default_configuration(cls):
         defaults = {
             "name": cls.PLUGIN_NAME,
@@ -139,10 +147,10 @@ class BraintreeGatewayPlugin(BasePlugin):
             "active": False,
             "configuration": [
                 {"name": "Template path", "value": "order/payment/braintree.html"},
-                {"name": "Public API key", "value": None},
-                {"name": "Secret API key", "value": None},
+                {"name": "Public API key", "value": ""},
+                {"name": "Secret API key", "value": ""},
                 {"name": "Use sandbox", "value": True},
-                {"name": "Merchant ID", "value": None},
+                {"name": "Merchant ID", "value": ""},
                 {"name": "Store customers card", "value": False},
                 {"name": "Automatic payment capture", "value": True},
                 {"name": "Require 3D secure", "value": False},

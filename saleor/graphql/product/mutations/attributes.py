@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 from ....core.permissions import ProductPermissions
+from ....core.utils import generate_unique_slug
 from ....product import AttributeInputType, models
 from ....product.error_codes import ProductErrorCode
 from ...core.mutations import (
@@ -165,8 +166,10 @@ class AttributeMixin:
     @classmethod
     def clean_attribute(cls, instance, cleaned_input):
         input_slug = cleaned_input.get("slug", None)
-        if input_slug is None:
-            cleaned_input["slug"] = slugify(cleaned_input["name"])
+        if not instance.slug and input_slug is None:
+            cleaned_input["slug"] = generate_unique_slug(
+                instance, cleaned_input["name"]
+            )
         elif input_slug == "":
             raise ValidationError(
                 {
@@ -177,7 +180,8 @@ class AttributeMixin:
                 }
             )
 
-        query = models.Attribute.objects.filter(slug=cleaned_input["slug"])
+        slug = input_slug if "slug" in cleaned_input else instance.slug
+        query = models.Attribute.objects.filter(slug=slug)
 
         if instance.pk:
             query = query.exclude(pk=instance.pk)

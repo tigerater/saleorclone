@@ -200,12 +200,22 @@ class PermissionMultipleChoiceField(forms.ModelMultipleChoiceField):
         return obj.name
 
 
-class ConfigBooleanField(forms.BooleanField):
+class ConfigField(forms.Field):
+    def __init__(self, *args, **kwargs):
+        structure = kwargs.pop("structure")
+        super().__init__(*args, **kwargs)
+        self.label = structure["name"]
+        self.name = structure["name"]
+        self.help_text = structure["help_text"]
+        self.initial = structure["value"]
+
+
+class ConfigBooleanField(forms.BooleanField, ConfigField):
     def to_python(self, value):
         return {"name": self.label, "value": super().to_python(value)}
 
 
-class ConfigCharField(forms.CharField):
+class ConfigCharField(forms.CharField, ConfigField):
     def clean(self, value):
         parsed_value = super().clean(value)
         return {"name": self.label, "value": parsed_value}

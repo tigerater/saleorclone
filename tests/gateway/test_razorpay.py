@@ -36,7 +36,7 @@ def gateway_config():
         template_path="template.html",
         connection_params={
             "public_key": "public",
-            "private_key": "secret",
+            "secret_key": "secret",
             "prefill": True,
             "store_name": "Saleor",
             "store_image": "image.png",

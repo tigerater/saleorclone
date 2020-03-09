@@ -526,7 +526,6 @@ def categories_tree(db, product_type):  # pylint: disable=W0613
 
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-10",
         price=Money(10, "USD"),
         product_type=product_type,
         category=child,
@@ -591,10 +590,7 @@ def permission_manage_service_accounts():
 @pytest.fixture
 def product_type(color_attribute, size_attribute):
     product_type = ProductType.objects.create(
-        name="Default Type",
-        slug="default-type",
-        has_variants=True,
-        is_shipping_required=True,
+        name="Default Type", has_variants=True, is_shipping_required=True
     )
     product_type.product_attributes.add(color_attribute)
     product_type.variant_attributes.add(size_attribute)
@@ -604,7 +600,7 @@ def product_type(color_attribute, size_attribute):
 @pytest.fixture
 def product_type_without_variant():
     product_type = ProductType.objects.create(
-        name="Type", slug="type", has_variants=False, is_shipping_required=True
+        name="Type", has_variants=False, is_shipping_required=True
     )
     return product_type
 
@@ -616,7 +612,6 @@ def product(product_type, category, warehouse):
 
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-11",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -643,7 +638,6 @@ def product(product_type, category, warehouse):
 def product_with_single_variant(product_type, category, warehouse):
     product = Product.objects.create(
         name="Test product with single variant",
-        slug="test-product-with-single-variant",
         price=Money("1.99", "USD"),
         product_type=product_type,
         category=category,
@@ -662,7 +656,6 @@ def product_with_single_variant(product_type, category, warehouse):
 def product_with_two_variants(product_type, category, warehouse):
     product = Product.objects.create(
         name="Test product with two variants",
-        slug="test-product-with-two-variant",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -697,17 +690,13 @@ def product_with_variant_with_two_attributes(
     color_attribute, size_attribute, category, warehouse
 ):
     product_type = ProductType.objects.create(
-        name="Type with two variants",
-        slug="two-variants",
-        has_variants=True,
-        is_shipping_required=True,
+        name="Type with two variants", has_variants=True, is_shipping_required=True
     )
     product_type.variant_attributes.add(color_attribute)
     product_type.variant_attributes.add(size_attribute)
 
     product = Product.objects.create(
         name="Test product with two variants",
-        slug="test-product-with-two-variant",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -756,7 +745,6 @@ def product_with_multiple_values_attributes(product, product_type, category) -> 
 def product_with_default_variant(product_type_without_variant, category, warehouse):
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-3",
         price=Money(10, "USD"),
         product_type=product_type_without_variant,
         category=category,
@@ -793,14 +781,10 @@ def product_variant_list(product):
 @pytest.fixture
 def product_without_shipping(category, warehouse):
     product_type = ProductType.objects.create(
-        name="Type with no shipping",
-        slug="no-shipping",
-        has_variants=False,
-        is_shipping_required=False,
+        name="Type with no shipping", has_variants=False, is_shipping_required=False
     )
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-4",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -830,7 +814,6 @@ def product_list(product_type, category, warehouse):
                 Product(
                     pk=1486,
                     name="Test product 1",
-                    slug="test-product-a",
                     price=Money(10, "USD"),
                     category=category,
                     product_type=product_type,
@@ -839,7 +822,6 @@ def product_list(product_type, category, warehouse):
                 Product(
                     pk=1487,
                     name="Test product 2",
-                    slug="test-product-b",
                     price=Money(20, "USD"),
                     category=category,
                     product_type=product_type,
@@ -848,7 +830,6 @@ def product_list(product_type, category, warehouse):
                 Product(
                     pk=1489,
                     name="Test product 3",
-                    slug="test-product-c",
                     price=Money(20, "USD"),
                     category=category,
                     product_type=product_type,
@@ -928,7 +909,6 @@ def product_with_image(product, image, media_root):
 def unavailable_product(product_type, category):
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-5",
         price=Money("10.00", "USD"),
         product_type=product_type,
         is_published=False,
@@ -941,7 +921,6 @@ def unavailable_product(product_type, category):
 def unavailable_product_with_variant(product_type, category, warehouse):
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-6",
         price=Money("10.00", "USD"),
         product_type=product_type,
         is_published=False,
@@ -966,7 +945,6 @@ def unavailable_product_with_variant(product_type, category, warehouse):
 def product_with_images(product_type, category, media_root):
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-7",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -1078,7 +1056,6 @@ def gift_card_created_by_staff(staff_user):
 def order_with_lines(order, product_type, category, shipping_zone, warehouse):
     product = Product.objects.create(
         name="Test product",
-        slug="test-product-8",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -1105,7 +1082,6 @@ def order_with_lines(order, product_type, category, shipping_zone, warehouse):
 
     product = Product.objects.create(
         name="Test product 2",
-        slug="test-product-9",
         price=Money("20.00", "USD"),
         product_type=product_type,
         category=category,
@@ -1378,9 +1354,9 @@ def collection_with_image(db, image, media_root):
 def collection_list(db):
     collections = Collection.objects.bulk_create(
         [
-            Collection(name="Collection 1", slug="collection-1", is_published="True"),
-            Collection(name="Collection 2", slug="collection-2", is_published="True"),
-            Collection(name="Collection 3", slug="collection-3", is_published="True"),
+            Collection(name="Collection 1", is_published="True"),
+            Collection(name="Collection 2", is_published="True"),
+            Collection(name="Collection 3", is_published="True"),
         ]
     )
     return collections
@@ -1625,14 +1601,12 @@ def payment_dummy(db, order_with_lines):
 def digital_content(category, media_root, warehouse) -> DigitalContent:
     product_type = ProductType.objects.create(
         name="Digital Type",
-        slug="digital-type",
         has_variants=True,
         is_shipping_required=False,
         is_digital=True,
     )
     product = Product.objects.create(
         name="Test digital product",
-        slug="test-digital-product",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
@@ -1868,10 +1842,7 @@ def customer_wishlist_item_with_two_variants(
 @pytest.fixture
 def warehouse(address, shipping_zone):
     warehouse = Warehouse.objects.create(
-        address=address,
-        name="Example Warehouse",
-        slug="example-warehouse",
-        email="test@example.com",
+        address=address, name="Example Warehouse", email="test@example.com"
     )
     warehouse.shipping_zones.add(shipping_zone)
     warehouse.save()

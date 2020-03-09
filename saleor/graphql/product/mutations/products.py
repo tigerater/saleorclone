@@ -11,7 +11,6 @@ from graphql_jwt.exceptions import PermissionDenied
 from graphql_relay import from_global_id
 
 from ....core.permissions import ProductPermissions
-from ....core.utils import generate_unique_slug
 from ....product import models
 from ....product.error_codes import ProductErrorCode
 from ....product.tasks import (
@@ -96,9 +95,7 @@ class CategoryCreate(ModelMutation):
     def clean_input(cls, info, instance, data):
         cleaned_input = super().clean_input(info, instance, data)
         if "slug" not in cleaned_input and "name" in cleaned_input:
-            cleaned_input["slug"] = generate_unique_slug(
-                instance, slugable_value=cleaned_input["name"]
-            )
+            cleaned_input["slug"] = slugify(cleaned_input["name"])
         parent_id = data["parent_id"]
         if parent_id:
             parent = cls.get_node_or_error(
@@ -208,9 +205,7 @@ class CollectionCreate(ModelMutation):
     def clean_input(cls, info, instance, data):
         cleaned_input = super().clean_input(info, instance, data)
         if "slug" not in cleaned_input and "name" in cleaned_input:
-            cleaned_input["slug"] = generate_unique_slug(
-                instance, slugable_value=cleaned_input["name"]
-            )
+            cleaned_input["slug"] = slugify(cleaned_input["name"])
         if data.get("background_image"):
             image_data = info.context.FILES.get(data["background_image"])
             validate_image_file(image_data, "background_image")
@@ -507,7 +502,6 @@ class ProductInput(graphene.InputObjectType):
         description="Determines if product is visible to customers."
     )
     name = graphene.String(description="Product name.")
-    slug = graphene.String(description="Product slug.")
     base_price = Decimal(description="Product price.")
     tax_code = graphene.String(description="Tax rate for enabled tax gateway.")
     seo = SeoInput(description="Search engine optimization fields.")
@@ -794,15 +788,6 @@ class ProductCreate(ModelMutation):
         product_type = (
             instance.product_type if instance.pk else cleaned_input.get("product_type")
         )  # type: models.ProductType
-
-        if (
-            not instance.slug
-            and "slug" not in cleaned_input
-            and "name" in cleaned_input
-        ):
-            cleaned_input["slug"] = generate_unique_slug(
-                instance, slugable_value=cleaned_input["name"]
-            )
 
         # Try to get price from "basePrice" or "price" field. Once "price" is removed
         # from the schema, only "basePrice" should be used here.
@@ -1286,7 +1271,6 @@ class ProductVariantClearPrivateMeta(ClearMetaBaseMutation):
 
 class ProductTypeInput(graphene.InputObjectType):
     name = graphene.String(description="Name of the product type.")
-    slug = graphene.String(description="Product type slug.")
     has_variants = graphene.Boolean(
         description=(
             "Determines if product of this type has multiple variants. This option "
@@ -1333,11 +1317,6 @@ class ProductTypeCreate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data):
         cleaned_input = super().clean_input(info, instance, data)
-
-        if "slug" not in cleaned_input and "name" in cleaned_input:
-            cleaned_input["slug"] = generate_unique_slug(
-                instance, slugable_value=cleaned_input["name"]
-            )
 
         # FIXME  tax_rate logic should be dropped after we remove tax_rate from input
         tax_rate = cleaned_input.pop("tax_rate", "")

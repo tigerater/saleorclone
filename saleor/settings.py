@@ -10,6 +10,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django_prices.utils.formatting import get_currency_fraction
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from .tracing import OpenTracingConfig
+
 
 def get_list(text):
     return [item.strip() for item in text.split(",")]
@@ -186,6 +188,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "saleor.core.middleware.request_tracing",
     "saleor.core.middleware.discounts",
     "saleor.core.middleware.google_analytics",
     "saleor.core.middleware.country",
@@ -523,6 +526,7 @@ if SENTRY_DSN:
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()])
 
 GRAPHENE = {
+    "MIDDLEWARE": ("saleor.graphql.middleware.OpentracingGrapheneMiddleware",),
     "RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST": True,
     "RELAY_CONNECTION_MAX_LIMIT": 100,
 }
@@ -557,3 +561,20 @@ if (
         "Make sure you've added storefront address to ALLOWED_CLIENT_HOSTS "
         "if ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL is enabled."
     )
+
+
+ENABLE_OPENTRACING = get_bool_from_env("ENABLE_OPENTRACING", False)
+# TRACER_TYPE can be either DATADOG or JAEGER
+# Default host / port for DataDog: localhost / 8126, Jaeger: localhost / 5775
+TRACER_TYPE = os.environ.get("TRACER_TYPE")
+TRACER_REPORTING_HOST = os.environ.get("TRACER_REPORTING_HOST")
+TRACER_REPORTING_PORT = os.environ.get("TRACER_REPORTING_PORT")
+
+
+if ENABLE_OPENTRACING:
+    config = OpenTracingConfig(
+        tracer_type=TRACER_TYPE,
+        reporting_host=TRACER_REPORTING_HOST,
+        reporting_port=TRACER_REPORTING_PORT,
+    )
+    config.create_global_tracer(service_name="saleor")

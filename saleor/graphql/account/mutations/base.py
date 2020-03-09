@@ -11,6 +11,7 @@ from ....account.emails import (
     send_user_password_reset_email_with_url,
 )
 from ....account.error_codes import AccountErrorCode
+from ....core.permissions import AccountPermissions
 from ....core.utils.url import validate_storefront_url
 from ...account.i18n import I18nMixin
 from ...account.types import Address, AddressInput, User
@@ -38,7 +39,7 @@ def can_edit_address(user, address):
     - customers associated to the given address.
     """
     return (
-        user.has_perm("account.manage_users")
+        user.has_perm(AccountPermissions.MANAGE_USERS)
         or user.addresses.filter(pk=address.pk).exists()
     )
 
@@ -307,13 +308,6 @@ class CustomerInput(UserInput, UserAddressInput):
 
 
 class UserCreateInput(CustomerInput):
-    send_password_email = graphene.Boolean(
-        description=(
-            "DEPRECATED: Will be removed in Saleor 2.10, if mutation has `redirect_url`"
-            " in input then customer get email with link to set a password. "
-            "Send an email with a link to set a password."
-        )
-    )
     redirect_url = graphene.String(
         description=(
             "URL of a view where users should be redirected to "
@@ -351,19 +345,6 @@ class BaseCustomerCreate(ModelMutation, I18nMixin):
                 billing_address_data, instance=getattr(instance, BILLING_ADDRESS_FIELD)
             )
             cleaned_input[BILLING_ADDRESS_FIELD] = billing_address
-
-        # DEPRECATED: We should remove this condition when dropping
-        # `send_password_email` from mutation input.
-        if cleaned_input.get("send_password_email"):
-            if not cleaned_input.get("redirect_url"):
-                raise ValidationError(
-                    {
-                        "redirect_url": ValidationError(
-                            "Redirect url is required to send a password.",
-                            code=AccountErrorCode.REQUIRED,
-                        )
-                    }
-                )
 
         if cleaned_input.get("redirect_url"):
             try:
@@ -415,7 +396,7 @@ class UserUpdateMeta(UpdateMetaBaseMutation):
         public = True
         error_type_class = AccountError
         error_type_field = "account_errors"
-        permissions = ("account.manage_users",)
+        permissions = (AccountPermissions.MANAGE_USERS,)
 
 
 class UserClearMeta(ClearMetaBaseMutation):
@@ -425,4 +406,4 @@ class UserClearMeta(ClearMetaBaseMutation):
         public = True
         error_type_class = AccountError
         error_type_field = "account_errors"
-        permissions = ("account.manage_users",)
+        permissions = (AccountPermissions.MANAGE_USERS,)

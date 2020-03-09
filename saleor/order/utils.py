@@ -99,14 +99,7 @@ def recalculate_order(order: Order, **kwargs):
     if order.discount:
         total -= order.discount
     order.total = total
-    order.save(
-        update_fields=[
-            "discount_amount",
-            "total_net_amount",
-            "total_gross_amount",
-            "currency",
-        ]
-    )
+    order.save()
     recalculate_order_weight(order)
 
 
@@ -145,13 +138,7 @@ def update_order_prices(order, discounts):
 
     if order.shipping_method:
         order.shipping_price = manager.calculate_order_shipping(order)
-        order.save(
-            update_fields=[
-                "shipping_price_net_amount",
-                "shipping_price_gross_amount",
-                "currency",
-            ]
-        )
+        order.save()
 
     recalculate_order(order)
 

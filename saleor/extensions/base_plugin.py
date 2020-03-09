@@ -299,6 +299,9 @@ class BasePlugin:
     ) -> List["CustomerSource"]:
         return NotImplemented
 
+    def create_form(self, data, payment_information, previous_value):
+        return NotImplemented
+
     def get_client_token(self, token_config, previous_value):
         return NotImplemented
 

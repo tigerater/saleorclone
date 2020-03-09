@@ -1760,6 +1760,13 @@ input GiftCardUpdateInput {
   userEmail: String
 }
 
+type Group implements Node {
+  name: String!
+  permissions: [PermissionDisplay]
+  id: ID!
+  users: [User]
+}
+
 type HomepageCollectionUpdate {
   errors: [Error!]
   shop: Shop
@@ -2307,6 +2314,8 @@ type Mutation {
   serviceAccountClearPrivateMetadata(id: ID!, input: MetaPath!): ServiceAccountClearPrivateMeta
   serviceAccountTokenCreate(input: ServiceAccountTokenInput!): ServiceAccountTokenCreate
   serviceAccountTokenDelete(id: ID!): ServiceAccountTokenDelete
+  permissionGroupCreate(input: PermissionGroupCreateInput!): PermissionGroupCreate
+  permissionGroupUpdate(id: ID!, input: PermissionGroupInput!): PermissionGroupUpdate
 }
 
 input NameTranslationInput {
@@ -2896,6 +2905,28 @@ enum PermissionEnum {
   MANAGE_TRANSLATIONS
   MANAGE_WEBHOOKS
   MANAGE_CHECKOUTS
+}
+
+type PermissionGroupCreate {
+  errors: [Error!]
+  group: Group
+  accountErrors: [AccountError!]
+}
+
+input PermissionGroupCreateInput {
+  name: String!
+  permissions: [PermissionEnum!]
+}
+
+input PermissionGroupInput {
+  name: String
+  permissions: [PermissionEnum!]
+}
+
+type PermissionGroupUpdate {
+  errors: [Error!]
+  group: Group
+  accountErrors: [AccountError!]
 }
 
 type Plugin implements Node {
@@ -4705,7 +4736,7 @@ type WishlistRemoveProductVariantMutation {
 
 scalar _Any
 
-union _Entity = Address | ServiceAccount | User | ProductVariant | Product | ProductType | Collection | Category | ProductImage
+union _Entity = Address | ServiceAccount | User | Group | ProductVariant | Product | ProductType | Collection | Category | ProductImage
 
 type _Service {
   sdl: String

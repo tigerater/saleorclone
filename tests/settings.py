@@ -1,8 +1,10 @@
 import re
-from typing import List, Pattern, Union
 
 from django.utils.functional import SimpleLazyObject
+from typing import List, Pattern, Union
 
+# pylint: disable=W0401, W0614
+# flake8: noqa
 from saleor.settings import *  # noqa
 
 
@@ -31,7 +33,9 @@ DEFAULT_CURRENCY = "USD"
 TIME_ZONE = "America/Chicago"
 LANGUAGE_CODE = "en"
 
+ES_URL = None
 SEARCH_BACKEND = "saleor.search.backends.postgresql"
+INSTALLED_APPS = [a for a in INSTALLED_APPS if a != "django_elasticsearch_dsl"]
 
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 

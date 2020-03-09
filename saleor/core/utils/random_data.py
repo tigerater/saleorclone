@@ -14,13 +14,10 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.encoding import smart_text
-from django.utils.text import slugify
 from faker import Factory
 from faker.providers import BaseProvider
 from measurement.measures import Weight
 from prices import Money, TaxedMoney
-from text_unidecode import unidecode
 
 from ...account.models import Address, User
 from ...account.utils import store_user_address
@@ -368,7 +365,7 @@ def create_product_image(product, placeholder_dir, image_name):
     return product_image
 
 
-def create_address(save=True):
+def create_address():
     address = Address(
         first_name=fake.first_name(),
         last_name=fake.last_name(),
@@ -384,36 +381,30 @@ def create_address(save=True):
     else:
         address.postal_code = fake.postalcode()
 
-    if save:
-        address.save()
+    address.save()
     return address
 
 
-def create_fake_user(save=True):
-    address = create_address(save=save)
+def create_fake_user():
+    address = create_address()
     email = get_email(address.first_name, address.last_name)
 
     # Skip the email if it already exists
-    try:
-        return User.objects.get(email=email)
-    except User.DoesNotExist:
-        pass
+    if User.objects.filter(email=email).exists():
+        return
 
-    user = User(
+    user = User.objects.create_user(
         first_name=address.first_name,
         last_name=address.last_name,
         email=email,
         password="password",
-        default_billing_address=address,
-        default_shipping_address=address,
-        is_active=True,
-        note=fake.paragraph(),
-        date_joined=fake.date_time(),
     )
 
-    if save:
-        user.save()
-        user.addresses.add(address)
+    user.addresses.add(address)
+    user.default_billing_address = address
+    user.default_shipping_address = address
+    user.is_active = True
+    user.save()
     return user
 
 
@@ -946,10 +937,8 @@ def create_shipping_zones():
 
 def create_warehouses():
     for shipping_zone in ShippingZone.objects.all():
-        shipping_zone_name = shipping_zone.name
         warehouse, _ = Warehouse.objects.update_or_create(
-            name=shipping_zone_name,
-            slug=slugify(smart_text(unidecode(shipping_zone_name))),
+            name=shipping_zone.name,
             defaults={"company_name": fake.company(), "address": create_address()},
         )
         warehouse.shipping_zones.add(shipping_zone)

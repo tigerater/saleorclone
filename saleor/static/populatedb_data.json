@@ -283,7 +283,6 @@
                 }
             },
             "name": "Paint",
-            "slug": "paint",
             "has_variants": true,
             "is_shipping_required": true,
             "is_digital": false,
@@ -304,7 +303,6 @@
                 }
             },
             "name": "Music",
-            "slug": "music",
             "has_variants": true,
             "is_shipping_required": true,
             "is_digital": false,
@@ -325,7 +323,6 @@
                 }
             },
             "name": "Juice",
-            "slug": "juice",
             "has_variants": true,
             "is_shipping_required": true,
             "is_digital": false,
@@ -346,7 +343,6 @@
                 }
             },
             "name": "Wine",
-            "slug": "wine",
             "has_variants": false,
             "is_shipping_required": true,
             "is_digital": false,
@@ -367,7 +363,6 @@
                 }
             },
             "name": "Beer",
-            "slug": "beer",
             "has_variants": false,
             "is_shipping_required": true,
             "is_digital": false,
@@ -388,7 +383,6 @@
                 }
             },
             "name": "Cushion",
-            "slug": "cushion",
             "has_variants": true,
             "is_shipping_required": true,
             "is_digital": false,
@@ -409,7 +403,6 @@
                 }
             },
             "name": "Shoe",
-            "slug": "shoe",
             "has_variants": true,
             "is_shipping_required": true,
             "is_digital": false,
@@ -430,7 +423,6 @@
                 }
             },
             "name": "Top (clothing)",
-            "slug": "top-clothing",
             "has_variants": true,
             "is_shipping_required": true,
             "is_digital": false,

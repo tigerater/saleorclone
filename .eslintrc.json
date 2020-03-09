@@ -3,11 +3,7 @@
     "browser": true,
     "jquery": true
   },
-  "extends": [
-    "standard",
-    "plugin:react/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["standard", "plugin:react/recommended"],
   "globals": {
     "Materialize": true,
     "describe": true,

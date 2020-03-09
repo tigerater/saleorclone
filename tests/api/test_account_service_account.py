@@ -356,9 +356,8 @@ def test_service_account_with_access_to_resources(
     """
     response = service_account_api_client.post_graphql(query)
     assert_no_permission(response)
-    response = service_account_api_client.post_graphql(
-        query, permissions=[permission_manage_orders]
-    )
+    service_account.permissions.add(permission_manage_orders)
+    response = service_account_api_client.post_graphql(query)
     get_graphql_content(response)
 
 

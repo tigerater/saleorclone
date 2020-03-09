@@ -1,6 +1,6 @@
 schema {
   query: Query
-  mutation: Mutations
+  mutation: Mutation
 }
 
 type AccountAddressCreate {
@@ -405,7 +405,6 @@ type AttributeValueDelete {
 
 input AttributeValueInput {
   id: ID
-  slug: String
   values: [String]!
 }
 
@@ -1990,7 +1989,7 @@ input MoveProductInput {
   sortOrder: Int
 }
 
-type Mutations {
+type Mutation {
   webhookCreate(input: WebhookCreateInput!): WebhookCreate
   webhookDelete(id: ID!): WebhookDelete
   webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
@@ -3328,7 +3327,7 @@ type ProductVariantUpdatePrivateMeta {
 type Query {
   webhook(id: ID!): Webhook
   webhooks(filter: WebhookFilterInput, before: String, after: String, first: Int, last: Int): WebhookCountableConnection
-  webhookEvents(before: String, after: String, first: Int, last: Int): WebhookEventCountableConnection
+  webhookEvents: [WebhookEvent]
   webhookSamplePayload(eventType: WebhookEventTypeEnum!): JSONString
   translations(kind: TranslatableKinds!, before: String, after: String, first: Int, last: Int): TranslatableItemConnection
   shop: Shop
@@ -3385,6 +3384,8 @@ type Query {
   serviceAccount(id: ID!): ServiceAccount
   user(id: ID!): User
   node(id: ID!): Node
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type ReducedRate {
@@ -4321,17 +4322,6 @@ type WebhookEvent {
   name: String
 }
 
-type WebhookEventCountableConnection {
-  pageInfo: PageInfo!
-  edges: [WebhookEventCountableEdge!]!
-  totalCount: Int
-}
-
-type WebhookEventCountableEdge {
-  node: WebhookEvent!
-  cursor: String!
-}
-
 enum WebhookEventTypeEnum {
   ANY_EVENTS
   ORDER_CREATED
@@ -4375,4 +4365,12 @@ enum WeightUnitsEnum {
   LB
   OZ
   G
+}
+
+scalar _Any
+
+union _Entity = Address | ServiceAccount | User | ProductVariant | Product | ProductType | Collection | Category | ProductImage
+
+type _Service {
+  sdl: String
 }

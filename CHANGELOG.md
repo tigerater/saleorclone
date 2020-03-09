@@ -97,6 +97,8 @@ All notable, unreleased changes to this project will be documented in this file.
 - Fix fetching staff user without manage_users permission - #4835 by @fowczarek
 - Add form to configure payments in dashboard - #4807 by @szewczykmira
 - Drop `manage_users` permission from the `permissions` query - #4854 by @maarcingebala
+- Fix ProductVariant with duplicated AttributeValues - #4829 by @fowczarek
+- Saleor can now be part of Apollo Federation, making seamless GraphQL schema extension possible - #4825 by @salwator
 
 ## 2.8.0
 

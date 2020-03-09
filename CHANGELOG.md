@@ -71,7 +71,7 @@ All notable, unreleased changes to this project will be documented in this file.
 - Added validations for minimum password length in settings - #4735 by @fowczarek
 - Add error codes to mutations responses - #4676 by @Kwaidan00
 - Payment gateways are now saleor plugins with dynamic configuration - #4669 by @salwator
-- Add support for webhooks - #4731 by @korycins
+- Fixed the inability of users to set a variant's `priceOverride` and `costPrice` to `null` - #4754 by @NyanKiyoshi
 
 ## 2.8.0
 
@@ -107,7 +107,6 @@ All notable, unreleased changes to this project will be documented in this file.
 - Refactored the backend side of `checkoutCreate` to improve performances and prevent side effects over the user's checkout if the checkout creation was to fail. - #4367 by @NyanKiyoshi
 - Refactored the logic of cleaning the checkout shipping method over the API, so users do not lose the shipping method when updating their checkout. If the shipping method becomes invalid, it will be replaced by the cheapest available. - #4367 by @NyanKiyoshi & @szewczykmira
 - Refactored process of getting available shipping methods to make it easier to understand and prevent human-made errors. - #4367 by @NyanKiyoshi
-- Moved 3D secure option to Braintree plugin configuration and update config structure mechanism - #4751 by @salwator
 
 ## 2.7.0
 

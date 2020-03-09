@@ -56,6 +56,9 @@ All notable, unreleased changes to this project will be documented in this file.
 - Drop unused resolver `resolve_availability` - #5190 by @maarcingebala
 - Fix permission for `checkoutCustomerAttach` mutation - #5192 by @maarcingebala
 - Restrict access to user field - #5194 by @maarcingebala
+- Unify permission for service account api client in test - #5197 by @fowczarek
+- Add additional confirmation step to checkoutComplete mutation - #5179 by @salwator
+- Allow sorting warehouses by name - #5211 by @dominik-zeglen
 
 ## 2.9.0
 

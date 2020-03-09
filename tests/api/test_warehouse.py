@@ -94,7 +94,6 @@ mutation createWarehouse($input: WarehouseCreateInput!) {
         warehouse {
             id
             name
-            slug
             companyName
             address {
                 id
@@ -114,7 +113,6 @@ mutation updateWarehouse($input: WarehouseUpdateInput!, $id: ID!) {
         }
         warehouse {
             name
-            slug
             companyName
             address {
                 id
@@ -254,7 +252,6 @@ def test_mutation_create_warehouse_requires_permission(staff_api_client):
     variables = {
         "input": {
             "name": "Test warehouse",
-            "slug": "test-warhouse",
             "companyName": "Amazing Company Inc",
             "email": "test-admin@example.com",
             "address": {
@@ -282,7 +279,6 @@ def test_mutation_create_warehouse(
     variables = {
         "input": {
             "name": "Test warehouse",
-            "slug": "test-warhouse",
             "companyName": "Amazing Company Inc",
             "email": "test-admin@example.com",
             "address": {
@@ -308,7 +304,6 @@ def test_mutation_create_warehouse(
         "Warehouse", warehouse.id
     )
     assert created_warehouse["name"] == warehouse.name
-    assert created_warehouse["slug"] == warehouse.slug
 
 
 def test_create_warehouse_creates_address(
@@ -366,7 +361,6 @@ def test_mutation_update_warehouse(
     staff_api_client.user.user_permissions.add(permission_manage_products)
     warehouse_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
     warehouse_old_name = warehouse.name
-    warehouse_slug = warehouse.slug
     warehouse_old_company_name = warehouse.company_name
     variables = {
         "id": warehouse_id,
@@ -381,7 +375,6 @@ def test_mutation_update_warehouse(
     assert not (warehouse.name == warehouse_old_name)
     assert not (warehouse.company_name == warehouse_old_company_name)
     assert warehouse.name == "New name"
-    assert warehouse.slug == warehouse_slug
     assert warehouse.company_name == "New name for company"
     assert warehouse.shipping_zones.count() == 0
 

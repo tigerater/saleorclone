@@ -75,7 +75,7 @@ type AccountRegister {
 input AccountRegisterInput {
   email: String!
   password: String!
-  redirectUrl: String!
+  redirectUrl: String
 }
 
 type AccountRequestDeletion {
@@ -683,7 +683,6 @@ type CheckoutClearPrivateMeta {
 type CheckoutComplete {
   errors: [Error!]
   order: Order
-  confirmationNeeded: Boolean!
   checkoutErrors: [CheckoutError!]
 }
 
@@ -2110,6 +2109,8 @@ type Mutation {
   createWarehouse(input: WarehouseCreateInput!): WarehouseCreate
   updateWarehouse(id: ID!, input: WarehouseUpdateInput!): WarehouseUpdate
   deleteWarehouse(id: ID!): WarehouseDelete
+  assignWarehouseShippingZone(id: ID!, shippingZoneIds: [ID!]!): WarehouseShippingZoneAssign
+  unassignWarehouseShippingZone(id: ID!, shippingZoneIds: [ID!]!): WarehouseShippingZoneUnassign
   createStock(input: StockInput!): StockCreate
   updateStock(id: ID!, input: StockInput!): StockUpdate
   deleteStock(id: ID!): StockDelete
@@ -2730,12 +2731,28 @@ type PageCountableEdge {
 
 type PageCreate {
   errors: [Error!]
+  pageErrors: [PageError!]
   page: Page
 }
 
 type PageDelete {
   errors: [Error!]
+  pageErrors: [PageError!]
   page: Page
+}
+
+type PageError {
+  field: String
+  message: String
+  code: PageErrorCode
+}
+
+enum PageErrorCode {
+  GRAPHQL_ERROR
+  INVALID
+  NOT_FOUND
+  REQUIRED
+  UNIQUE
 }
 
 input PageFilterInput {
@@ -2808,6 +2825,7 @@ input PageTranslationInput {
 
 type PageUpdate {
   errors: [Error!]
+  pageErrors: [PageError!]
   page: Page
 }
 
@@ -3053,6 +3071,7 @@ type Product implements Node {
   publicationDate: Date
   isPublished: Boolean!
   productType: ProductType!
+  slug: String!
   category: Category
   updatedAt: DateTime
   chargeTaxes: Boolean!
@@ -3074,7 +3093,6 @@ type Product implements Node {
   images: [ProductImage]
   collections: [Collection]
   translation(languageCode: LanguageCodeEnum!): ProductTranslation
-  slug: String!
 }
 
 type ProductBulkDelete {
@@ -3128,6 +3146,7 @@ input ProductCreateInput {
   descriptionJson: JSONString
   isPublished: Boolean
   name: String
+  slug: String
   basePrice: Decimal
   taxCode: String
   seo: SeoInput
@@ -3239,6 +3258,7 @@ input ProductInput {
   descriptionJson: JSONString
   isPublished: Boolean
   name: String
+  slug: String
   basePrice: Decimal
   taxCode: String
   seo: SeoInput
@@ -3301,6 +3321,7 @@ type ProductTranslation implements Node {
 type ProductType implements Node {
   id: ID!
   name: String!
+  slug: String!
   hasVariants: Boolean!
   isShippingRequired: Boolean!
   isDigital: Boolean!
@@ -3375,6 +3396,7 @@ input ProductTypeFilterInput {
 
 input ProductTypeInput {
   name: String
+  slug: String
   hasVariants: Boolean
   productAttributes: [ID]
   variantAttributes: [ID]
@@ -3998,6 +4020,7 @@ type ShippingZone implements Node {
   priceRange: MoneyRange
   countries: [CountryDisplay]
   shippingMethods: [ShippingMethod]
+  warehouses: [Warehouse]
 }
 
 type ShippingZoneBulkDelete {
@@ -4704,6 +4727,7 @@ type VoucherUpdate {
 type Warehouse implements Node {
   id: ID!
   name: String!
+  slug: String!
   companyName: String!
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection!
   address: Address!
@@ -4739,11 +4763,12 @@ type WarehouseCreate {
 }
 
 input WarehouseCreateInput {
-  name: String!
+  slug: String
   companyName: String
-  shippingZones: [ID]
   email: String
+  name: String!
   address: WarehouseAddressInput!
+  shippingZones: [ID]
 }
 
 type WarehouseDelete {
@@ -4771,6 +4796,18 @@ input WarehouseFilterInput {
   search: String
 }
 
+type WarehouseShippingZoneAssign {
+  errors: [Error!]
+  warehouse: Warehouse
+  warehouseErrors: [WarehouseError!]
+}
+
+type WarehouseShippingZoneUnassign {
+  errors: [Error!]
+  warehouse: Warehouse
+  warehouseErrors: [WarehouseError!]
+}
+
 enum WarehouseSortField {
   NAME
 }
@@ -4787,10 +4824,10 @@ type WarehouseUpdate {
 }
 
 input WarehouseUpdateInput {
-  name: String!
+  slug: String
   companyName: String
-  shippingZones: [ID]
   email: String
+  name: String
   address: WarehouseAddressInput
 }
 

@@ -14,6 +14,7 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.text import slugify
 from faker import Factory
 from faker.providers import BaseProvider
 from measurement.measures import Weight
@@ -365,7 +366,7 @@ def create_product_image(product, placeholder_dir, image_name):
     return product_image
 
 
-def create_address():
+def create_address(save=True):
     address = Address(
         first_name=fake.first_name(),
         last_name=fake.last_name(),
@@ -381,30 +382,36 @@ def create_address():
     else:
         address.postal_code = fake.postalcode()
 
-    address.save()
+    if save:
+        address.save()
     return address
 
 
-def create_fake_user():
-    address = create_address()
+def create_fake_user(save=True):
+    address = create_address(save=save)
     email = get_email(address.first_name, address.last_name)
 
     # Skip the email if it already exists
-    if User.objects.filter(email=email).exists():
-        return
+    try:
+        return User.objects.get(email=email)
+    except User.DoesNotExist:
+        pass
 
-    user = User.objects.create_user(
+    user = User(
         first_name=address.first_name,
         last_name=address.last_name,
         email=email,
         password="password",
+        default_billing_address=address,
+        default_shipping_address=address,
+        is_active=True,
+        note=fake.paragraph(),
+        date_joined=fake.date_time(),
     )
 
-    user.addresses.add(address)
-    user.default_billing_address = address
-    user.default_shipping_address = address
-    user.is_active = True
-    user.save()
+    if save:
+        user.save()
+        user.addresses.add(address)
     return user
 
 
@@ -937,8 +944,10 @@ def create_shipping_zones():
 
 def create_warehouses():
     for shipping_zone in ShippingZone.objects.all():
+        shipping_zone_name = shipping_zone.name
         warehouse, _ = Warehouse.objects.update_or_create(
-            name=shipping_zone.name,
+            name=shipping_zone_name,
+            slug=slugify(shipping_zone_name),
             defaults={"company_name": fake.company(), "address": create_address()},
         )
         warehouse.shipping_zones.add(shipping_zone)

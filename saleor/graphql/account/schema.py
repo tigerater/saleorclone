@@ -1,6 +1,5 @@
 import graphene
 from graphql_jwt.decorators import login_required
-from graphql_jwt.exceptions import PermissionDenied
 
 from ..core.fields import FilterInputConnectionField
 from ..core.types import FilterInputObjectType
@@ -165,13 +164,9 @@ class AccountQueries(graphene.ObjectType):
     def resolve_staff_users(self, info, query=None, **_kwargs):
         return resolve_staff_users(info, query=query)
 
+    @permission_required("account.manage_users")
     def resolve_user(self, info, id):
-        user = graphene.Node.get_node_from_global_id(info, id, User)
-        if user.is_staff and info.context.user.has_perm("account.manage_staff"):
-            return user
-        if not user.is_staff and info.context.user.has_perm("account.manage_users"):
-            return user
-        raise PermissionDenied()
+        return graphene.Node.get_node_from_global_id(info, id, User)
 
 
 class AccountMutations(graphene.ObjectType):

@@ -24,7 +24,6 @@ from ....warehouse import models as stock_models
 from ....warehouse.availability import (
     get_available_quantity,
     get_available_quantity_for_customer,
-    get_quantity_allocated,
     is_product_in_stock,
     is_variant_in_stock,
 )
@@ -374,7 +373,8 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
     def resolve_quantity_allocated(root: models.ProductVariant, info):
         country = info.context.country
-        return get_quantity_allocated(root, country)
+        stock = stock_models.Stock.objects.get_variant_stock_for_country(country, root)
+        return stock.quantity_allocated
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)

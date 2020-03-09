@@ -535,24 +535,28 @@ def test_filter_product_by_category(user_api_client, product):
 def test_fetch_product_by_id(user_api_client, product):
     query = """
     query ($productId: ID!) {
-        product(id: $productId) {
-            name
+        node(id: $productId) {
+            ... on Product {
+                name
+            }
         }
     }
     """
     variables = {"productId": graphene.Node.to_global_id("Product", product.id)}
     response = user_api_client.post_graphql(query, variables)
     content = get_graphql_content(response)
-    product_data = content["data"]["product"]
+    product_data = content["data"]["node"]
     assert product_data["name"] == product.name
 
 
 def _fetch_product(client, product, permissions=None):
     query = """
     query ($productId: ID!) {
-        product(id: $productId) {
-            name,
-            isPublished
+        node(id: $productId) {
+            ... on Product {
+                name,
+                isPublished
+            }
         }
     }
     """
@@ -561,7 +565,7 @@ def _fetch_product(client, product, permissions=None):
         query, variables, permissions=permissions, check_no_permissions=False
     )
     content = get_graphql_content(response)
-    return content["data"]["product"]
+    return content["data"]["node"]
 
 
 def test_fetch_unpublished_product_staff_user(

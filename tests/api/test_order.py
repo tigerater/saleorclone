@@ -489,7 +489,7 @@ def test_payment_information_order_events_query(
     assert data["paymentGateway"] == payment_dummy.gateway
 
 
-def test_non_staff_user_cannot_only_see_his_order(user_api_client, order):
+def test_non_staff_user_can_only_see_his_order(user_api_client, order):
     query = """
     query OrderQuery($id: ID!) {
         order(id: $id) {
@@ -500,27 +500,16 @@ def test_non_staff_user_cannot_only_see_his_order(user_api_client, order):
     ID = graphene.Node.to_global_id("Order", order.id)
     variables = {"id": ID}
     response = user_api_client.post_graphql(query, variables)
-    assert_no_permission(response)
-
-
-def test_query_order_as_service_account(
-    service_account_api_client, permission_manage_orders, order
-):
-    query = """
-    query OrderQuery($id: ID!) {
-        order(id: $id) {
-            token
-        }
-    }
-    """
-    ID = graphene.Node.to_global_id("Order", order.id)
-    variables = {"id": ID}
-    response = service_account_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_orders]
-    )
     content = get_graphql_content(response)
     order_data = content["data"]["order"]
-    assert order_data["token"] == order.token
+    assert order_data["number"] == str(order.pk)
+
+    order.user = None
+    order.save()
+    response = user_api_client.post_graphql(query, variables)
+    content = get_graphql_content(response)
+    order_data = content["data"]["order"]
+    assert not order_data
 
 
 def test_draft_order_create(
@@ -2025,36 +2014,6 @@ def test_authorized_access_to_order_by_token(
     )
     content = get_graphql_content(response)
     assert content["data"]["orderByToken"]["user"]["id"] == customer_user_id
-
-
-def test_query_draft_order_by_token_with_requester_as_customer(
-    user_api_client, draft_order
-):
-    draft_order.user = user_api_client.user
-    draft_order.save(update_fields=["user"])
-    query = """
-    query OrderByToken($token: UUID!) {
-        orderByToken(token: $token) {
-            id
-        }
-    }
-    """
-    response = user_api_client.post_graphql(query, {"token": draft_order.token})
-    content = get_graphql_content(response)
-    assert not content["data"]["orderByToken"]
-
-
-def test_query_draft_order_by_token_as_anonymous_customer(api_client, draft_order):
-    query = """
-    query OrderByToken($token: UUID!) {
-        orderByToken(token: $token) {
-            id
-        }
-    }
-    """
-    response = api_client.post_graphql(query, {"token": draft_order.token})
-    content = get_graphql_content(response)
-    assert not content["data"]["orderByToken"]
 
 
 MUTATION_CANCEL_ORDERS = """

@@ -377,9 +377,7 @@ class ProductVariant(CountableDjangoObjectType):
 @key(fields="id")
 class Product(CountableDjangoObjectType):
     url = graphene.String(
-        description="The storefront URL for the product.",
-        required=True,
-        deprecation_reason="DEPRECATED: Will be removed in Saleor 2.11.",
+        description="The storefront URL for the product.", required=True
     )
     thumbnail = graphene.Field(
         Image,
@@ -471,7 +469,7 @@ class Product(CountableDjangoObjectType):
 
     @staticmethod
     def resolve_url(root: models.Product, *_args):
-        return ""
+        return root.get_absolute_url()
 
     @staticmethod
     @gql_optimizer.resolver_hints(
@@ -756,10 +754,8 @@ class Category(CountableDjangoObjectType):
     products = PrefetchingConnectionField(
         Product, description="List of products in the category."
     )
-    url = graphene.String(
-        description="The storefront's URL for the category.",
-        deprecation_reason="DEPRECATED: Will be removed in Saleor 2.11.",
-    )
+    # Deprecated. To remove in #5022
+    url = graphene.String(description="The storefront's URL for the category.")
     children = PrefetchingConnectionField(
         lambda: Category, description="List of children of the category."
     )
@@ -809,9 +805,10 @@ class Category(CountableDjangoObjectType):
         qs = root.children.all()
         return gql_optimizer.query(qs, info)
 
+    # Deprecated. To remove in #5022
     @staticmethod
     def resolve_url(root: models.Category, _info):
-        return ""
+        return root.get_absolute_url()
 
     @staticmethod
     def resolve_products(root: models.Category, info, **_kwargs):

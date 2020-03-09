@@ -42,7 +42,6 @@ class AccountRegister(ModelMutation):
         user.set_password(password)
         user.save()
         account_events.customer_account_created_event(user=user)
-        info.context.extensions.customer_created(customer=user)
 
 
 class AccountInput(graphene.InputObjectType):
@@ -71,8 +70,8 @@ class AccountUpdate(BaseCustomerCreate):
         error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -99,8 +98,8 @@ class AccountRequestDeletion(BaseMutation):
         error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -128,8 +127,8 @@ class AccountDelete(ModelDeleteMutation):
         error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def clean_instance(cls, info, instance):
@@ -185,8 +184,8 @@ class AccountAddressCreate(ModelMutation):
         error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -237,8 +236,8 @@ class AccountSetDefaultAddress(BaseMutation):
         error_type_field = "account_errors"
 
     @classmethod
-    def check_permissions(cls, context):
-        return context.user.is_authenticated
+    def check_permissions(cls, user):
+        return user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):

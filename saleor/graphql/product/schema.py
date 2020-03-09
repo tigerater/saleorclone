@@ -21,7 +21,6 @@ from .bulk_mutations.products import (
     ProductBulkPublish,
     ProductImageBulkDelete,
     ProductTypeBulkDelete,
-    ProductVariantBulkCreate,
     ProductVariantBulkDelete,
 )
 from .enums import StockAvailability
@@ -401,7 +400,6 @@ class ProductMutations(graphene.ObjectType):
 
     product_variant_create = ProductVariantCreate.Field()
     product_variant_delete = ProductVariantDelete.Field()
-    product_variant_bulk_create = ProductVariantBulkCreate.Field()
     product_variant_bulk_delete = ProductVariantBulkDelete.Field()
     product_variant_update = ProductVariantUpdate.Field()
     product_variant_translate = ProductVariantTranslate.Field()

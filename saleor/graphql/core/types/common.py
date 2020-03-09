@@ -58,12 +58,6 @@ class ProductError(Error):
     code = ProductErrorCode(description="The error code.")
 
 
-class BulkProductError(ProductError):
-    index = graphene.Int(
-        description="Index of an input list item that caused the error."
-    )
-
-
 class ShopError(Error):
     code = ShopErrorCode(description="The error code.")
 

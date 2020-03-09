@@ -19,9 +19,7 @@ from .types import ShippingZone
 class ShippingQueries(graphene.ObjectType):
     shipping_zone = graphene.Field(
         ShippingZone,
-        id=graphene.Argument(
-            graphene.ID, description="ID of the shipping zone.", required=True
-        ),
+        id=graphene.Argument(graphene.ID, required=True),
         description="Lookup a shipping zone by ID.",
     )
     shipping_zones = PrefetchingConnectionField(

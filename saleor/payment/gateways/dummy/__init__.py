@@ -2,6 +2,7 @@ import uuid
 
 from ... import ChargeStatus, TransactionKind
 from ...interface import GatewayConfig, GatewayResponse, PaymentData
+from .forms import DummyPaymentForm
 
 
 def dummy_success():
@@ -10,6 +11,10 @@ def dummy_success():
 
 def get_client_token(**_):
     return str(uuid.uuid4())
+
+
+def create_form(data, payment_information, connection_params):
+    return DummyPaymentForm(data=data)
 
 
 def authorize(

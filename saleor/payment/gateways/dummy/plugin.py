@@ -10,6 +10,7 @@ from . import (
     authorize,
     capture,
     confirm,
+    create_form,
     get_client_token,
     process_payment,
     refund,
@@ -20,6 +21,7 @@ GATEWAY_NAME = "Dummy"
 
 if TYPE_CHECKING:
     from ...interface import GatewayResponse, PaymentData, TokenConfig
+    from django import forms
 
 
 def require_active_plugin(fn):
@@ -140,8 +142,18 @@ class DummyGatewayPlugin(BasePlugin):
         return process_payment(payment_information, self._get_gateway_config())
 
     @require_active_plugin
+    def create_form(
+        self, data, payment_information: "PaymentData", previous_value
+    ) -> "forms.Form":
+        return create_form(data, payment_information, {})
+
+    @require_active_plugin
     def get_client_token(self, token_config: "TokenConfig", previous_value):
         return get_client_token()
+
+    @require_active_plugin
+    def get_payment_template(self, previous_value) -> str:
+        return self._get_gateway_config().template_path
 
     @require_active_plugin
     def get_payment_config(self, previous_value):

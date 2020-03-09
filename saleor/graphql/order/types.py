@@ -3,7 +3,6 @@ import graphene_django_optimizer as gql_optimizer
 from django.core.exceptions import ValidationError
 from graphene import relay
 
-from ...core.permissions import OrderPermissions
 from ...core.taxes import display_gross_prices
 from ...extensions.manager import get_extensions_manager
 from ...order import models
@@ -190,7 +189,7 @@ class Fulfillment(MetadataObjectType, CountableDjangoObjectType):
         return root.get_status_display()
 
     @staticmethod
-    @permission_required(OrderPermissions.MANAGE_ORDERS)
+    @permission_required("orders.manage_orders")
     def resolve_private_meta(root: models.Fulfillment, _info):
         return resolve_private_meta(root, _info)
 
@@ -505,7 +504,7 @@ class Order(MetadataObjectType, CountableDjangoObjectType):
         return root.discount
 
     @staticmethod
-    @permission_required(OrderPermissions.MANAGE_ORDERS)
+    @permission_required("order.manage_orders")
     def resolve_private_meta(root: models.Order, _info):
         return resolve_private_meta(root, _info)
 

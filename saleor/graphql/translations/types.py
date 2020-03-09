@@ -1,7 +1,6 @@
 import graphene
 from django.conf import settings
 
-from ...core.permissions import DiscountPermissions, ShippingPermissions
 from ...discount import models as discount_models
 from ...menu import models as menu_models
 from ...page import models as page_models
@@ -281,7 +280,7 @@ class VoucherTranslatableContent(CountableDjangoObjectType):
         only_fields = BASIC_TRANSLATABLE_FIELDS
 
     @staticmethod
-    @permission_required(DiscountPermissions.MANAGE_DISCOUNTS)
+    @permission_required("discount.manage_discounts")
     def resolve_voucher(root: discount_models.Voucher, _info):
         return root
 
@@ -309,7 +308,7 @@ class SaleTranslatableContent(CountableDjangoObjectType):
         only_fields = BASIC_TRANSLATABLE_FIELDS
 
     @staticmethod
-    @permission_required(DiscountPermissions.MANAGE_DISCOUNTS)
+    @permission_required("discount.manage_discounts")
     def resolve_sale(root: discount_models.Sale, _info):
         return root
 
@@ -373,6 +372,6 @@ class ShippingMethodTranslatableContent(CountableDjangoObjectType):
         only_fields = BASIC_TRANSLATABLE_FIELDS
 
     @staticmethod
-    @permission_required(ShippingPermissions.MANAGE_SHIPPING)
+    @permission_required("shipping.manage_shipping")
     def resolve_shipping_method(root: shipping_models.ShippingMethod, _info):
         return root

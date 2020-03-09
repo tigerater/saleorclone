@@ -6,7 +6,6 @@ from django.db import transaction
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 
-from ....core.permissions import ProductPermissions
 from ....product import AttributeInputType, models
 from ....product.error_codes import ProductErrorCode
 from ...core.mutations import (
@@ -217,7 +216,7 @@ class AttributeCreate(AttributeMixin, ModelMutation):
     class Meta:
         model = models.Attribute
         description = "Creates an attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -258,7 +257,7 @@ class AttributeUpdate(AttributeMixin, ModelMutation):
     class Meta:
         model = models.Attribute
         description = "Updates attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -327,7 +326,7 @@ class AttributeAssign(BaseMutation):
 
     @classmethod
     def check_permissions(cls, context):
-        return context.user.has_perm(ProductPermissions.MANAGE_PRODUCTS)
+        return context.user.has_perm("product.manage_products")
 
     @classmethod
     def get_operations(cls, info, operations: List[AttributeAssignInput]):
@@ -473,7 +472,7 @@ class AttributeUnassign(BaseMutation):
 
     @classmethod
     def check_permissions(cls, context):
-        return context.user.has_perm(ProductPermissions.MANAGE_PRODUCTS)
+        return context.user.has_perm("product.manage_products")
 
     @classmethod
     def save_field_values(cls, product_type, field, pks):
@@ -511,7 +510,7 @@ class AttributeDelete(ModelDeleteMutation):
     class Meta:
         model = models.Attribute
         description = "Deletes an attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -520,7 +519,7 @@ class AttributeUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.Attribute
         description = "Update public metadata for attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
         error_type_field = "product_errors"
@@ -530,7 +529,7 @@ class AttributeClearMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clears public metadata item for attribute."
         model = models.Attribute
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
         error_type_field = "product_errors"
@@ -540,7 +539,7 @@ class AttributeUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         description = "Update public metadata for attribute."
         model = models.Attribute
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
         error_type_field = "product_errors"
@@ -550,7 +549,7 @@ class AttributeClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clears public metadata item for attribute."
         model = models.Attribute
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
         error_type_field = "product_errors"
@@ -586,7 +585,7 @@ class AttributeValueCreate(ModelMutation):
     class Meta:
         model = models.AttributeValue
         description = "Creates a value for an attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -629,7 +628,7 @@ class AttributeValueUpdate(ModelMutation):
     class Meta:
         model = models.AttributeValue
         description = "Updates value of an attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -661,7 +660,7 @@ class AttributeValueDelete(ModelDeleteMutation):
     class Meta:
         model = models.AttributeValue
         description = "Deletes a value of an attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -679,7 +678,7 @@ class ProductTypeReorderAttributes(BaseMutation):
 
     class Meta:
         description = "Reorder the attributes of a product type."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -755,7 +754,7 @@ class AttributeReorderValues(BaseMutation):
 
     class Meta:
         description = "Reorder the values of an attribute."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 

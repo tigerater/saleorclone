@@ -2,7 +2,6 @@ import graphene
 import graphene_django_optimizer as gql_optimizer
 from graphene import relay
 
-from ....core.permissions import ProductPermissions
 from ....product import models
 from ...core.connection import CountableDjangoObjectType
 from ...core.resolvers import resolve_meta, resolve_private_meta
@@ -51,7 +50,7 @@ class DigitalContent(CountableDjangoObjectType, MetadataObjectType):
         return gql_optimizer.query(qs, info)
 
     @staticmethod
-    @permission_required(ProductPermissions.MANAGE_PRODUCTS)
+    @permission_required("product.manage_products")
     def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 

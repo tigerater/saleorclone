@@ -11,7 +11,6 @@ from django_prices.models import MoneyField
 from measurement.measures import Weight
 from prices import Money, MoneyRange
 
-from ..core.permissions import ShippingPermissions
 from ..core.utils.json_serializer import CustomJsonEncoder
 from ..core.utils.translations import TranslationProxy
 from ..core.weight import (
@@ -81,7 +80,7 @@ class ShippingZone(models.Model):
     class Meta:
         permissions = (
             (
-                ShippingPermissions.MANAGE_SHIPPING.codename,
+                "manage_shipping",
                 pgettext_lazy("Permission description", "Manage shipping."),
             ),
         )

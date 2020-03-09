@@ -7,7 +7,7 @@ from graphql_jwt.decorators import login_required
 
 from ...account import models
 from ...checkout.utils import get_user_checkout
-from ...core.permissions import AccountPermissions, OrderPermissions, get_permissions
+from ...core.permissions import get_permissions
 from ...order import models as order_models
 from ..checkout.types import Checkout
 from ..core.connection import CountableDjangoObjectType
@@ -17,8 +17,6 @@ from ..core.types import CountryDisplay, Image, MetadataObjectType, PermissionDi
 from ..core.utils import get_node_optimized
 from ..decorators import one_of_permissions_required
 from ..utils import format_permissions_for_display
-from ..wishlist.resolvers import resolve_wishlist_items_from_user
-from ..wishlist.types import WishlistItem
 from .enums import CountryCodeEnum, CustomerEventsEnum
 
 
@@ -170,7 +168,7 @@ class ServiceAccountToken(CountableDjangoObjectType):
         description = "Represents token data."
         model = models.ServiceAccountToken
         interfaces = [relay.Node]
-        permissions = (AccountPermissions.MANAGE_SERVICE_ACCOUNTS,)
+        permissions = ("account.manage_service_accounts",)
         only_fields = ["name", "auth_token"]
 
     @staticmethod
@@ -199,7 +197,7 @@ class ServiceAccount(MetadataObjectType, CountableDjangoObjectType):
         description = "Represents service account data."
         interfaces = [relay.Node]
         model = models.ServiceAccount
-        permissions = (AccountPermissions.MANAGE_SERVICE_ACCOUNTS,)
+        permissions = ("account.manage_service_accounts",)
         only_fields = [
             "name" "permissions",
             "created",
@@ -268,7 +266,6 @@ class User(MetadataObjectType, CountableDjangoObjectType):
         "saleor.graphql.payment.types.PaymentSource",
         description="List of stored payment sources.",
     )
-    wishlist = PrefetchingConnectionField(WishlistItem, description="User's wishlist.")
 
     class Meta:
         description = "Represents user data."
@@ -312,23 +309,19 @@ class User(MetadataObjectType, CountableDjangoObjectType):
         return format_permissions_for_display(permissions)
 
     @staticmethod
-    @one_of_permissions_required(
-        [AccountPermissions.MANAGE_USERS, AccountPermissions.MANAGE_STAFF]
-    )
+    @one_of_permissions_required(["account.manage_users", "account.manage_staff"])
     def resolve_note(root: models.User, info):
         return root.note
 
     @staticmethod
-    @one_of_permissions_required(
-        [AccountPermissions.MANAGE_USERS, AccountPermissions.MANAGE_STAFF]
-    )
+    @one_of_permissions_required(["account.manage_users", "account.manage_staff"])
     def resolve_events(root: models.User, info):
         return root.events.all()
 
     @staticmethod
     def resolve_orders(root: models.User, info, **_kwargs):
         viewer = info.context.user
-        if viewer.has_perm(OrderPermissions.MANAGE_ORDERS):
+        if viewer.has_perm("order.manage_orders"):
             return root.orders.all()
         return root.orders.confirmed()
 
@@ -351,19 +344,13 @@ class User(MetadataObjectType, CountableDjangoObjectType):
         return resolve_payment_sources(root)
 
     @staticmethod
-    @one_of_permissions_required(
-        [AccountPermissions.MANAGE_USERS, AccountPermissions.MANAGE_STAFF]
-    )
+    @one_of_permissions_required(["account.manage_users", "account.manage_staff"])
     def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
     def resolve_meta(root, _info):
         return resolve_meta(root, _info)
-
-    @staticmethod
-    def resolve_wishlist(root: models.User, info, **_kwargs):
-        return resolve_wishlist_items_from_user(root)
 
     @staticmethod
     def __resolve_reference(root, _info, **_kwargs):

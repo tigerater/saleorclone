@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Model, QuerySet
 
-from ...core.permissions import MenuPermissions, SitePermissions
 from ...menu import models
 from ...menu.error_codes import MenuErrorCode
 from ...menu.utils import update_menu
@@ -64,7 +63,7 @@ class MenuCreate(ModelMutation):
     class Meta:
         description = "Creates a new Menu."
         model = models.Menu
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -132,7 +131,7 @@ class MenuUpdate(ModelMutation):
     class Meta:
         description = "Updates a menu."
         model = models.Menu
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -144,7 +143,7 @@ class MenuDelete(ModelDeleteMutation):
     class Meta:
         description = "Deletes a menu."
         model = models.Menu
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -178,7 +177,7 @@ class MenuItemCreate(ModelMutation):
     class Meta:
         description = "Creates a new menu item."
         model = models.MenuItem
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -225,7 +224,7 @@ class MenuItemUpdate(MenuItemCreate):
     class Meta:
         description = "Updates a menu item."
         model = models.MenuItem
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -246,7 +245,7 @@ class MenuItemDelete(ModelDeleteMutation):
     class Meta:
         description = "Deletes a menu item."
         model = models.MenuItem
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -276,7 +275,7 @@ class MenuItemMove(BaseMutation):
 
     class Meta:
         description = "Moves items of menus."
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -408,7 +407,7 @@ class AssignNavigation(BaseMutation):
 
     class Meta:
         description = "Assigns storefront's navigation menus."
-        permissions = (MenuPermissions.MANAGE_MENUS, SitePermissions.MANAGE_SETTINGS)
+        permissions = ("menu.manage_menus", "site.manage_settings")
         error_type_class = MenuError
         error_type_field = "menu_errors"
 

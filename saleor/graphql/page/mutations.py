@@ -1,7 +1,6 @@
 import graphene
 from django.utils.text import slugify
 
-from ...core.permissions import PagePermissions
 from ...page import models
 from ..core.mutations import ModelDeleteMutation, ModelMutation
 from ..core.types.common import SeoInput
@@ -33,7 +32,7 @@ class PageCreate(ModelMutation):
     class Meta:
         description = "Creates a new page."
         model = models.Page
-        permissions = (PagePermissions.MANAGE_PAGES,)
+        permissions = ("page.manage_pages",)
 
     @classmethod
     def clean_input(cls, info, instance, data):
@@ -64,4 +63,4 @@ class PageDelete(ModelDeleteMutation):
     class Meta:
         description = "Deletes a page."
         model = models.Page
-        permissions = (PagePermissions.MANAGE_PAGES,)
+        permissions = ("page.manage_pages",)

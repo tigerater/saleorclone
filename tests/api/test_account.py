@@ -605,7 +605,7 @@ CUSTOMER_CREATE_MUTATION = """
     mutation CreateCustomer(
         $email: String, $firstName: String, $lastName: String,
         $note: String, $billing: AddressInput, $shipping: AddressInput,
-        $redirect_url: String) {
+        $send_mail: Boolean, $redirect_url: String) {
         customerCreate(input: {
             email: $email,
             firstName: $firstName,
@@ -613,6 +613,7 @@ CUSTOMER_CREATE_MUTATION = """
             note: $note,
             defaultShippingAddress: $shipping,
             defaultBillingAddress: $billing
+            sendPasswordEmail: $send_mail
             redirectUrl: $redirect_url
         }) {
             errors {
@@ -733,6 +734,24 @@ def test_customer_create_without_send_password(
     data = content["data"]["customerCreate"]
     assert not data["errors"]
     User.objects.get(email=email)
+
+
+def test_customer_create_without_redirect_url_deprecated_send_mail_flag(
+    staff_api_client, permission_manage_users
+):
+    email = "api_user@example.com"
+    variables = {"email": email, "send_mail": True}
+    response = staff_api_client.post_graphql(
+        CUSTOMER_CREATE_MUTATION, variables, permissions=[permission_manage_users]
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["customerCreate"]
+    assert data["accountErrors"][0] == {
+        "field": "redirectUrl",
+        "code": AccountErrorCode.REQUIRED.name,
+    }
+    staff_user = User.objects.filter(email=email)
+    assert not staff_user
 
 
 def test_customer_create_with_invalid_url(staff_api_client, permission_manage_users):
@@ -1280,9 +1299,10 @@ def test_customer_delete_errors(customer_user, admin_user, staff_user):
 
 STAFF_CREATE_MUTATION = """
     mutation CreateStaff(
-            $email: String, $permissions: [PermissionEnum], $redirect_url: String) {
+            $email: String, $permissions: [PermissionEnum],
+            $send_mail: Boolean, $redirect_url: String) {
         staffCreate(input: {email: $email, permissions: $permissions,
-                redirectUrl: $redirect_url}) {
+                sendPasswordEmail: $send_mail, redirectUrl: $redirect_url}) {
             errors {
                 field
                 message
@@ -1382,6 +1402,24 @@ def test_staff_create_without_send_password(
     data = content["data"]["staffCreate"]
     assert not data["errors"]
     User.objects.get(email=email)
+
+
+def test_staff_create_without_redirect_url_deprecated_send_mail_flag(
+    staff_api_client, media_root, permission_manage_staff
+):
+    email = "api_user@example.com"
+    variables = {"email": email, "send_mail": True}
+    response = staff_api_client.post_graphql(
+        STAFF_CREATE_MUTATION, variables, permissions=[permission_manage_staff]
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["staffCreate"]
+    assert data["accountErrors"][0] == {
+        "field": "redirectUrl",
+        "code": AccountErrorCode.REQUIRED.name,
+    }
+    staff_user = User.objects.filter(email=email)
+    assert not staff_user
 
 
 def test_staff_create_with_invalid_url(

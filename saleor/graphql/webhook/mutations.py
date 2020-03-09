@@ -1,7 +1,6 @@
 import graphene
 from django.core.exceptions import ValidationError
 
-from ...core.permissions import WebhookPermissions
 from ...webhook import models
 from ...webhook.error_codes import WebhookErrorCode
 from ..core.mutations import ModelDeleteMutation, ModelMutation
@@ -38,7 +37,7 @@ class WebhookCreate(ModelMutation):
     class Meta:
         description = "Creates a new webhook subscription."
         model = models.Webhook
-        permissions = (WebhookPermissions.MANAGE_WEBHOOKS,)
+        permissions = ("webhook.manage_webhooks",)
         error_type_class = WebhookError
         error_type_field = "webhook_errors"
 
@@ -128,7 +127,7 @@ class WebhookUpdate(ModelMutation):
     class Meta:
         description = "Updates a webhook subscription."
         model = models.Webhook
-        permissions = (WebhookPermissions.MANAGE_WEBHOOKS,)
+        permissions = ("webhook.manage_webhooks",)
         error_type_class = WebhookError
         error_type_field = "webhook_errors"
 
@@ -155,7 +154,7 @@ class WebhookDelete(ModelDeleteMutation):
     class Meta:
         description = "Deletes a webhook subscription."
         model = models.Webhook
-        permissions = (WebhookPermissions.MANAGE_WEBHOOKS,)
+        permissions = ("webhook.manage_webhooks",)
         error_type_class = WebhookError
         error_type_field = "webhook_errors"
 

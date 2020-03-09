@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import Prefetch
+from django.utils import timezone
 
 from ...account.error_codes import AccountErrorCode
 from ...checkout import models
@@ -13,19 +14,21 @@ from ...checkout.utils import (
     abort_order_data,
     add_promo_code_to_checkout,
     add_variant_to_checkout,
+    add_voucher_to_checkout,
     change_billing_address_in_checkout,
     change_shipping_address_in_checkout,
     clean_checkout,
     create_order,
     get_user_checkout,
     get_valid_shipping_methods_for_checkout,
+    get_voucher_for_checkout,
     prepare_order_data,
     recalculate_checkout_discount,
     remove_promo_code_from_checkout,
+    remove_voucher_from_checkout,
 )
 from ...core import analytics
 from ...core.exceptions import InsufficientStock
-from ...core.permissions import OrderPermissions
 from ...core.taxes import TaxError
 from ...core.utils.url import validate_storefront_url
 from ...discount import models as voucher_model
@@ -82,9 +85,14 @@ def update_checkout_shipping_method_if_invalid(checkout: models.Checkout, discou
         checkout.shipping_method = None
         checkout.save(update_fields=["shipping_method"])
 
-    is_valid = clean_shipping_method(
-        checkout=checkout, method=checkout.shipping_method, discounts=discounts
-    )
+    is_valid = True
+    try:
+        is_valid = clean_shipping_method(
+            checkout=checkout, method=checkout.shipping_method, discounts=discounts
+        )
+    except ValidationError:
+        checkout.shipping_method = None
+        checkout.save(update_fields=["shipping_method"])
 
     if not is_valid:
         cheapest_alternative = get_valid_shipping_methods_for_checkout(
@@ -332,7 +340,7 @@ class CheckoutLinesAdd(BaseMutation):
         quantities = [line.get("quantity") for line in lines]
 
         check_lines_quantity(variants, quantities)
-        update_checkout_shipping_method_if_invalid(checkout, info.context.discounts)
+        # update_checkout_shipping_method_if_invalid(checkout, info.context.discounts)
 
         if variants and quantities:
             for variant, quantity in zip(variants, quantities):
@@ -345,6 +353,7 @@ class CheckoutLinesAdd(BaseMutation):
                         f"Insufficient product stock: {exc.item}", code=exc.code
                     )
 
+        update_checkout_shipping_method_if_invalid(checkout, info.context.discounts)
         recalculate_checkout_discount(checkout, info.context.discounts)
 
         return CheckoutLinesAdd(checkout=checkout)
@@ -742,6 +751,62 @@ class CheckoutComplete(BaseMutation):
         return CheckoutComplete(order=order)
 
 
+class CheckoutUpdateVoucher(BaseMutation):
+    checkout = graphene.Field(Checkout, description="An checkout with updated voucher.")
+
+    class Arguments:
+        checkout_id = graphene.ID(description="Checkout ID.", required=True)
+        voucher_code = graphene.String(description="Voucher code.")
+
+    class Meta:
+        description = (
+            "DEPRECATED: Will be removed in Saleor 2.10, use CheckoutAddPromoCode "
+            "or CheckoutRemovePromoCode instead. Adds voucher to the checkout. Query "
+            "it without voucher_code field to remove voucher from checkout."
+        )
+        error_type_class = CheckoutError
+        error_type_field = "checkout_errors"
+
+    @classmethod
+    def perform_mutation(cls, _root, info, checkout_id, voucher_code=None):
+        checkout = cls.get_node_or_error(
+            info, checkout_id, only_type=Checkout, field="checkout_id"
+        )
+
+        if voucher_code:
+            try:
+                voucher = voucher_model.Voucher.objects.active(date=timezone.now()).get(
+                    code=voucher_code
+                )
+            except voucher_model.Voucher.DoesNotExist:
+                raise ValidationError(
+                    {
+                        "voucher_code": ValidationError(
+                            "Voucher with given code does not exist.",
+                            code=CheckoutErrorCode.NOT_FOUND,
+                        )
+                    }
+                )
+
+            try:
+                add_voucher_to_checkout(checkout, voucher)
+            except voucher_model.NotApplicable:
+                raise ValidationError(
+                    {
+                        "voucher_code": ValidationError(
+                            "Voucher is not applicable to that checkout.",
+                            code=CheckoutErrorCode.VOUCHER_NOT_APPLICABLE,
+                        )
+                    }
+                )
+        else:
+            existing_voucher = get_voucher_for_checkout(checkout)
+            if existing_voucher:
+                remove_voucher_from_checkout(checkout)
+
+        return CheckoutUpdateVoucher(checkout=checkout)
+
+
 class CheckoutAddPromoCode(BaseMutation):
     checkout = graphene.Field(
         Checkout, description="The checkout with the added gift card or voucher."
@@ -789,13 +854,13 @@ class CheckoutRemovePromoCode(BaseMutation):
             info, checkout_id, only_type=Checkout, field="checkout_id"
         )
         remove_promo_code_from_checkout(checkout, promo_code)
-        return CheckoutRemovePromoCode(checkout=checkout)
+        return CheckoutUpdateVoucher(checkout=checkout)
 
 
 class CheckoutUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         description = "Updates metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = True
         error_type_class = CheckoutError
@@ -805,7 +870,7 @@ class CheckoutUpdateMeta(UpdateMetaBaseMutation):
 class CheckoutUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         description = "Updates private metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = False
         error_type_class = CheckoutError
@@ -815,7 +880,7 @@ class CheckoutUpdatePrivateMeta(UpdateMetaBaseMutation):
 class CheckoutClearMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clear metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = True
         error_type_class = CheckoutError
@@ -825,7 +890,7 @@ class CheckoutClearMeta(ClearMetaBaseMutation):
 class CheckoutClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clear private metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = False
         error_type_class = CheckoutError

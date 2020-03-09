@@ -8,7 +8,7 @@ from ..order import FulfillmentStatus, OrderStatus
 from ..order.models import Order
 from ..payment import ChargeStatus
 from ..product.models import Product
-from .event_types import WebhookEventType
+from . import WebhookEventType
 from .payload_serializers import PayloadSerializer
 
 ADDRESS_FIELDS = (

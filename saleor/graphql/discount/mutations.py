@@ -1,6 +1,5 @@
 import graphene
 
-from ...core.permissions import DiscountPermissions
 from ...core.utils.promo_code import (
     PromoCodeAlreadyExists,
     generate_promo_code,
@@ -140,7 +139,7 @@ class VoucherCreate(ModelMutation):
     class Meta:
         description = "Creates a new voucher."
         model = models.Voucher
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
     @classmethod
     def clean_input(cls, info, instance, data):
@@ -167,7 +166,7 @@ class VoucherUpdate(VoucherCreate):
     class Meta:
         description = "Updates a voucher."
         model = models.Voucher
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
 
 class VoucherDelete(ModelDeleteMutation):
@@ -177,7 +176,7 @@ class VoucherDelete(ModelDeleteMutation):
     class Meta:
         description = "Deletes a voucher."
         model = models.Voucher
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
 
 class VoucherBaseCatalogueMutation(BaseDiscountCatalogueMutation):
@@ -199,7 +198,7 @@ class VoucherBaseCatalogueMutation(BaseDiscountCatalogueMutation):
 class VoucherAddCatalogues(VoucherBaseCatalogueMutation):
     class Meta:
         description = "Adds products, categories, collections to a voucher."
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -213,7 +212,7 @@ class VoucherAddCatalogues(VoucherBaseCatalogueMutation):
 class VoucherRemoveCatalogues(VoucherBaseCatalogueMutation):
     class Meta:
         description = "Removes products, categories, collections from a voucher."
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -267,7 +266,7 @@ class SaleCreate(SaleUpdateMinimalVariantPriceMixin, ModelMutation):
     class Meta:
         description = "Creates a new sale."
         model = models.Sale
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
 
 class SaleUpdate(SaleUpdateMinimalVariantPriceMixin, ModelMutation):
@@ -280,7 +279,7 @@ class SaleUpdate(SaleUpdateMinimalVariantPriceMixin, ModelMutation):
     class Meta:
         description = "Updates a sale."
         model = models.Sale
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
 
 class SaleDelete(SaleUpdateMinimalVariantPriceMixin, ModelDeleteMutation):
@@ -290,7 +289,7 @@ class SaleDelete(SaleUpdateMinimalVariantPriceMixin, ModelDeleteMutation):
     class Meta:
         description = "Deletes a sale."
         model = models.Sale
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
 
 class SaleBaseCatalogueMutation(BaseDiscountCatalogueMutation):
@@ -312,7 +311,7 @@ class SaleBaseCatalogueMutation(BaseDiscountCatalogueMutation):
 class SaleAddCatalogues(SaleBaseCatalogueMutation):
     class Meta:
         description = "Adds products, categories, collections to a voucher."
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -326,7 +325,7 @@ class SaleAddCatalogues(SaleBaseCatalogueMutation):
 class SaleRemoveCatalogues(SaleBaseCatalogueMutation):
     class Meta:
         description = "Removes products, categories, collections from a sale."
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):

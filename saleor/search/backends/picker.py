@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.utils.module_loading import import_module  # type: ignore
+from django.utils.module_loading import import_module
 
 
 def pick_backend():

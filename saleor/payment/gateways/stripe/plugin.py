@@ -18,9 +18,7 @@ from . import (
 GATEWAY_NAME = "Stripe"
 
 if TYPE_CHECKING:
-    # flake8: noqa
     from . import GatewayResponse, PaymentData
-    from ...interface import CustomerSource
 
 
 def require_active_plugin(fn):

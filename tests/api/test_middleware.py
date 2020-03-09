@@ -10,8 +10,7 @@ def test_service_account_middleware_accepts_api_requests(service_account, rf):
 
     # Retrieve sample request object
     request = rf.get(reverse("api"))
-    token = service_account.tokens.first().auth_token
-    request.META = {"HTTP_AUTHORIZATION": f"Bearer {token}"}
+    request.META = {"HTTP_AUTHORIZATION": f"Bearer {service_account.auth_token}"}
 
     middleware = service_account_middleware(Mock())
     middleware(request)
@@ -26,8 +25,7 @@ def test_service_account_middleware_block(service_account, path, rf):
     request = rf.get(reverse("api"))
 
     request.path = reverse(path)
-    token = service_account.tokens.first().auth_token
-    request.META = {"HTTP_AUTHORIZATION": f"Bearer {token}"}
+    request.META = {"HTTP_AUTHORIZATION": f"Bearer {service_account.auth_token}"}
 
     middleware = service_account_middleware(Mock())
     middleware(request)

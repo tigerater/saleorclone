@@ -595,7 +595,7 @@ type Checkout implements Node {
   privateMeta: [MetaStore]!
   meta: [MetaStore]!
   availableShippingMethods: [ShippingMethod]!
-  availablePaymentGateways: [GatewaysEnum]!
+  availablePaymentGateways: [String]!
   email: String!
   isShippingRequired: Boolean!
   lines: [CheckoutLine]
@@ -1601,13 +1601,6 @@ input FulfillmentUpdateTrackingInput {
   notifyCustomer: Boolean
 }
 
-enum GatewaysEnum {
-  DUMMY
-  BRAINTREE
-  RAZORPAY
-  STRIPE
-}
-
 scalar GenericScalar
 
 type Geolocalization {
@@ -2205,8 +2198,6 @@ type Mutations {
   serviceAccountDelete(id: ID!): ServiceAccountDelete
   serviceAccountUpdatePrivateMetadata(id: ID!, input: MetaInput!): ServiceAccountUpdatePrivateMeta
   serviceAccountClearStoredPrivateMetadata(id: ID!, input: MetaPath!): ServiceAccountClearStoredPrivateMeta
-  serviceAccountTokenCreate(input: ServiceAccountTokenInput!): ServiceAccountTokenCreate
-  serviceAccountTokenDelete(id: ID!): ServiceAccountTokenDelete
   passwordReset(email: String!): PasswordReset
 }
 
@@ -2687,7 +2678,7 @@ enum PaymentErrorCode {
 }
 
 input PaymentInput {
-  gateway: GatewaysEnum!
+  gateway: String!
   token: String!
   amount: Decimal
   billingAddress: AddressInput
@@ -3293,7 +3284,7 @@ type Query {
   reportProductSales(period: ReportingPeriod!, before: String, after: String, first: Int, last: Int): ProductVariantCountableConnection
   payment(id: ID!): Payment
   payments(before: String, after: String, first: Int, last: Int): PaymentCountableConnection
-  paymentClientToken(gateway: GatewaysEnum): String
+  paymentClientToken(gateway: String!): String
   page(id: ID, slug: String): Page
   pages(query: String, filter: PageFilterInput, before: String, after: String, first: Int, last: Int): PageCountableConnection
   homepageEvents(before: String, after: String, first: Int, last: Int): OrderEventCountableConnection
@@ -3455,9 +3446,9 @@ input SeoInput {
 
 type ServiceAccount implements Node {
   id: ID!
+  authToken: String
   created: DateTime
   isActive: Boolean
-  tokens: [ServiceAccountToken]
   privateMeta: [MetaStore]!
   meta: [MetaStore]!
   permissions: [PermissionDisplay]
@@ -3483,6 +3474,7 @@ type ServiceAccountCountableEdge {
 
 type ServiceAccountCreate {
   errors: [Error!]
+  authToken: String
   accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }
@@ -3502,30 +3494,6 @@ input ServiceAccountInput {
   name: String
   isActive: Boolean
   permissions: [PermissionEnum]
-}
-
-type ServiceAccountToken implements Node {
-  name: String
-  authToken: String
-  id: ID!
-}
-
-type ServiceAccountTokenCreate {
-  errors: [Error!]
-  authToken: String
-  accountErrors: [AccountError!]
-  serviceAccountToken: ServiceAccountToken
-}
-
-type ServiceAccountTokenDelete {
-  errors: [Error!]
-  accountErrors: [AccountError!]
-  serviceAccountToken: ServiceAccountToken
-}
-
-input ServiceAccountTokenInput {
-  name: String
-  serviceAccount: ID!
 }
 
 type ServiceAccountUpdate {

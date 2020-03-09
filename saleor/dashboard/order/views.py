@@ -637,7 +637,6 @@ def fulfill_order_lines(request, order_pk):
                 number="quantity_fulfilled",
             ) % {"quantity_fulfilled": quantity_fulfilled}
 
-            fulfillment.refresh_from_db()
             order_fulfilled(
                 fulfillment,
                 request.user,

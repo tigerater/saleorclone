@@ -49,8 +49,7 @@ def get_error_fields(error_type_class, error_type_field):
             graphene.List(
                 graphene.NonNull(error_type_class),
                 description="List of errors that occurred executing the mutation.",
-            ),
-            default_value=[],
+            )
         )
     }
 
@@ -580,7 +579,7 @@ class CreateToken(ObtainJSONWebToken):
     """Mutation that authenticates a user and returns token and user data.
 
     It overrides the default graphql_jwt.ObtainJSONWebToken to wrap potential
-    authentication errors in our Error type, which is consistent to how the rest of
+    authentication errors in our Error type, which is consistent to how rest of
     the mutation works.
     """
 
@@ -602,7 +601,7 @@ class CreateToken(ObtainJSONWebToken):
 
 
 class VerifyToken(Verify):
-    """Mutation that confirms if token is valid and also returns user data."""
+    """Mutation that confirm if token is valid and also return user data."""
 
     user = graphene.Field(User)
 

@@ -14,11 +14,7 @@ AVATARS_PATH = os.path.join(
 
 def store_user_address(user, address, address_type):
     """Add address to user address book and set as default one."""
-    address_data = address.as_data()
-
-    address = user.addresses.filter(**address_data).first()
-    if address is None:
-        address = user.addresses.create(**address_data)
+    address, _ = user.addresses.get_or_create(**address.as_data())
 
     if address_type == AddressType.BILLING:
         if not user.default_billing_address:

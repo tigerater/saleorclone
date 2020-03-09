@@ -24,17 +24,10 @@ def discover_plugins_modules(plugins: List[str]):
 class ConfigurationTypeField:
     STRING = "String"
     BOOLEAN = "Boolean"
-    SECRET = "Secret"
-    PASSWORD = "Password"
     CHOICES = [
         (STRING, pgettext_lazy("Type of the configuration field", "Field is a String")),
         (
             BOOLEAN,
             pgettext_lazy("Type of the configuration field", "Field is a Boolean"),
-        ),
-        (SECRET, pgettext_lazy("Type of the configuration field", "Field is a Secret")),
-        (
-            PASSWORD,
-            pgettext_lazy("Type of the configuration field", "Field is a Password"),
         ),
     ]

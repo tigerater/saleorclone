@@ -128,6 +128,11 @@ EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
 EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
 EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
+# WARNING: frontend confirmation screen is NOT created yet.
+# Enabling this feature will cause incomplete registrations.
+# Should remain disabled unless you know what you're doing!
+ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL = False
+
 ENABLE_SSL = get_bool_from_env("ENABLE_SSL", False)
 
 if ENABLE_SSL:
@@ -538,6 +543,3 @@ PLUGINS = [
 # True to use DraftJS (JSON based), for the 2.0 dashboard
 # False to use the old editor from dashboard 1.0
 USE_JSON_CONTENT = get_bool_from_env("USE_JSON_CONTENT", False)
-JWT_TOKEN_SECRET = os.environ.get("JWT_TOKEN_SECRET", "saleor")
-if not DEBUG:
-    JWT_VERIFY_EXPIRATION = True

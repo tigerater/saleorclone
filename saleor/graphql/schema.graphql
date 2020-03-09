@@ -1027,10 +1027,8 @@ enum ConfigurationTypeFieldEnum {
   PASSWORD
 }
 
-type ConfirmEmailChange {
+type ConfirmAccount {
   errors: [Error!]
-  user: User
-  accountErrors: [AccountError!]
 }
 
 enum CountryCode {
@@ -1339,9 +1337,6 @@ enum CustomerEventsEnum {
   ACCOUNT_CREATED
   PASSWORD_RESET_LINK_SENT
   PASSWORD_RESET
-  EMAIL_CHANGED_REQUEST
-  PASSWORD_CHANGED
-  EMAIL_CHANGED
   PLACED_ORDER
   NOTE_ADDED_TO_ORDER
   DIGITAL_LINK_DOWNLOADED
@@ -2268,10 +2263,9 @@ type Mutation {
   checkoutUpdatePrivateMetadata(id: ID!, input: MetaInput!): CheckoutUpdatePrivateMeta
   checkoutClearPrivateMetadata(id: ID!, input: MetaPath!): CheckoutClearPrivateMeta
   requestPasswordReset(email: String!, redirectUrl: String!): RequestPasswordReset
+  confirmAccount(email: String!, token: String!): ConfirmAccount
   setPassword(token: String!, email: String!, password: String!): SetPassword
   passwordChange(newPassword: String!, oldPassword: String!): PasswordChange
-  requestEmailChange(newEmail: String!, password: String!, redirectUrl: String!): RequestEmailChange
-  confirmEmailChange(token: String!): ConfirmEmailChange
   accountAddressCreate(input: AddressInput!, type: AddressTypeEnum): AccountAddressCreate
   accountAddressUpdate(id: ID!, input: AddressInput!): AccountAddressUpdate
   accountAddressDelete(id: ID!): AccountAddressDelete
@@ -3562,12 +3556,6 @@ input ReorderInput {
 enum ReportingPeriod {
   TODAY
   THIS_MONTH
-}
-
-type RequestEmailChange {
-  errors: [Error!]
-  user: User
-  accountErrors: [AccountError!]
 }
 
 type RequestPasswordReset {

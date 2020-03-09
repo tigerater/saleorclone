@@ -78,8 +78,6 @@ class Address(models.Model):
         return self.full_name
 
     def __eq__(self, other):
-        if not isinstance(other, Address):
-            return False
         return self.as_data() == other.as_data()
 
     __hash__ = models.Model.__hash__

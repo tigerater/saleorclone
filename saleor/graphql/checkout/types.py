@@ -3,12 +3,13 @@ import graphene_django_optimizer as gql_optimizer
 
 from ...checkout import calculations, models
 from ...checkout.utils import get_valid_shipping_methods_for_checkout
+from ...core.permissions import OrderPermissions
 from ...core.taxes import display_gross_prices, zero_taxed_money
 from ...extensions.manager import get_extensions_manager
 from ..core.connection import CountableDjangoObjectType
 from ..core.resolvers import resolve_meta, resolve_private_meta
 from ..core.types.meta import MetadataObjectType
-from ..core.types.money import Money, TaxedMoney
+from ..core.types.money import TaxedMoney
 from ..decorators import permission_required
 from ..giftcard.types import GiftCard
 from ..shipping.types import ShippingMethod
@@ -108,18 +109,11 @@ class Checkout(MetadataObjectType, CountableDjangoObjectType):
             "shipping costs, and discounts included."
         ),
     )
-    discount_amount = graphene.Field(
-        Money,
-        deprecation_reason=(
-            "DEPRECATED: Will be removed in Saleor 2.10, use discount instead."
-        ),
-    )
 
     class Meta:
         only_fields = [
             "billing_address",
             "created",
-            "discount_amount",
             "discount_name",
             "gift_cards",
             "is_shipping_required",
@@ -200,14 +194,10 @@ class Checkout(MetadataObjectType, CountableDjangoObjectType):
         return root.is_shipping_required()
 
     @staticmethod
-    @permission_required("order.manage_orders")
+    @permission_required(OrderPermissions.MANAGE_ORDERS)
     def resolve_private_meta(root: models.Checkout, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
     def resolve_meta(root: models.Checkout, _info):
         return resolve_meta(root, _info)
-
-    @staticmethod
-    def resolve_discount_amount(root: models.Checkout, _info):
-        return root.discount

@@ -125,12 +125,12 @@ def test_create_fake_users(db):
 
 
 def test_create_address(db):
-    assert not Address.objects.exists()
+    assert Address.objects.all().count() == 0
     random_data.create_address()
     assert Address.objects.all().count() == 1
 
 
-def test_create_fake_order(db, monkeypatch, image, media_root, warehouse):
+def test_create_fake_order(db, monkeypatch, image, media_root):
     # Tests shouldn't depend on images present in placeholder folder
     monkeypatch.setattr(
         "saleor.core.utils.random_data.get_image", Mock(return_value=image)

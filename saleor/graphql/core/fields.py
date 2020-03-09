@@ -178,7 +178,6 @@ class FilterInputConnectionField(BaseDjangoConnectionField):
         on_resolve = partial(cls.resolve_connection, connection, default_manager, args)
 
         filter_input = args.get(filters_name)
-
         if filter_input and filterset_class:
             iterable = filterset_class(
                 data=dict(filter_input), queryset=iterable, request=info.context

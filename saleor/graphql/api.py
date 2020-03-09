@@ -1,5 +1,4 @@
 import graphene
-from graphene_federation import build_schema
 
 from .account.schema import AccountMutations, AccountQueries
 from .checkout.schema import CheckoutMutations, CheckoutQueries
@@ -38,7 +37,7 @@ class Query(
     node = graphene.Node.Field()
 
 
-class Mutation(
+class Mutations(
     AccountMutations,
     CheckoutMutations,
     CoreMutations,
@@ -57,4 +56,4 @@ class Mutation(
     pass
 
 
-schema = build_schema(Query, mutation=Mutation)
+schema = graphene.Schema(Query, Mutations)

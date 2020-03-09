@@ -658,7 +658,7 @@ def fulfill_order_lines(request, order_pk):
         "order": order,
         "unfulfilled_lines": unfulfilled_lines,
     }
-    template = "dashboard/order/fulfillment_form.html"
+    template = "dashboard/order/fulfillment.html"
     return TemplateResponse(request, template, ctx, status=status)
 
 

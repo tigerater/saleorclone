@@ -15,10 +15,8 @@ from graphql.error import (
     format_error as format_graphql_error,
 )
 from graphql.execution import ExecutionResult
-from graphql_jwt.exceptions import PermissionDenied
 
-unhandled_errors_logger = logging.getLogger("saleor.graphql.errors.unhandled")
-handled_errors_logger = logging.getLogger("saleor.graphql.errors.handled")
+logger = logging.getLogger(__name__)
 
 
 class GraphQLView(View):
@@ -35,8 +33,6 @@ class GraphQLView(View):
     backend = None
     middleware = None
     root_value = None
-
-    HANDLED_EXCEPTIONS = (GraphQLError, PermissionDenied)
 
     def __init__(
         self, schema=None, executor=None, middleware=None, root_value=None, backend=None
@@ -191,8 +187,8 @@ class GraphQLView(View):
             variables = operations.get("variables")
         return query, variables, operation_name
 
-    @classmethod
-    def format_error(cls, error):
+    @staticmethod
+    def format_error(error):
         if isinstance(error, GraphQLError):
             result = format_graphql_error(error)
         else:
@@ -202,10 +198,7 @@ class GraphQLView(View):
         while isinstance(exc, GraphQLError) and hasattr(exc, "original_error"):
             exc = exc.original_error
 
-        if isinstance(exc, cls.HANDLED_EXCEPTIONS):
-            handled_errors_logger.error("A query had an error", exc_info=exc)
-        else:
-            unhandled_errors_logger.error("A query failed unexpectedly", exc_info=exc)
+        logger.error("Exception information:", exc_info=exc)
 
         result["extensions"] = {"exception": {"code": type(exc).__name__}}
         if settings.DEBUG:

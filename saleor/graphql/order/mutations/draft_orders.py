@@ -52,9 +52,6 @@ class DraftOrderInput(InputObjectType):
     voucher = graphene.ID(
         description="ID of the voucher associated with the order.", name="voucher"
     )
-    customer_note = graphene.String(
-        description="A note from a customer. Visible by customers in the order summary."
-    )
 
 
 class DraftOrderCreateInput(DraftOrderInput):

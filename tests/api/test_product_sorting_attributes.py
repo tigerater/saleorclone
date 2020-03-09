@@ -55,15 +55,9 @@ def products_structures(category):
     pt_apples, pt_oranges, pt_other = list(
         product_models.ProductType.objects.bulk_create(
             [
-                product_models.ProductType(
-                    name="Apples", slug="apples", has_variants=False
-                ),
-                product_models.ProductType(
-                    name="Oranges", slug="oranges", has_variants=False
-                ),
-                product_models.ProductType(
-                    name="Other attributes", slug="other", has_variants=False
-                ),
+                product_models.ProductType(name="Apples", has_variants=False),
+                product_models.ProductType(name="Oranges", has_variants=False),
+                product_models.ProductType(name="Other attributes", has_variants=False),
             ]
         )
     )
@@ -97,7 +91,6 @@ def products_structures(category):
             [
                 product_models.Product(
                     name=f"{attrs[0]} Apple - {attrs[1]} ({i})",
-                    slug=f"{attrs[0]}-apple-{attrs[1]}-({i})",
                     product_type=pt_apples,
                     category=category,
                     price=zero_money(),
@@ -113,7 +106,6 @@ def products_structures(category):
             [
                 product_models.Product(
                     name=f"{attrs[0]} Orange - {attrs[1]} ({i})",
-                    slug=f"{attrs[0]}-orange-{attrs[1]}-({i})",
                     product_type=pt_oranges,
                     category=category,
                     price=zero_money(),
@@ -126,7 +118,6 @@ def products_structures(category):
 
     dummy = product_models.Product.objects.create(
         name=f"Oopsie Dummy",
-        slug="oopsie-dummy",
         product_type=pt_other,
         category=category,
         price=zero_money(),
@@ -134,7 +125,6 @@ def products_structures(category):
     )
     product_models.Product.objects.create(
         name=f"Another Dummy but first in ASC and has no attribute value",
-        slug="another-dummy",
         product_type=pt_other,
         category=category,
         price=zero_money(),
@@ -479,12 +469,8 @@ def test_sort_product_not_having_attribute_data(api_client, category, count_quer
     }
 
     # Create two product types, with one forced to be at the bottom (no such attribute)
-    product_type = product_models.ProductType.objects.create(
-        name="Apples", slug="apples"
-    )
-    other_product_type = product_models.ProductType.objects.create(
-        name="Chocolates", slug="chocolates"
-    )
+    product_type = product_models.ProductType.objects.create(name="Apples")
+    other_product_type = product_models.ProductType.objects.create(name="Chocolates")
 
     # Assign an attribute to the product type
     attribute = product_models.Attribute.objects.create(name="Kind", slug="kind")
@@ -495,19 +481,19 @@ def test_sort_product_not_having_attribute_data(api_client, category, count_quer
 
     # Create a product with a value
     product_having_attr_value = product_models.Product.objects.create(
-        name="Z", slug="z", product_type=product_type, **product_create_kwargs
+        name="Z", product_type=product_type, **product_create_kwargs
     )
     associate_attribute_values_to_instance(product_having_attr_value, attribute, value)
 
     # Create a product having the same product type but no attribute data
     product_models.Product.objects.create(
-        name="Y", slug="y", product_type=product_type, **product_create_kwargs
+        name="Y", product_type=product_type, **product_create_kwargs
     )
 
     # Create a new product having a name that would be ordered first in ascending
     # as the default ordering is by name for non matching products
     product_models.Product.objects.create(
-        name="A", slug="a", product_type=other_product_type, **product_create_kwargs
+        name="A", product_type=other_product_type, **product_create_kwargs
     )
 
     # Sort the products

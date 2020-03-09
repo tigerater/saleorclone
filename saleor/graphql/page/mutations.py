@@ -1,11 +1,11 @@
 import graphene
-from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 
 from ...core.permissions import PagePermissions
 from ...page import models
 from ..core.mutations import ModelDeleteMutation, ModelMutation
 from ..core.types.common import SeoInput
-from ..core.utils import clean_seo_fields, validate_slug_and_generate_if_needed
+from ..core.utils import clean_seo_fields
 
 
 class PageInput(graphene.InputObjectType):
@@ -38,18 +38,10 @@ class PageCreate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data):
         cleaned_input = super().clean_input(info, instance, data)
-        try:
-            cleaned_input = validate_slug_and_generate_if_needed(
-                instance, "title", cleaned_input
-            )
-        except ValidationError:
-            raise ValidationError(
-                {
-                    "slug": ValidationError(
-                        "Slug value cannot be blank.", code="required"
-                    )
-                }
-            )
+        slug = cleaned_input.get("slug", "")
+        title = cleaned_input.get("title", "")
+        if title and not slug:
+            cleaned_input["slug"] = slugify(title)
         clean_seo_fields(cleaned_input)
         return cleaned_input
 
@@ -64,7 +56,6 @@ class PageUpdate(PageCreate):
     class Meta:
         description = "Updates an existing page."
         model = models.Page
-        permissions = (PagePermissions.MANAGE_PAGES,)
 
 
 class PageDelete(ModelDeleteMutation):

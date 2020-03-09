@@ -1,8 +1,10 @@
 import graphene
 
-from ..core.fields import PrefetchingConnectionField
+from ..core.fields import FilterInputConnectionField
+from .enums import WebhookEventTypeEnum
+from .filters import WebhookFilterInput
 from .mutations import WebhookCreate, WebhookDelete, WebhookUpdate
-from .resolvers import resolve_webhook, resolve_webhooks
+from .resolvers import resolve_sample_payload, resolve_webhook, resolve_webhooks
 from .types import Webhook
 
 
@@ -14,12 +16,31 @@ class WebhookQueries(graphene.ObjectType):
         ),
         description="Look up a webhook by ID.",
     )
-    webhooks = PrefetchingConnectionField(Webhook, description="List of webhooks.")
+    webhooks = FilterInputConnectionField(
+        Webhook,
+        description="List of webhooks.",
+        filter=WebhookFilterInput(description="Filtering options for webhooks."),
+    )
 
-    def resolve_webhooks(self, info, **_kwargs):
+    webhook_sample_payload = graphene.Field(
+        graphene.JSONString,
+        event_type=graphene.Argument(
+            WebhookEventTypeEnum,
+            required=True,
+            description="Name of the requested event type.",
+        ),
+    )
+
+    @staticmethod
+    def resolve_webhook_sample_payload(_, info, **data):
+        return resolve_sample_payload(info, data["event_type"])
+
+    @staticmethod
+    def resolve_webhooks(_, info, **_kwargs):
         return resolve_webhooks(info)
 
-    def resolve_webhook(self, info, **data):
+    @staticmethod
+    def resolve_webhook(_, info, **data):
         return resolve_webhook(info, data["id"])
 
 

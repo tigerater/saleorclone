@@ -14,7 +14,7 @@ class PythonSerializer(PythonBaseSerializer):
         return data
 
 
-class PayloadSerializer(JSONSerializer):
+class WebhookSerializer(JSONSerializer):
     def __init__(self):
         super().__init__()
         self.additional_fields = {}

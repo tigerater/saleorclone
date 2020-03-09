@@ -68,6 +68,7 @@ def gateway_config():
     return GatewayConfig(
         gateway_name="Dummy",
         auto_capture=True,
+        template_path="template.html",
         connection_params={"secret-key": "nobodylikesspanishinqusition"},
     )
 

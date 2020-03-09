@@ -6,9 +6,12 @@ import dj_database_url
 import dj_email_url
 import sentry_sdk
 from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from django_prices.utils.formatting import get_currency_fraction
 from sentry_sdk.integrations.django import DjangoIntegration
+
+from .tracing import OpenTracingConfig
 
 
 def get_list(text):
@@ -40,8 +43,9 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
+_DEFAULT_CLIENT_HOSTS = "localhost,127.0.0.1"
 ALLOWED_CLIENT_HOSTS = get_list(
-    os.environ.get("ALLOWED_CLIENT_HOSTS", "localhost,127.0.0.1")
+    os.environ.get("ALLOWED_CLIENT_HOSTS", _DEFAULT_CLIENT_HOSTS)
 )
 
 INTERNAL_IPS = get_list(os.environ.get("INTERNAL_IPS", "127.0.0.1"))
@@ -128,6 +132,11 @@ EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
 EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
 EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
+# If enabled, make sure you have set proper storefront address in ALLOWED_CLIENT_HOSTS.
+ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL = os.environ.get(
+    "ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL", True
+)
+
 ENABLE_SSL = get_bool_from_env("ENABLE_SSL", False)
 
 if ENABLE_SSL:
@@ -178,6 +187,7 @@ TEMPLATES = [
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 MIDDLEWARE = [
+    # 'django_opentracing.OpenTracingMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "saleor.core.middleware.discounts",
@@ -217,6 +227,7 @@ INSTALLED_APPS = [
     "saleor.data_feeds",
     "saleor.page",
     "saleor.payment",
+    "saleor.warehouse",
     "saleor.webhook",
     "saleor.wishlist",
     # External apps
@@ -245,7 +256,7 @@ if ENABLE_DEBUG_TOOLBAR:
         )
         warnings.warn(msg)
     else:
-        INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
+        INSTALLED_APPS += ["django.forms", "debug_toolbar", "graphiql_debug_toolbar"]
         MIDDLEWARE.append("saleor.graphql.middleware.DebugToolbarMiddleware")
 
         DEBUG_TOOLBAR_PANELS = [
@@ -518,6 +529,7 @@ if SENTRY_DSN:
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()])
 
 GRAPHENE = {
+    "MIDDLEWARE": ("saleor.graphql.middleware.OpentracingGrapheneMiddleware",),
     "RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST": True,
     "RELAY_CONNECTION_MAX_LIMIT": 100,
 }
@@ -541,3 +553,31 @@ USE_JSON_CONTENT = get_bool_from_env("USE_JSON_CONTENT", False)
 JWT_TOKEN_SECRET = os.environ.get("JWT_TOKEN_SECRET", "saleor")
 if not DEBUG:
     JWT_VERIFY_EXPIRATION = True
+
+
+if (
+    not DEBUG
+    and ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL
+    and ALLOWED_CLIENT_HOSTS == get_list(_DEFAULT_CLIENT_HOSTS)
+):
+    raise ImproperlyConfigured(
+        "Make sure you've added storefront address to ALLOWED_CLIENT_HOSTS "
+        "if ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL is enabled."
+    )
+
+
+ENABLE_OPENTRACING = get_bool_from_env("ENABLE_OPENTRACING", False)
+# TRACER_TYPE can be either DATADOG or JAEGER
+# Default host / port for DataDog: localhost / 8126, Jaeger: localhost / 5775
+TRACER_TYPE = os.environ.get("TRACER_TYPE")
+TRACER_REPORTING_HOST = os.environ.get("TRACER_REPORTING_HOST")
+TRACER_REPORTING_PORT = os.environ.get("TRACER_REPORTING_PORT")
+
+
+if ENABLE_OPENTRACING:
+    config = OpenTracingConfig(
+        tracer_type=TRACER_TYPE,
+        reporting_host=TRACER_REPORTING_HOST,
+        reporting_port=TRACER_REPORTING_PORT,
+    )
+    config.create_global_tracer(service_name="saleor")

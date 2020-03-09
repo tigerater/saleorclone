@@ -253,11 +253,7 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
         blank=True, default=dict, sanitizer=clean_draft_js
     )
     category = models.ForeignKey(
-        Category,
-        related_name="products",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        Category, related_name="products", on_delete=models.CASCADE
     )
 
     currency = models.CharField(

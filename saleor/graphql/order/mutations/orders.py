@@ -152,6 +152,7 @@ class OrderUpdate(DraftOrderUpdate):
             user = User.objects.filter(email=instance.user_email).first()
             instance.user = user
         instance.save()
+        info.context.extensions.order_updated(instance)
 
 
 class OrderUpdateShippingInput(graphene.InputObjectType):
@@ -232,7 +233,7 @@ class OrderUpdateShipping(BaseMutation):
         )
         # Post-process the results
         recalculate_order(order)
-
+        info.context.extensions.order_updated(order)
         return OrderUpdateShipping(order=order)
 
 
@@ -289,6 +290,8 @@ class OrderCancel(BaseMutation):
         order = cls.get_node_or_error(info, data.get("id"), only_type=Order)
         clean_order_cancel(order)
         cancel_order(user=info.context.user, order=order, restock=restock)
+        info.context.extensions.order_cancelled(order)
+        info.context.extensions.order_updated(order)
         return OrderCancel(order=order)
 
 
@@ -313,6 +316,7 @@ class OrderMarkAsPaid(BaseMutation):
         )
 
         mark_order_as_paid(order, info.context.user)
+        info.context.extensions.order_updated(order)
         return OrderMarkAsPaid(order=order)
 
 
@@ -352,6 +356,7 @@ class OrderCapture(BaseMutation):
         events.payment_captured_event(
             order=order, user=info.context.user, amount=amount, payment=payment
         )
+        info.context.extensions.order_updated(order)
         return OrderCapture(order=order)
 
 
@@ -378,6 +383,7 @@ class OrderVoid(BaseMutation):
         events.payment_voided_event(
             order=order, user=info.context.user, payment=payment
         )
+        info.context.extensions.order_updated(order)
         return OrderVoid(order=order)
 
 
@@ -417,4 +423,5 @@ class OrderRefund(BaseMutation):
         events.payment_refunded_event(
             order=order, user=info.context.user, amount=amount, payment=payment
         )
+        info.context.extensions.order_updated(order)
         return OrderRefund(order=order)

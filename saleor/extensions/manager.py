@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from .base_plugin import BasePlugin
     from ..checkout.models import Checkout, CheckoutLine
     from ..product.models import Product
-    from ..account.models import Address
+    from ..account.models import Address, User
     from ..order.models import OrderLine, Order
     from ..payment.interface import PaymentData, GatewayResponse, TokenConfig
 
@@ -179,6 +179,30 @@ class ExtensionsManager(PaymentInterface):
         return self.__run_method_on_plugins(
             "postprocess_order_creation", default_value, order
         )
+
+    def customer_created(self, customer: "User"):
+        default_value = None
+        return self.__run_method_on_plugins("customer_created", default_value, customer)
+
+    def product_created(self, product: "Product"):
+        default_value = None
+        return self.__run_method_on_plugins("product_created", default_value, product)
+
+    def order_fully_paid(self, order: "Order"):
+        default_value = None
+        return self.__run_method_on_plugins("order_fully_paid", default_value, order)
+
+    def order_updated(self, order: "Order"):
+        default_value = None
+        return self.__run_method_on_plugins("order_updated", default_value, order)
+
+    def order_cancelled(self, order: "Order"):
+        default_value = None
+        return self.__run_method_on_plugins("order_cancelled", default_value, order)
+
+    def order_fulfilled(self, order: "Order"):
+        default_value = None
+        return self.__run_method_on_plugins("order_fulfilled", default_value, order)
 
     def authorize_payment(
         self, gateway: Gateway, payment_information: "PaymentData"

@@ -1,6 +1,6 @@
 import graphene
 
-from ..core.fields import FilterInputConnectionField
+from ..core.fields import FilterInputConnectionField, PrefetchingConnectionField
 from ..decorators import permission_required
 from .enums import WebhookEventTypeEnum
 from .filters import WebhookFilterInput
@@ -27,7 +27,7 @@ class WebhookQueries(graphene.ObjectType):
         description="List of webhooks.",
         filter=WebhookFilterInput(description="Filtering options for webhooks."),
     )
-    webhook_events = graphene.List(
+    webhook_events = PrefetchingConnectionField(
         WebhookEvent, description="List of all available webhook events."
     )
 

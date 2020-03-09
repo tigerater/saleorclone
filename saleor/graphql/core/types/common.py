@@ -15,7 +15,6 @@ from ..enums import (
     ShippingErrorCode,
     ShopErrorCode,
     WebhookErrorCode,
-    WishlistErrorCode,
 )
 from .money import VAT
 
@@ -88,10 +87,6 @@ class ExtensionsError(Error):
 
 class WebhookError(Error):
     code = WebhookErrorCode(description="The error code.")
-
-
-class WishlistError(Error):
-    code = WishlistErrorCode(description="The error code.")
 
 
 class LanguageDisplay(graphene.ObjectType):

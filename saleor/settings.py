@@ -218,7 +218,6 @@ INSTALLED_APPS = [
     "saleor.page",
     "saleor.payment",
     "saleor.webhook",
-    "saleor.wishlist",
     # External apps
     "versatileimagefield",
     "django_measurement",

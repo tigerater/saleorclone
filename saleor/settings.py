@@ -218,7 +218,6 @@ INSTALLED_APPS = [
     "saleor.page",
     "saleor.payment",
     "saleor.webhook",
-    "saleor.wishlist",
     # External apps
     "versatileimagefield",
     "django_measurement",
@@ -383,6 +382,13 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 
 LOW_STOCK_THRESHOLD = 10
 MAX_CHECKOUT_LINE_QUANTITY = int(os.environ.get("MAX_CHECKOUT_LINE_QUANTITY", 50))
+
+bootstrap4 = {
+    "set_placeholder": False,
+    "set_required": False,
+    "success_css_class": "",
+    "form_renderers": {"default": "saleor.core.utils.form_renderer.FormRenderer"},
+}
 
 TEST_RUNNER = "tests.runner.PytestTestRunner"
 

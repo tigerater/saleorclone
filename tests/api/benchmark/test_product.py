@@ -26,35 +26,10 @@ def test_product_details(product, api_client, count_queries):
           name
           stockQuantity
           isAvailable
-          pricing {
-            discountLocalCurrency {
-              currency
-              gross {
-                amount
-                localized
-              }
-            }
-            price {
-              currency
-              gross {
-                amount
-                localized
-              }
-            }
-            priceUndiscounted {
-              currency
-              gross {
-                amount
-                localized
-              }
-            }
-            priceLocalCurrency {
-              currency
-              gross {
-                amount
-                localized
-              }
-            }
+          price {
+            currency
+            amount
+            localized
           }
           attributes {
             attribute {
@@ -84,59 +59,19 @@ def test_product_details(product, api_client, count_queries):
                       id
                       name
                     }
-                    pricing {
-                      priceRange {
-                        start{
-                          currency
-                          gross {
-                            amount
-                            localized
-                          }
-                        }
-                        stop{
-                          currency
-                          gross {
-                            amount
-                            localized
-                          }
-                        }
-                      }
-                      priceRangeUndiscounted {
-                        start{
-                          currency
-                          gross {
-                            amount
-                            localized
-                          }
-                        }
-                        stop{
-                          currency
-                          gross {
-                            amount
-                            localized
-                          }
-                        }
-                      }
-                      priceRangeLocalCurrency {
-                        start{
-                          currency
-                          gross {
-                            amount
-                            localized
-                          }
-                        }
-                        stop{
-                          currency
-                          gross {
-                            amount
-                            localized
-                          }
-                        }
-                      }
+                    price {
+                      amount
+                      currency
+                      localized
                     }
                   }
                 }
               }
+            }
+            price {
+              amount
+              currency
+              localized
             }
             images {
               id
@@ -147,7 +82,9 @@ def test_product_details(product, api_client, count_queries):
             }
             seoDescription
             seoTitle
-            isAvailable
+            availability {
+              available
+            }
           }
         }
     """

@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 import pytest
-from django.utils.text import slugify
 from prices import Money
 
 from saleor.account.models import Address
@@ -20,7 +19,6 @@ def named_products(category, product_type):
     def gen_product(name, description):
         product = Product.objects.create(
             name=name,
-            slug=slugify(name),
             description=description,
             price=Money(Decimal(6.6), "USD"),
             product_type=product_type,

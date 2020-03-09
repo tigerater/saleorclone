@@ -8,12 +8,11 @@ from django.utils.translation import pgettext_lazy
 from ..core import analytics
 from ..extensions.manager import get_extensions_manager
 from ..payment import ChargeStatus, CustomPaymentChoices, PaymentError
-from ..warehouse.management import decrease_stock
+from ..product.utils import decrease_stock
 from . import FulfillmentStatus, OrderStatus, emails, events, utils
 from .emails import send_fulfillment_confirmation_to_customer, send_payment_confirmation
 from .models import Fulfillment, FulfillmentLine
 from .utils import (
-    get_order_country,
     order_line_needs_automatic_fulfillment,
     recalculate_order,
     restock_fulfillment_lines,
@@ -182,9 +181,6 @@ def mark_order_as_paid(order: "Order", request_user: "User"):
     # pylint: disable=cyclic-import
     from ..payment.utils import create_payment
 
-    if not order.billing_address:
-        raise Exception("Order does not have billing address")
-
     payment = create_payment(
         gateway=CustomPaymentChoices.MANUAL,
         payment_token="",
@@ -217,9 +213,8 @@ def clean_mark_order_as_paid(order: "Order"):
 
 def fulfill_order_line(order_line, quantity):
     """Fulfill order line with given quantity."""
-    country = get_order_country(order_line.order)
     if order_line.variant and order_line.variant.track_inventory:
-        decrease_stock(order_line.variant, country, quantity)
+        decrease_stock(order_line.variant, quantity)
     order_line.quantity_fulfilled += quantity
     order_line.save(update_fields=["quantity_fulfilled"])
 
@@ -240,9 +235,8 @@ def automatically_fulfill_digital_lines(order: "Order"):
     for line in digital_lines:
         if not order_line_needs_automatic_fulfillment(line):
             continue
-        if line.variant:
-            digital_content = line.variant.digital_content
-            digital_content.urls.create(line=line)
+        digital_content = line.variant.digital_content
+        digital_content.urls.create(line=line)
         quantity = line.quantity
         FulfillmentLine.objects.create(
             fulfillment=fulfillment, order_line=line, quantity=quantity

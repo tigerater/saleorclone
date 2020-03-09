@@ -11,88 +11,82 @@ from saleor.product.utils.availability import (
     get_product_availability_status,
     get_variant_availability_status,
 )
-from saleor.warehouse.models import Stock
 
 
-def test_product_availability_status(unavailable_product, warehouse):
+def test_product_availability_status(unavailable_product):
     product = unavailable_product
     product.product_type.has_variants = True
 
     # product is not published
-    status = get_product_availability_status(product, "US")
+    status = get_product_availability_status(product)
     assert status == ProductAvailabilityStatus.NOT_PUBLISHED
 
     product.is_published = True
     product.save()
 
     # product has no variants
-    status = get_product_availability_status(product, "US")
+    status = get_product_availability_status(product)
     assert status == ProductAvailabilityStatus.VARIANTS_MISSSING
 
     variant_1 = product.variants.create(sku="test-1")
     variant_2 = product.variants.create(sku="test-2")
-    # create empty stock records
-    stock_1 = Stock.objects.create(
-        product_variant=variant_1, warehouse=warehouse, quantity=0
-    )
-    stock_2 = Stock.objects.create(
-        product_variant=variant_2, warehouse=warehouse, quantity=0
-    )
 
-    status = get_product_availability_status(product, "US")
+    # create empty stock records
+    variant_1.quantity = 0
+    variant_2.quantity = 0
+    variant_1.save()
+    variant_2.save()
+    status = get_product_availability_status(product)
     assert status == ProductAvailabilityStatus.OUT_OF_STOCK
 
     # assign quantity to only one stock record
-    stock_1.quantity = 5
-    stock_1.save()
-    status = get_product_availability_status(product, "US")
+    variant_1.quantity = 5
+    variant_1.save()
+    status = get_product_availability_status(product)
     assert status == ProductAvailabilityStatus.LOW_STOCK
 
     # both stock records have some quantity
-    stock_2.quantity = 5
-    stock_2.save()
-    status = get_product_availability_status(product, "US")
+    variant_2.quantity = 5
+    variant_2.save()
+    status = get_product_availability_status(product)
     assert status == ProductAvailabilityStatus.READY_FOR_PURCHASE
 
     # set product availability date from future
     product.publication_date = datetime.date.today() + datetime.timedelta(days=1)
     product.save()
-    status = get_product_availability_status(product, "US")
+    status = get_product_availability_status(product)
     assert status == ProductAvailabilityStatus.NOT_YET_AVAILABLE
 
 
-def test_variant_is_out_of_stock_when_product_is_unavalable(
-    unavailable_product, warehouse
-):
+def test_variant_is_out_of_stock_when_product_is_unavalable(unavailable_product):
     product = unavailable_product
     product.product_type.has_variants = True
 
     variant = product.variants.create(sku="test")
-    Stock.objects.create(product_variant=variant, warehouse=warehouse, quantity=0)
+    variant.quantity = 0
+    variant.save(update_fields=["quantity"])
 
-    status = get_variant_availability_status(variant, "US")
+    status = get_variant_availability_status(variant)
     assert status == VariantAvailabilityStatus.OUT_OF_STOCK
 
 
 @pytest.mark.parametrize(
-    "current_stock, expected_status",
+    "stock, expected_status",
     (
         (0, VariantAvailabilityStatus.OUT_OF_STOCK),
         (1, VariantAvailabilityStatus.AVAILABLE),
     ),
 )
-def test_variant_availability_status(stock, current_stock, expected_status):
-    stock.quantity = current_stock
-    stock.quantity_allocated = 0
-    stock.save(update_fields=["quantity", "quantity_allocated"])
-    variant = stock.product_variant
+def test_variant_availability_status(variant, stock, expected_status):
+    variant.quantity = stock
+    variant.quantity_allocated = 0
 
-    status = get_variant_availability_status(variant, "US")
+    status = get_variant_availability_status(variant)
     assert status == expected_status
 
 
 def test_variant_is_still_available_when_another_variant_is_unavailable(
-    product_variant_list, warehouse
+    product_variant_list,
 ):
     """
     Ensure a variant is not incorrectly flagged as out of stock when another variant
@@ -100,30 +94,24 @@ def test_variant_is_still_available_when_another_variant_is_unavailable(
     """
 
     unavailable_variant, available_variant = product_variant_list[:2]
-    Stock.objects.create(
-        product_variant=unavailable_variant, warehouse=warehouse, quantity=0
-    )
-    Stock.objects.create(
-        product_variant=available_variant,
-        warehouse=warehouse,
-        quantity=1,
-        quantity_allocated=0,
-    )
 
-    status = get_variant_availability_status(available_variant, "US")
+    unavailable_variant.quantity = 0
+    available_variant.quantity = 1
+    available_variant.quantity_allocated = 0
+
+    status = get_variant_availability_status(available_variant)
     assert status == VariantAvailabilityStatus.AVAILABLE
 
-    status = get_variant_availability_status(unavailable_variant, "US")
+    status = get_variant_availability_status(unavailable_variant)
     assert status == VariantAvailabilityStatus.OUT_OF_STOCK
 
 
-def test_availability(stock, monkeypatch, settings):
-    product = stock.product_variant.product
+def test_availability(product, monkeypatch, settings):
     taxed_price = TaxedMoney(Money("10.0", "USD"), Money("12.30", "USD"))
     monkeypatch.setattr(
         ExtensionsManager, "apply_taxes_to_product", Mock(return_value=taxed_price)
     )
-    availability = get_product_availability(product, country="PL")
+    availability = get_product_availability(product)
     taxed_price_range = TaxedMoneyRange(start=taxed_price, stop=taxed_price)
     assert availability.price_range == taxed_price_range
     assert availability.price_range_local_currency is None
@@ -134,10 +122,10 @@ def test_availability(stock, monkeypatch, settings):
     )
     settings.DEFAULT_COUNTRY = "PL"
     settings.OPENEXCHANGERATES_API_KEY = "fake-key"
-    availability = get_product_availability(product, local_currency="PLN", country="PL")
+    availability = get_product_availability(product, local_currency="PLN")
     assert availability.price_range_local_currency.start.currency == "PLN"
 
-    availability = get_product_availability(product, country="PL")
+    availability = get_product_availability(product)
     assert availability.price_range.start.tax.amount
     assert availability.price_range.stop.tax.amount
     assert availability.price_range_undiscounted.start.tax.amount

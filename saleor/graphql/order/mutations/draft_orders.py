@@ -14,11 +14,9 @@ from ....order.utils import (
     allocate_stock,
     change_order_line_quantity,
     delete_order_line,
-    get_order_country,
     recalculate_order,
     update_order_prices,
 )
-from ....warehouse.availability import check_stock_quantity, get_available_quantity
 from ...account.i18n import I18nMixin
 from ...account.types import AddressInput
 from ...core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
@@ -109,7 +107,7 @@ class DraftOrderCreate(ModelMutation, I18nMixin):
 
         if shipping_address:
             shipping_address = cls.validate_address(
-                shipping_address, instance=instance.shipping_address, info=info
+                shipping_address, instance=instance.shipping_address
             )
             shipping_address = info.context.extensions.change_user_address(
                 shipping_address, "shipping", user=instance
@@ -117,7 +115,7 @@ class DraftOrderCreate(ModelMutation, I18nMixin):
             cleaned_input["shipping_address"] = shipping_address
         if billing_address:
             billing_address = cls.validate_address(
-                billing_address, instance=instance.billing_address, info=info
+                billing_address, instance=instance.billing_address
             )
             billing_address = info.context.extensions.change_user_address(
                 billing_address, "billing", user=instance
@@ -268,16 +266,14 @@ class DraftOrderComplete(BaseMutation):
                 order.shipping_address.delete()
 
         order.save()
-        country = get_order_country(order)
 
         oversold_items = []
         for line in order:
             try:
-                check_stock_quantity(line.variant, country, line.quantity)
-                allocate_stock(line.variant, country, line.quantity)
+                line.variant.check_quantity(line.quantity)
+                allocate_stock(line.variant, line.quantity)
             except InsufficientStock:
-                available_stock = get_available_quantity(line.variant, country)
-                allocate_stock(line.variant, country, available_stock)
+                allocate_stock(line.variant, line.variant.quantity_available)
                 oversold_items.append(str(line))
         order_created(order, user=info.context.user, from_draft=True)
 

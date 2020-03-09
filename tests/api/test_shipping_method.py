@@ -47,31 +47,18 @@ def test_shipping_zone_query(
 
 
 def test_shipping_zones_query(
-    staff_api_client,
-    shipping_zone,
-    permission_manage_shipping,
-    permission_manage_products,
+    staff_api_client, shipping_zone, permission_manage_shipping
 ):
     query = """
     query MultipleShippings {
-        shippingZones(first: 100) {
-            edges {
-              node {
-                id
-                name
-                warehouses {
-                  id
-                  name
-                }
-              }
-            }
+        shippingZones {
             totalCount
         }
     }
     """
     num_of_shippings = shipping_zone._meta.model.objects.count()
     response = staff_api_client.post_graphql(
-        query, permissions=[permission_manage_shipping, permission_manage_products]
+        query, permissions=[permission_manage_shipping]
     )
     content = get_graphql_content(response)
     assert content["data"]["shippingZones"]["totalCount"] == num_of_shippings

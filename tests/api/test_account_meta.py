@@ -3,7 +3,7 @@ import json
 import graphene
 import pytest
 
-from tests.api.utils import assert_no_permission, get_graphql_content
+from tests.api.utils import get_graphql_content
 
 PRIVATE_META_NAMESPACE = "TEST_NAMESPACE"
 PUBLIC_META_NAMESPACE = "PUBLIC_NAMESPACE"
@@ -99,7 +99,7 @@ def test_user_has_no_access_to_private_meta(user_api_client, customer_with_meta)
 
 
 UPDATE_PRIVATE_METADATA_MUTATION = """
-    mutation UserUpdatePrivateMetadata($id: ID!, $input: MetaInput!) {
+    mutation TokenCreate($id: ID!, $input: MetaInput!) {
       userUpdatePrivateMetadata(
         id: $id
         input: $input
@@ -328,7 +328,7 @@ def test_staff_access_to_public_metadata(
 
 
 UPDATE_METADATA_MUTATION = """
-    mutation UserUpdateMetadata($id: ID!, $input: MetaInput!) {
+    mutation TokenCreate($id: ID!, $input: MetaInput!) {
       userUpdateMetadata(
         id: $id
         input: $input
@@ -350,9 +350,7 @@ UPDATE_METADATA_MUTATION = """
 """
 
 
-def test_staff_update_metadata_through_mutation(
-    staff_api_client, permission_manage_users, customer_with_meta
-):
+def test_update_metadata_through_mutation(user_api_client, customer_with_meta):
     NEW_VALUE = "NEW_VALUE"
     user_id = graphene.Node.to_global_id("User", customer_with_meta.id)
     variables = {
@@ -364,10 +362,7 @@ def test_staff_update_metadata_through_mutation(
             "value": NEW_VALUE,
         },
     }
-
-    resp = staff_api_client.post_graphql(
-        UPDATE_METADATA_MUTATION, variables, permissions=[permission_manage_users]
-    )
+    resp = user_api_client.post_graphql(UPDATE_METADATA_MUTATION, variables)
     meta = get_graphql_content(resp)["data"]["userUpdateMetadata"]["user"]["meta"][0]
 
     assert meta["namespace"] == PUBLIC_META_NAMESPACE
@@ -376,8 +371,8 @@ def test_staff_update_metadata_through_mutation(
     ]
 
 
-def test_staff_add_new_key_value_pair_to_metadata_using_mutation(
-    staff_api_client, customer_with_meta, permission_manage_users
+def test_add_new_key_value_pair_to_metadata_using_mutation(
+    user_api_client, customer_with_meta
 ):
     NEW_KEY = "NEW_KEY"
     NEW_VALUE = "NEW_VALUE"
@@ -391,9 +386,7 @@ def test_staff_add_new_key_value_pair_to_metadata_using_mutation(
             "value": NEW_VALUE,
         },
     }
-    response = staff_api_client.post_graphql(
-        UPDATE_METADATA_MUTATION, variables, permissions=[permission_manage_users]
-    )
+    response = user_api_client.post_graphql(UPDATE_METADATA_MUTATION, variables)
     meta = get_graphql_content(response)["data"]["userUpdateMetadata"]["user"]["meta"][
         0
     ]
@@ -406,9 +399,7 @@ def test_staff_add_new_key_value_pair_to_metadata_using_mutation(
     assert meta["clients"] == [{"metadata": expected_metadata, "name": META_CLIENT}]
 
 
-def test_add_new_namespace_metadata_using_mutation(
-    staff_api_client, customer_with_meta, permission_manage_users
-):
+def test_add_new_namespace_metadata_using_mutation(user_api_client, customer_with_meta):
     NEW_KEY = "NEW_KEY"
     NEW_VALUE = "NEW_VALUE"
     NEW_NAMESPACE = "NEW_NAMESPACE"
@@ -424,9 +415,7 @@ def test_add_new_namespace_metadata_using_mutation(
             "value": NEW_VALUE,
         },
     }
-    response = staff_api_client.post_graphql(
-        UPDATE_METADATA_MUTATION, variables, permissions=[permission_manage_users]
-    )
+    response = user_api_client.post_graphql(UPDATE_METADATA_MUTATION, variables)
     meta = get_graphql_content(response)["data"]["userUpdateMetadata"]["user"]["meta"]
 
     assert meta[0]["namespace"] == NEW_NAMESPACE
@@ -463,9 +452,7 @@ CLEAR_METADATA_MUTATION = """
 """
 
 
-def test_staff_clear_metadata_through_mutation(
-    staff_api_client, customer_with_meta, permission_manage_users
-):
+def test_clear_metadata_through_mutation(user_api_client, customer_with_meta):
     user_id = graphene.Node.to_global_id("User", customer_with_meta.id)
     variables = {
         "id": user_id,
@@ -475,9 +462,7 @@ def test_staff_clear_metadata_through_mutation(
             "key": PUBLIC_KEY,
         },
     }
-    response = staff_api_client.post_graphql(
-        CLEAR_METADATA_MUTATION, variables, permissions=[permission_manage_users]
-    )
+    response = user_api_client.post_graphql(CLEAR_METADATA_MUTATION, variables)
     meta = get_graphql_content(response)["data"]["userClearMetadata"]["user"]["meta"][0]
 
     assert meta["namespace"] == PUBLIC_META_NAMESPACE
@@ -497,91 +482,10 @@ def test_clear_silently_metadata_from_nonexistent_client(
             "key": PUBLIC_KEY,
         },
     }
-    response = staff_api_client.post_graphql(
-        CLEAR_METADATA_MUTATION, variables, permissions=[permission_manage_users]
-    )
+    response = staff_api_client.post_graphql(CLEAR_METADATA_MUTATION, variables)
     meta = get_graphql_content(response)["data"]["userClearMetadata"]["user"]["meta"][0]
 
     assert meta["namespace"] == PUBLIC_META_NAMESPACE
     assert meta["clients"] == [
         {"metadata": [{"key": PUBLIC_KEY, "value": PUBLIC_VALUE}], "name": META_CLIENT}
-    ]
-
-
-@pytest.mark.parametrize(
-    "mutation", [UPDATE_METADATA_MUTATION, UPDATE_PRIVATE_METADATA_MUTATION]
-)
-def test_staff_update_meta_without_permissions(
-    staff_api_client, customer_with_meta, mutation
-):
-    user_id = graphene.Node.to_global_id("User", customer_with_meta.id)
-    variables = {
-        "id": user_id,
-        "input": {
-            "namespace": "new_namespace",
-            "clientName": "client_name",
-            "key": "meta_key",
-            "value": "value",
-        },
-    }
-    response = staff_api_client.post_graphql(mutation, variables)
-    assert_no_permission(response)
-
-
-@pytest.mark.parametrize(
-    "mutation", [CLEAR_METADATA_MUTATION, CLEAR_PRIVATE_METADATA_MUTATION]
-)
-def test_staff_clear_meta_without_permissions(
-    staff_api_client, customer_with_meta, mutation
-):
-    user_id = graphene.Node.to_global_id("User", customer_with_meta.id)
-    variables = {
-        "id": user_id,
-        "input": {
-            "namespace": PUBLIC_META_NAMESPACE,
-            "clientName": META_CLIENT,
-            "key": PUBLIC_KEY,
-        },
-    }
-    response = staff_api_client.post_graphql(mutation, variables)
-    assert_no_permission(response)
-
-
-UPDATE_ACCOUNT_META_MUTATION = """
-    mutation AccountUpdateMeta($input: MetaInput!) {
-      accountUpdateMeta(input: $input){
-        user{
-          meta{
-            namespace
-            clients{
-              name
-              metadata{
-                key
-                value
-              }
-            }
-          }
-        }
-      }
-    }
-"""
-
-
-def test_user_updates_own_meta(user_api_client, customer_with_meta):
-    NEW_VALUE = "NEW_VALUE"
-    variables = {
-        "input": {
-            "namespace": PUBLIC_META_NAMESPACE,
-            "clientName": META_CLIENT,
-            "key": PUBLIC_KEY,
-            "value": NEW_VALUE,
-        }
-    }
-
-    resp = user_api_client.post_graphql(UPDATE_ACCOUNT_META_MUTATION, variables)
-    meta = get_graphql_content(resp)["data"]["accountUpdateMeta"]["user"]["meta"][0]
-
-    assert meta["namespace"] == PUBLIC_META_NAMESPACE
-    assert meta["clients"] == [
-        {"metadata": [{"key": PUBLIC_KEY, "value": NEW_VALUE}], "name": META_CLIENT}
     ]

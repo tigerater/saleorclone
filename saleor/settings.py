@@ -128,10 +128,6 @@ EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
 EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
 EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
-ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL = os.environ.get(
-    "ENABLE_ACCOUNT_CONFIRMATION", True
-)
-
 ENABLE_SSL = get_bool_from_env("ENABLE_SSL", False)
 
 if ENABLE_SSL:
@@ -221,6 +217,7 @@ INSTALLED_APPS = [
     "saleor.data_feeds",
     "saleor.page",
     "saleor.payment",
+    "saleor.warehouse",
     "saleor.webhook",
     "saleor.wishlist",
     # External apps

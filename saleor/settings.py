@@ -149,6 +149,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
     ("assets", os.path.join(PROJECT_ROOT, "saleor", "static", "assets")),
+    ("favicons", os.path.join(PROJECT_ROOT, "saleor", "static", "favicons")),
     ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images")),
 ]
 STATICFILES_FINDERS = [
@@ -225,6 +226,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sitemaps",
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.auth",

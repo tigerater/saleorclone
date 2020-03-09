@@ -2,6 +2,9 @@ import os
 import random
 
 from django.conf import settings
+from django.contrib.admin.views.decorators import (
+    staff_member_required as django_staff_member_required,
+)
 from django.core.files import File
 
 from ..checkout import AddressType
@@ -114,3 +117,7 @@ def remove_staff_member(staff):
         staff.save()
     else:
         staff.delete()
+
+
+def staff_member_required(f):
+    return django_staff_member_required(f, login_url="account:login")

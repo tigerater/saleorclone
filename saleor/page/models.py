@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import pgettext_lazy
 from draftjs_sanitizer import clean_draft_js
 
@@ -36,7 +37,7 @@ class Page(SeoModel, PublishableModel):
         return self.title
 
     def get_absolute_url(self):
-        return ""
+        return reverse("page:details", kwargs={"slug": self.slug})
 
 
 class PageTranslation(SeoModelTranslation):

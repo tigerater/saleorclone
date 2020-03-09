@@ -31,16 +31,10 @@ class Command(BaseCommand):
             action="store_true",
             help="Delete staff user accounts (doesn't delete superuser accounts).",
         )
-        parser.add_argument(
-            "--force",
-            action="store_true",
-            help="Allows running the cleardb command in DEBUG=False mode.",
-        )
 
     def handle(self, **options):
-        force = options.get("force", False)
-        if not settings.DEBUG and not force:
-            raise CommandError("Cannot clear the database in DEBUG=False mode.")
+        if not settings.DEBUG:
+            raise CommandError("Cannot clear the database in DEBUG=True mode.")
 
         Checkout.objects.all().delete()
         self.stdout.write("Removed checkouts")

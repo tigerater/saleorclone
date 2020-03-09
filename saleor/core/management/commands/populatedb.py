@@ -1,6 +1,7 @@
 from io import StringIO
 
 from django.apps import apps
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import connection
@@ -66,6 +67,10 @@ class Command(BaseCommand):
             cursor.execute("PRAGMA temp_store = MEMORY;")
             cursor.execute("PRAGMA synchronous = OFF;")
 
+    def populate_search_index(self):
+        if settings.ES_URL:
+            call_command("search_index", "--rebuild", force=True)
+
     def sequence_reset(self):
         """Run a SQL sequence reset on all saleor.* apps.
 
@@ -111,5 +116,7 @@ class Command(BaseCommand):
             msg = create_superuser(credentials)
             self.stdout.write(msg)
             add_address_to_admin(credentials["email"])
+        if not options["withoutsearch"]:
+            self.populate_search_index()
         if not options["skipsequencereset"]:
             self.sequence_reset()

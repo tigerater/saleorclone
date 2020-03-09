@@ -28,6 +28,7 @@ All notable, unreleased changes to this project will be documented in this file.
 - Allow staff member to receive notification about customers orders - #4993 by @kswiatek92
 - JWT payload now contains user global id - #5039 by @salwator
 - Made middleware path resolving lazy and refactored middleware names - #5041 by @NyanKiyoshi
+- Generate slug in attribute value save - #5055 by @fowczarek
 
 ## 2.9.0
 
@@ -565,7 +566,6 @@ All notable, unreleased changes to this project will be documented in this file.
 - Add database sequence reset to `populatedb` - #3406 by @michaljelonek
 - Get authorized amount from succeeded auth transactions - #3417 by @jxltom
 - Resort imports by `isort` - #3412 by @jxltom
-- Drop storefront 1.0 - #5043 by @IKarbowiak
 
 ### Dashboard 2.0
 

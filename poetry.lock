@@ -467,6 +467,14 @@ beautifulsoup4 = "*"
 
 [[package]]
 category = "main"
+description = "Use Cache URLs in your Django application."
+name = "django-cache-url"
+optional = false
+python-versions = "*"
+version = "3.0.0"
+
+[[package]]
+category = "main"
 description = "Provides a country field for Django models."
 name = "django-countries"
 optional = false
@@ -503,6 +511,17 @@ version = "0.1.0"
 
 [package.dependencies]
 django-debug-toolbar = ">=2.0"
+
+[[package]]
+category = "main"
+description = "Wrapper around elasticsearch-dsl-py for django models"
+name = "django-elasticsearch-dsl"
+optional = false
+python-versions = "*"
+version = "0.5.1"
+
+[package.dependencies]
+elasticsearch-dsl = ">=2.1.0,<6.2.0"
 
 [[package]]
 category = "dev"
@@ -551,6 +570,14 @@ version = "0.2.1"
 Django = ">=1.11"
 PyJWT = ">=1.5.0"
 graphene-django = ">=2.0.0"
+
+[[package]]
+category = "main"
+description = "Django app to allow superusers to impersonate other users."
+name = "django-impersonate"
+optional = false
+python-versions = "*"
+version = "1.4.1"
 
 [[package]]
 category = "main"
@@ -758,6 +785,14 @@ python-magic = ">=0.4.15,<1.0.0"
 
 [[package]]
 category = "main"
+description = "Transparently use webpack with django"
+name = "django-webpack-loader"
+optional = false
+python-versions = "*"
+version = "0.6.0"
+
+[[package]]
+category = "main"
 description = "Docutils -- Python Documentation Utilities"
 name = "docutils"
 optional = false
@@ -777,6 +812,38 @@ urllib3 = "*"
 
 [package.extras]
 dev = ["pre-commit", "pytest", "mock"]
+
+[[package]]
+category = "main"
+description = "Python client for Elasticsearch"
+name = "elasticsearch"
+optional = false
+python-versions = "*"
+version = "6.3.1"
+
+[package.dependencies]
+urllib3 = ">=1.21.1"
+
+[package.extras]
+develop = ["requests (>=2.0.0,<3.0.0)", "nose", "coverage", "mock", "pyaml", "nosexcover", "sphinx", "sphinx-rtd-theme"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
+
+[[package]]
+category = "main"
+description = "Python client for Elasticsearch"
+name = "elasticsearch-dsl"
+optional = false
+python-versions = "*"
+version = "6.0.1"
+
+[package.dependencies]
+elasticsearch = ">=6.0.0,<7.0.0"
+ipaddress = "*"
+python-dateutil = "*"
+six = "*"
+
+[package.extras]
+develop = ["mock", "pytest (>=3.0.0)", "pytest-cov", "pytz", "sphinx", "sphinx-rtd-theme"]
 
 [[package]]
 category = "dev"
@@ -1127,6 +1194,14 @@ zipp = ">=0.5"
 [package.extras]
 docs = ["sphinx", "rst.linker"]
 testing = ["packaging", "importlib-resources"]
+
+[[package]]
+category = "main"
+description = "IPv4/IPv6 manipulation library"
+name = "ipaddress"
+optional = false
+python-versions = "*"
+version = "1.0.23"
 
 [[package]]
 category = "dev"
@@ -2268,7 +2343,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "08a8caa3d6012e766e8127d84f1cb61952258e205e7aaa486039c6299579b446"
+content-hash = "0c234fdf02a1d0ddf94001aafb6d70b6c6c73ae26c35d7ef1aea0730bc3574dd"
 python-versions = "~3.8"
 
 [metadata.files]
@@ -2483,6 +2558,10 @@ django-babel = [
 django-bootstrap4 = [
     {file = "django-bootstrap4-1.0.1.tar.gz", hash = "sha256:3da770392819267eda2f774bcf832460af00db21089b94caf4df94be8a48c48c"},
 ]
+django-cache-url = [
+    {file = "django-cache-url-3.0.0.tar.gz", hash = "sha256:235950e2d7cb16164082167c2974301e2f0fb2313d40bfacc9d24f5b09c3514b"},
+    {file = "django_cache_url-3.0.0-py2.py3-none-any.whl", hash = "sha256:964120787dc80e568a355385a3880a19f2f00219c251903956f3137d1583d097"},
+]
 django-countries = [
     {file = "django-countries-5.5.tar.gz", hash = "sha256:1cefad9ec804d6a0318b91c5394b5aef00336755928f44d0a6420507719d65c8"},
     {file = "django_countries-5.5-py2.py3-none-any.whl", hash = "sha256:22e96236101783cfe5222ef5174972242a7e8176336d119a4dc111aedce35897"},
@@ -2493,6 +2572,10 @@ django-debug-toolbar = [
 ]
 django-debug-toolbar-request-history = [
     {file = "django_debug_toolbar_request_history-0.1.0-py2.py3-none-any.whl", hash = "sha256:b258919bc9f0b863a20783ceda51e4a52c187f93a859de0fcb289423d9aff453"},
+]
+django-elasticsearch-dsl = [
+    {file = "django-elasticsearch-dsl-0.5.1.tar.gz", hash = "sha256:8c96714d8eef30763e820a2909663b236df765e5c6c8508721489dc9713dfef7"},
+    {file = "django_elasticsearch_dsl-0.5.1-py2.py3-none-any.whl", hash = "sha256:114889f0f70d584e300953b9fc75f312b447e3ff96136dad03028654ba9f4cbd"},
 ]
 django-extensions = [
     {file = "django-extensions-2.2.5.tar.gz", hash = "sha256:b58320d3fe3d6ae7d1d8e38959713fa92272f4921e662d689058d942a5b444f7"},
@@ -2507,6 +2590,9 @@ django-graphiql-debug-toolbar = [
 ]
 django-graphql-jwt = [
     {file = "django-graphql-jwt-0.2.1.tar.gz", hash = "sha256:6dcf9dd4990098e289d76ab4220edbf436a2e26dc6af1d4a526ac699ad93bf14"},
+]
+django-impersonate = [
+    {file = "django-impersonate-1.4.1.tar.gz", hash = "sha256:63b62d06f93b0318698c68f7314c78473914c262d4164eb66ad860bb83e04771"},
 ]
 django-js-asset = [
     {file = "django-js-asset-1.2.2.tar.gz", hash = "sha256:c163ae80d2e0b22d8fb598047cd0dcef31f81830e127cfecae278ad574167260"},
@@ -2562,6 +2648,10 @@ django-versatileimagefield = [
     {file = "django-versatileimagefield-1.11.tar.gz", hash = "sha256:8322ee9d7bf5ffa5360990320d2cc2efc7017feff35422636d49f625721edf82"},
     {file = "django_versatileimagefield-1.11-py2.py3-none-any.whl", hash = "sha256:90e1614db9ee593f502f4e5ec0942611589e1d91567a20447c8cf48459ee52d5"},
 ]
+django-webpack-loader = [
+    {file = "django-webpack-loader-0.6.0.tar.gz", hash = "sha256:60bab6b9a037a5346fad12d2a70a6bc046afb33154cf75ed640b93d3ebd5f520"},
+    {file = "django_webpack_loader-0.6.0-py2.py3-none-any.whl", hash = "sha256:970b968c2a8975fb7eff56a3bab5d0d90d396740852d1e0c50c5cfe2b824199a"},
+]
 docutils = [
     {file = "docutils-0.15.2-py2-none-any.whl", hash = "sha256:9e4d7ecfc600058e07ba661411a2b7de2fd0fafa17d1a7f7361cd47b1175c827"},
     {file = "docutils-0.15.2-py3-none-any.whl", hash = "sha256:6c4f696463b79f1fb8ba0c594b63840ebd41f059e92b31957c46b74a4599b6d0"},
@@ -2569,6 +2659,14 @@ docutils = [
 ]
 draftjs-sanitizer = [
     {file = "draftjs-sanitizer-1.0.0.tar.gz", hash = "sha256:4603a9296153cd06d5a1d76a45a1ff0295363516af983d8dde28cafc5cd67583"},
+]
+elasticsearch = [
+    {file = "elasticsearch-6.3.1-py2.py3-none-any.whl", hash = "sha256:7546cc08e3899716e12fe67d12d7cfe9a64647014d1134b014c3c392b63cad42"},
+    {file = "elasticsearch-6.3.1.tar.gz", hash = "sha256:aada5cfdc4a543c47098eb3aca6663848ef5d04b4324935ced441debc11ec98b"},
+]
+elasticsearch-dsl = [
+    {file = "elasticsearch-dsl-6.0.1.tar.gz", hash = "sha256:8c340995388544662598299a63357acd576579eb939e500956d58a5fd8c17cd1"},
+    {file = "elasticsearch_dsl-6.0.1-py2.py3-none-any.whl", hash = "sha256:e4254061442fded9721d4ed07db398f66453c402ab60409a2b9a88be433c27ba"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
@@ -2668,6 +2766,10 @@ idna = [
 importlib-metadata = [
     {file = "importlib_metadata-0.23-py2.py3-none-any.whl", hash = "sha256:d5f18a79777f3aa179c145737780282e27b508fc8fd688cb17c7a813e8bd39af"},
     {file = "importlib_metadata-0.23.tar.gz", hash = "sha256:aa18d7378b00b40847790e7c27e11673d7fed219354109d0e7b9e5b25dc3ad26"},
+]
+ipaddress = [
+    {file = "ipaddress-1.0.23-py2.py3-none-any.whl", hash = "sha256:6e0f4a39e66cb5bb9a137b00276a2eff74f93b71dcbdad6f10ff7df9d3557fcc"},
+    {file = "ipaddress-1.0.23.tar.gz", hash = "sha256:b7f8e0369580bb4a24d5ba1d7cc29660a4a6987763faf1d8a8046830e020e7e2"},
 ]
 isort = [
     {file = "isort-4.3.21-py2.py3-none-any.whl", hash = "sha256:6e811fcb295968434526407adb8796944f1988c5b65e8139058f2014cbe100fd"},

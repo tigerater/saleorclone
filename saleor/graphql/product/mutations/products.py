@@ -50,7 +50,6 @@ from ..types import (
     ProductVariant,
 )
 from ..utils import (
-    get_used_attibute_values_for_variant,
     get_used_variants_attribute_values,
     validate_attribute_input_for_product,
     validate_attribute_input_for_variant,
@@ -1044,9 +1043,7 @@ class ProductVariantCreate(ModelMutation):
         return attributes
 
     @classmethod
-    def validate_duplicated_attribute_values(
-        cls, attributes, used_attribute_values, instance=None
-    ):
+    def validate_duplicated_attribute_values(cls, attributes, used_attribute_values):
         attribute_values = defaultdict(list)
         for attribute in attributes:
             attribute_values[attribute.id].extend(attribute.values)
@@ -1091,7 +1088,7 @@ class ProductVariantCreate(ModelMutation):
 
             try:
                 cls.validate_duplicated_attribute_values(
-                    attributes, used_attribute_values, instance
+                    attributes, used_attribute_values
                 )
                 cleaned_input["attributes"] = cls.clean_attributes(
                     attributes, product_type
@@ -1151,22 +1148,6 @@ class ProductVariantUpdate(ProductVariantCreate):
         permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
-
-    @classmethod
-    def validate_duplicated_attribute_values(
-        cls, attributes, used_attribute_values, instance=None
-    ):
-        # Check if the variant is getting updated,
-        # and the assigned attributes do not change
-        if instance.product_id is not None:
-            assigned_attributes = get_used_attibute_values_for_variant(instance)
-            input_attribute_values = defaultdict(list)
-            for attribute in attributes:
-                input_attribute_values[attribute.id].extend(attribute.values)
-            if input_attribute_values == assigned_attributes:
-                return
-        # if assigned attributes is getting updated run duplicated attribute validation
-        super().validate_duplicated_attribute_values(attributes, used_attribute_values)
 
 
 class ProductVariantDelete(ModelDeleteMutation):

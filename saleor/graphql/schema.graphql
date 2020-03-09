@@ -960,7 +960,7 @@ type CollectionUpdatePrivateMeta {
 
 type ConfigurationItem {
   name: String!
-  value: String!
+  value: String
   type: ConfigurationTypeFieldEnum
   helpText: String
   label: String
@@ -974,6 +974,8 @@ input ConfigurationItemInput {
 enum ConfigurationTypeFieldEnum {
   STRING
   BOOLEAN
+  SECRET
+  PASSWORD
 }
 
 enum CountryCode {
@@ -2004,7 +2006,7 @@ type MetaStore {
 type Money {
   currency: String!
   amount: Float!
-  localized: String! @deprecated(reason: "DEPRECATED: Will be removed in Saleor 2.11. Price formatting according to the current locale should be handled by the frontend client.")
+  localized: String!
 }
 
 type MoneyRange {

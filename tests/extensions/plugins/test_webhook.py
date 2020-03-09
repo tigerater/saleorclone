@@ -4,16 +4,15 @@ import pytest
 import requests
 from django.core.serializers import serialize
 
-from saleor.account.models import ServiceAccount
 from saleor.extensions.manager import get_extensions_manager
 from saleor.extensions.plugins.webhook import create_hmac_signature
-from saleor.extensions.plugins.webhook.tasks import trigger_webhooks_for_event
-from saleor.webhook import WebhookEventType
-from saleor.webhook.payloads import (
+from saleor.extensions.plugins.webhook.payloads import (
     generate_customer_payload,
     generate_order_payload,
     generate_product_payload,
 )
+from saleor.extensions.plugins.webhook.tasks import trigger_webhooks_for_event
+from saleor.webhook import WebhookEventType
 
 
 @pytest.mark.vcr
@@ -21,12 +20,7 @@ from saleor.webhook.payloads import (
     "saleor.extensions.plugins.webhook.tasks.requests.post", wraps=requests.post
 )
 def test_trigger_webhooks_for_event(
-    mock_request,
-    webhook,
-    order_with_lines,
-    permission_manage_orders,
-    permission_manage_users,
-    permission_manage_products,
+    mock_request, webhook, order_with_lines, permission_manage_orders
 ):
     webhook.service_account.permissions.add(permission_manage_orders)
     webhook.target_url = "https://webhook.site/f0fc9979-cbd4-47b7-8705-1acb03fff1d0"
@@ -44,66 +38,6 @@ def test_trigger_webhooks_for_event(
     mock_request.assert_called_once_with(
         webhook.target_url, data=expected_data, headers=expected_headers, timeout=10
     )
-
-
-first_url = "http://www.example.com/first/"
-third_url = "http://www.example.com/third/"
-
-
-@pytest.mark.parametrize(
-    "event_name, total_webhook_calls, expected_target_urls",
-    [
-        (WebhookEventType.PRODUCT_CREATED, 1, {first_url}),
-        (WebhookEventType.ORDER_FULLY_PAID, 2, {first_url, third_url}),
-        (WebhookEventType.ORDER_FULFILLED, 1, {third_url}),
-        (WebhookEventType.ORDER_CANCELLED, 1, {third_url}),
-        (WebhookEventType.ORDER_UPDATED, 1, {third_url}),
-        (WebhookEventType.ORDER_CREATED, 1, {third_url}),
-        (WebhookEventType.CUSTOMER_CREATED, 0, set()),
-    ],
-)
-@mock.patch("saleor.extensions.plugins.webhook.tasks.send_webhook_request.delay")
-def test_trigger_webhooks_for_event_calls_expected_events(
-    mock_request,
-    event_name,
-    total_webhook_calls,
-    expected_target_urls,
-    service_account,
-    order_with_lines,
-    permission_manage_orders,
-    permission_manage_users,
-    permission_manage_products,
-):
-    service_account.permissions.add(permission_manage_orders)
-    service_account.permissions.add(permission_manage_products)
-    webhook = service_account.webhooks.create(
-        target_url="http://www.example.com/first/"
-    )
-    webhook.events.create(event_type=WebhookEventType.CUSTOMER_CREATED)
-    webhook.events.create(event_type=WebhookEventType.PRODUCT_CREATED)
-    webhook.events.create(event_type=WebhookEventType.ORDER_FULLY_PAID)
-
-    sa_without_permissions = ServiceAccount.objects.create()
-
-    second_webhook = sa_without_permissions.webhooks.create(
-        target_url="http://www.example.com/wrong"
-    )
-    second_webhook.events.create(event_type=WebhookEventType.ALL)
-    second_webhook.events.create(event_type=WebhookEventType.PRODUCT_CREATED)
-    second_webhook.events.create(event_type=WebhookEventType.CUSTOMER_CREATED)
-
-    sa_with_partial_permissions = ServiceAccount.objects.create()
-    sa_with_partial_permissions.permissions.add(permission_manage_orders)
-    third_webhook = sa_with_partial_permissions.webhooks.create(
-        target_url="http://www.example.com/third/"
-    )
-    third_webhook.events.create(event_type=WebhookEventType.ALL)
-
-    trigger_webhooks_for_event(event_name, data="")
-    assert mock_request.call_count == total_webhook_calls
-
-    target_url_calls = {call[0][1] for call in mock_request.call_args_list}
-    assert target_url_calls == expected_target_urls
 
 
 @pytest.mark.vcr
@@ -167,7 +101,7 @@ def test_order_fully_paid(mocked_webhook_trigger, settings, order_with_lines):
 
     expected_data = generate_order_payload(order_with_lines)
     mocked_webhook_trigger.assert_called_once_with(
-        WebhookEventType.ORDER_FULLY_PAID, expected_data
+        WebhookEventType.ORDER_FULLYPAID, expected_data
     )
 
 

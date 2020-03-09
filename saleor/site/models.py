@@ -66,7 +66,7 @@ class SiteSettings(models.Model):
         max_length=settings.DEFAULT_MAX_EMAIL_DISPLAY_NAME_LENGTH,
         blank=True,
         default="",
-        validators=EMAIL_SENDER_NAME_VALIDATORS,  # type: ignore
+        validators=EMAIL_SENDER_NAME_VALIDATORS,
     )
     default_mail_sender_address = models.EmailField(blank=True, null=True)
     customer_set_password_url = models.CharField(max_length=255, blank=True, null=True)

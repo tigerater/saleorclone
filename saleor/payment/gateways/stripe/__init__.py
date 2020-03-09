@@ -186,8 +186,8 @@ def _get_client(**connection_params):
 
 
 def _error_response(
-    kind: str,  # use TransactionKind class
-    exc: stripe.error.StripeError,
+    kind: TransactionKind,
+    exc: Exception,
     payment_info: PaymentData,
     action_required: bool = False,
 ) -> GatewayResponse:
@@ -206,7 +206,7 @@ def _error_response(
 
 def _success_response(
     intent: stripe.PaymentIntent,
-    kind: str,  # use TransactionKind class
+    kind: TransactionKind,
     success: bool = True,
     amount=None,
     currency=None,

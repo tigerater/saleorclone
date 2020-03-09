@@ -21,13 +21,10 @@ class WarehouseQueryset(models.QuerySet):
 
 class Warehouse(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    name = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     company_name = models.CharField(blank=True, max_length=255)
 
-    shipping_zones = models.ManyToManyField(
-        ShippingZone, blank=True, related_name="warehouses"
-    )
+    shipping_zones = models.ManyToManyField(ShippingZone, blank=True)
     address = models.ForeignKey(Address, on_delete=models.PROTECT)
 
     email = models.EmailField(blank=True, default="")

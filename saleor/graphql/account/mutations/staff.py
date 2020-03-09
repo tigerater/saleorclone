@@ -320,10 +320,7 @@ class AddressCreate(ModelMutation):
         user = cls.get_node_or_error(info, user_id, field="user_id", only_type=User)
         response = super().perform_mutation(root, info, **data)
         if not response.errors:
-            address = info.context.extensions.change_user_address(
-                response.address, None, user
-            )
-            user.addresses.add(address)
+            user.addresses.add(response.address)
             response.user = user
         return response
 

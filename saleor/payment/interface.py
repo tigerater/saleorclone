@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
+if TYPE_CHECKING:
+    from . import TransactionKind
 
 
 @dataclass
@@ -24,7 +27,7 @@ class GatewayResponse:
 
     is_success: bool
     action_required: bool
-    kind: str  # use "TransactionKind" class
+    kind: "TransactionKind"
     amount: Decimal
     currency: str
     transaction_id: Optional[str]
@@ -62,7 +65,7 @@ class PaymentData:
     billing: Optional[AddressData]
     shipping: Optional[AddressData]
     order_id: Optional[int]
-    customer_ip_address: Optional[str]
+    customer_ip_address: str
     customer_email: str
     token: Optional[str] = None
     customer_id: Optional[str] = None

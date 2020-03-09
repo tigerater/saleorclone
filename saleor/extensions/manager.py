@@ -271,31 +271,22 @@ class ExtensionsManager(PaymentInterface):
             )
         raise Exception(f"Payment plugin {gateway} is inaccessible!")
 
-    def get_active_plugins(self, plugins=None) -> List["BasePlugin"]:
-        if plugins is None:
-            plugins = self.plugins
-        return [
-            plugin
-            for plugin in plugins
-            if self.get_plugin_configuration(plugin.PLUGIN_NAME).active
-        ]
-
-    def list_payment_plugin_names(self, active_only: bool = False) -> List[str]:
+    def list_payment_gateways(self, active_only: bool = True) -> List[dict]:
         payment_method = "process_payment"
         plugins = self.plugins
         if active_only:
-            plugins = self.get_active_plugins()
+            plugins = [
+                plugin
+                for plugin in plugins
+                if self.get_plugin_configuration(plugin.PLUGIN_NAME).active
+            ]
         return [
-            plugin.PLUGIN_NAME
+            {
+                "name": plugin.PLUGIN_NAME,
+                "config": self.__get_payment_config(plugin.PLUGIN_NAME),
+            }
             for plugin in plugins
             if payment_method in type(plugin).__dict__
-        ]
-
-    def list_payment_gateways(self, active_only: bool = True) -> List[dict]:
-        payment_plugins = self.list_payment_plugin_names(active_only=active_only)
-        return [
-            {"name": plugin_name, "config": self.__get_payment_config(plugin_name)}
-            for plugin_name in payment_plugins
         ]
 
     def get_payment_template(self, gateway: str) -> str:

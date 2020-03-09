@@ -2,23 +2,17 @@ import graphene
 
 from ..core.fields import PrefetchingConnectionField
 from ..decorators import permission_required
+from .enums import PaymentGatewayEnum
 from .mutations import PaymentCapture, PaymentRefund, PaymentSecureConfirm, PaymentVoid
 from .resolvers import resolve_client_token, resolve_payments
 from .types import Payment
 
 
 class PaymentQueries(graphene.ObjectType):
-    payment = graphene.Field(
-        Payment,
-        description="Lookup a payment by ID.",
-        id=graphene.Argument(
-            graphene.ID, description="ID of the payment.", required=True
-        ),
-    )
+    payment = graphene.Field(Payment, id=graphene.Argument(graphene.ID))
     payments = PrefetchingConnectionField(Payment, description="List of payments")
     payment_client_token = graphene.Field(
-        graphene.String,
-        gateway=graphene.String(required=True, description="A payment gateway."),
+        graphene.String, args={"gateway": PaymentGatewayEnum()}
     )
 
     @permission_required("order.manage_orders")

@@ -1,7 +1,6 @@
 import graphene
 
 from ..core.connection import CountableConnection
-from ..core.fields import BaseConnectionField
 from ..discount import types as discount_types
 from ..discount.resolvers import resolve_sales, resolve_vouchers
 from ..menu import types as menu_types
@@ -57,7 +56,7 @@ class TranslatableKinds(graphene.Enum):
 
 
 class TranslationQueries(graphene.ObjectType):
-    translations = BaseConnectionField(
+    translations = graphene.ConnectionField(
         TranslatableItemConnection,
         description="Returns list of all translatable items of a given kind.",
         kind=graphene.Argument(

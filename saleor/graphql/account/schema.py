@@ -37,6 +37,8 @@ from .mutations.service_account import (
     ServiceAccountClearStoredPrivateMeta,
     ServiceAccountCreate,
     ServiceAccountDelete,
+    ServiceAccountTokenCreate,
+    ServiceAccountTokenDelete,
     ServiceAccountUpdate,
     ServiceAccountUpdatePrivateMeta,
 )
@@ -83,51 +85,38 @@ class ServiceAccountFilterInput(FilterInputObjectType):
 class AccountQueries(graphene.ObjectType):
     address_validation_rules = graphene.Field(
         AddressValidationData,
-        description="Returns address validation rules.",
-        country_code=graphene.Argument(
-            CountryCodeEnum,
-            description="Two-letter ISO 3166-1 country code.",
-            required=True,
-        ),
-        country_area=graphene.Argument(
-            graphene.String, description="Designation of a region, province or state."
-        ),
-        city=graphene.Argument(graphene.String, description="City or a town name."),
-        city_area=graphene.Argument(
-            graphene.String, description="Sublocality like a district."
-        ),
+        country_code=graphene.Argument(CountryCodeEnum, required=True),
+        country_area=graphene.Argument(graphene.String),
+        city=graphene.Argument(graphene.String),
+        city_area=graphene.Argument(graphene.String),
     )
     customers = FilterInputConnectionField(
         User,
-        filter=CustomerFilterInput(description="Filtering options for customers."),
+        filter=CustomerFilterInput(),
         description="List of the shop's customers.",
         query=graphene.String(description=DESCRIPTIONS["user"]),
     )
-    me = graphene.Field(User, description="Return the currently authenticated user.")
+    me = graphene.Field(User, description="Logged in user data.")
     staff_users = FilterInputConnectionField(
         User,
-        filter=StaffUserInput(description="Filtering options for staff users."),
+        filter=StaffUserInput(),
         description="List of the shop's staff users.",
         query=graphene.String(description=DESCRIPTIONS["user"]),
     )
     service_accounts = FilterInputConnectionField(
         ServiceAccount,
-        filter=ServiceAccountFilterInput(
-            description="Filtering options for service accounts."
-        ),
+        filter=ServiceAccountFilterInput(),
         description="List of the service accounts",
     )
     service_account = graphene.Field(
         ServiceAccount,
-        id=graphene.Argument(
-            graphene.ID, description="ID of the service account.", required=True
-        ),
+        id=graphene.Argument(graphene.ID, required=True),
         description="Lookup a service account by ID.",
     )
 
     user = graphene.Field(
         User,
-        id=graphene.Argument(graphene.ID, description="ID of the user.", required=True),
+        id=graphene.Argument(graphene.ID, required=True),
         description="Lookup a user by ID.",
     )
 
@@ -227,6 +216,9 @@ class AccountMutations(graphene.ObjectType):
     service_account_clear_stored_private_metadata = (
         ServiceAccountClearStoredPrivateMeta.Field()
     )
+
+    service_account_token_create = ServiceAccountTokenCreate.Field()
+    service_account_token_delete = ServiceAccountTokenDelete.Field()
 
     # Staff deprecated mutation
     password_reset = PasswordReset.Field()

@@ -5,7 +5,9 @@ import pytest
 from django_countries.fields import Country
 from prices import Money, TaxedMoney
 
+from saleor.core.payments import Gateway
 from saleor.core.taxes import TaxType
+
 from saleor.extensions import ConfigurationTypeField
 from saleor.extensions.base_plugin import BasePlugin
 from saleor.extensions.manager import ExtensionsManager, get_extensions_manager
@@ -413,4 +415,6 @@ def test_manager_serve_list_of_payment_gateways():
         "tests.extensions.test_manager.InactivePaymentGateway",
     ]
     manager = ExtensionsManager(plugins=plugins)
-    assert manager.list_payment_gateways() == [ActivePaymentGateway.PLUGIN_NAME]
+    assert manager.list_payment_gateways() == [
+        Gateway(ActivePaymentGateway.PLUGIN_NAME)
+    ]

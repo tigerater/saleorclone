@@ -254,7 +254,6 @@ INSTALLED_APPS = [
     "saleor.data_feeds",
     "saleor.page",
     "saleor.payment",
-    "saleor.webhook",
     # External apps
     "versatileimagefield",
     "django_babel",
@@ -610,6 +609,19 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 if SENTRY_DSN:
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()])
+
+DUMMY = "dummy"
+BRAINTREE = "braintree"
+RAZORPAY = "razorpay"
+STRIPE = "stripe"
+
+# TODO: remove this after graphql schema stops generating enum from this
+PAYMENT_GATEWAYS = {
+    DUMMY: {"template_path": "order/payment/dummy.html"},
+    BRAINTREE: {"template_path": "order/payment/braintree.html"},
+    RAZORPAY: {"template_path": "order/payment/razorpay.html"},
+    STRIPE: None,
+}
 
 GRAPHENE = {
     "RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST": True,

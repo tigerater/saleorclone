@@ -236,7 +236,7 @@ class CollectionReorderProducts(BaseMutation):
     )
 
     class Meta:
-        description = "Reorder the products of a collection"
+        description = "Reorder the products of a collection."
         permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
@@ -371,7 +371,7 @@ class CollectionRemoveProducts(BaseMutation):
 class CollectionUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.Collection
-        description = "Update public metadata for Collection"
+        description = "Update public metadata for collection."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -381,7 +381,7 @@ class CollectionUpdateMeta(UpdateMetaBaseMutation):
 class CollectionClearMeta(ClearMetaBaseMutation):
     class Meta:
         model = models.Collection
-        description = "Clears public metadata item for Collection"
+        description = "Clears public metadata for collection."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -391,7 +391,7 @@ class CollectionClearMeta(ClearMetaBaseMutation):
 class CollectionUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.Collection
-        description = "Update public metadata for Collection"
+        description = "Update private metadata for collection."
         permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
@@ -401,7 +401,7 @@ class CollectionUpdatePrivateMeta(UpdateMetaBaseMutation):
 class CollectionClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         model = models.Collection
-        description = "Clears public metadata item for Collection"
+        description = "Clears private metadata item for collection."
         permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
@@ -411,7 +411,7 @@ class CollectionClearPrivateMeta(ClearMetaBaseMutation):
 class CategoryUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.Category
-        description = "Update public metadata for category"
+        description = "Update public metadata for category."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -421,7 +421,7 @@ class CategoryUpdateMeta(UpdateMetaBaseMutation):
 class CategoryClearMeta(ClearMetaBaseMutation):
     class Meta:
         model = models.Category
-        description = "Clears public metadata item for category"
+        description = "Clears public metadata for category."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -431,7 +431,7 @@ class CategoryClearMeta(ClearMetaBaseMutation):
 class CategoryUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.Category
-        description = "Update public metadata for category"
+        description = "Update private metadata for category."
         permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
@@ -441,7 +441,7 @@ class CategoryUpdatePrivateMeta(UpdateMetaBaseMutation):
 class CategoryClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         model = models.Category
-        description = "Clears public metadata item for category"
+        description = "Clears private metadata for category."
         permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
@@ -449,7 +449,7 @@ class CategoryClearPrivateMeta(ClearMetaBaseMutation):
 
 
 class AttributeValueInput(InputObjectType):
-    id = graphene.ID(description="ID of the selected attribute")
+    id = graphene.ID(description="ID of the selected attribute.")
     slug = graphene.String(description="Slug of the selected attribute.")
     values = graphene.List(
         graphene.String,
@@ -482,7 +482,7 @@ class ProductInput(graphene.InputObjectType):
     )
     name = graphene.String(description="Product name.")
     base_price = Decimal(description="Product price.")
-    tax_code = graphene.String(description="Tax rate for enabled tax gateway")
+    tax_code = graphene.String(description="Tax rate for enabled tax gateway.")
     seo = SeoInput(description="Search engine optimization fields.")
     weight = WeightScalar(description="Weight of the Product.", required=False)
     sku = graphene.String(
@@ -595,7 +595,9 @@ class AttributeAssignmentMixin:
         """Lazy-retrieve or create the database objects from the supplied raw values."""
         get_or_create = attribute.values.get_or_create
         return tuple(
-            get_or_create(attribute=attribute, name=value, slug=slugify(value))[0]
+            get_or_create(
+                attribute=attribute, slug=slugify(value), defaults={"name": value}
+            )[0]
             for value in values
         )
 
@@ -940,7 +942,7 @@ class ProductDelete(ModelDeleteMutation):
 class ProductUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.Product
-        description = "Update public metadata for product"
+        description = "Update public metadata for product."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -949,7 +951,7 @@ class ProductUpdateMeta(UpdateMetaBaseMutation):
 
 class ProductClearMeta(ClearMetaBaseMutation):
     class Meta:
-        description = "Clears public metadata item for product"
+        description = "Clears public metadata item for product."
         model = models.Product
         permissions = ("product.manage_products",)
         public = True
@@ -959,7 +961,7 @@ class ProductClearMeta(ClearMetaBaseMutation):
 
 class ProductUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
-        description = "Update public metadata for product"
+        description = "Update private metadata for product."
         model = models.Product
         permissions = ("product.manage_products",)
         public = False
@@ -969,7 +971,7 @@ class ProductUpdatePrivateMeta(UpdateMetaBaseMutation):
 
 class ProductClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
-        description = "Clears public metadata item for product"
+        description = "Clears private metadata item for product."
         model = models.Product
         permissions = ("product.manage_products",)
         public = False
@@ -1017,7 +1019,7 @@ class ProductVariantCreate(ModelMutation):
         )
 
     class Meta:
-        description = "Creates a new variant for a product"
+        description = "Creates a new variant for a product."
         model = models.ProductVariant
         permissions = ("product.manage_products",)
         error_type_class = ProductError
@@ -1112,7 +1114,7 @@ class ProductVariantUpdate(ProductVariantCreate):
         )
 
     class Meta:
-        description = "Updates an existing variant for product"
+        description = "Updates an existing variant for product."
         model = models.ProductVariant
         permissions = ("product.manage_products",)
         error_type_class = ProductError
@@ -1142,7 +1144,7 @@ class ProductVariantDelete(ModelDeleteMutation):
 class ProductVariantUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.ProductVariant
-        description = "Update public metadata for product variant"
+        description = "Update public metadata for product variant."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -1152,7 +1154,7 @@ class ProductVariantUpdateMeta(UpdateMetaBaseMutation):
 class ProductVariantClearMeta(ClearMetaBaseMutation):
     class Meta:
         model = models.ProductVariant
-        description = "Clears public metadata item for product variant"
+        description = "Clears public metadata for product variant."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -1162,7 +1164,7 @@ class ProductVariantClearMeta(ClearMetaBaseMutation):
 class ProductVariantUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.ProductVariant
-        description = "Update public metadata for product variant"
+        description = "Update private metadata for product variant."
         permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
@@ -1172,7 +1174,7 @@ class ProductVariantUpdatePrivateMeta(UpdateMetaBaseMutation):
 class ProductVariantClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         model = models.ProductVariant
-        description = "Clears public metadata item for product variant"
+        description = "Clears private metadata for product variant."
         permissions = ("product.manage_products",)
         public = False
         error_type_class = ProductError
@@ -1206,7 +1208,7 @@ class ProductTypeInput(graphene.InputObjectType):
         description="Determines if products are digital.", required=False
     )
     weight = WeightScalar(description="Weight of the ProductType items.")
-    tax_code = graphene.String(description="Tax rate for enabled tax gateway")
+    tax_code = graphene.String(description="Tax rate for enabled tax gateway.")
 
 
 class ProductTypeCreate(ModelMutation):
@@ -1291,7 +1293,7 @@ class ProductTypeDelete(ModelDeleteMutation):
 class ProductTypeUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         model = models.ProductType
-        description = "Update public metadata for product type"
+        description = "Update public metadata for product type."
         permissions = ("product.manage_products",)
         public = True
         error_type_class = ProductError
@@ -1300,7 +1302,7 @@ class ProductTypeUpdateMeta(UpdateMetaBaseMutation):
 
 class ProductTypeClearMeta(ClearMetaBaseMutation):
     class Meta:
-        description = "Clears public metadata item for product type"
+        description = "Clears public metadata for product type."
         model = models.ProductType
         permissions = ("product.manage_products",)
         public = True
@@ -1310,7 +1312,7 @@ class ProductTypeClearMeta(ClearMetaBaseMutation):
 
 class ProductTypeUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
-        description = "Update public metadata for product type"
+        description = "Update private metadata for product type."
         model = models.ProductType
         permissions = ("product.manage_products",)
         public = False
@@ -1320,7 +1322,7 @@ class ProductTypeUpdatePrivateMeta(UpdateMetaBaseMutation):
 
 class ProductTypeClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
-        description = "Clears public metadata item for product type"
+        description = "Clears private metadata for product type."
         model = models.ProductType
         permissions = ("product.manage_products",)
         public = False
@@ -1494,7 +1496,7 @@ class VariantImageAssign(BaseMutation):
         variant_id = graphene.ID(required=True, description="ID of a product variant.")
 
     class Meta:
-        description = "Assign an image to a product variant"
+        description = "Assign an image to a product variant."
         permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
@@ -1538,7 +1540,7 @@ class VariantImageUnassign(BaseMutation):
         variant_id = graphene.ID(required=True, description="ID of a product variant.")
 
     class Meta:
-        description = "Unassign an image from a product variant"
+        description = "Unassign an image from a product variant."
         permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"

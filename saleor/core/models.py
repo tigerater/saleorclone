@@ -57,7 +57,7 @@ class PublishedQuerySet(models.QuerySet):
 
 class PublishableModel(models.Model):
     publication_date = models.DateField(blank=True, null=True)
-    is_published = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=True)
 
     objects = PublishedQuerySet.as_manager()
 

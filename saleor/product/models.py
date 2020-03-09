@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import TYPE_CHECKING, Iterable, Union
+from typing import Iterable, Union
 from uuid import uuid4
 
 from django.conf import settings
@@ -15,7 +15,6 @@ from django.utils.text import slugify
 from django.utils.translation import pgettext_lazy
 from django_measurement.models import MeasurementField
 from django_prices.models import MoneyField
-from django_prices.templatetags import prices
 from draftjs_sanitizer import clean_draft_js
 from measurement.measures import Weight
 from mptt.managers import TreeManager
@@ -41,11 +40,6 @@ from ..discount.utils import calculate_discounted_price
 from ..seo.models import SeoModel, SeoModelTranslation
 from . import AttributeInputType
 
-if TYPE_CHECKING:
-    from prices import Money
-
-    from ..account.models import User
-
 
 class Category(MPTTModel, ModelWithMetadata, SeoModel):
     name = models.CharField(max_length=128)
@@ -64,10 +58,10 @@ class Category(MPTTModel, ModelWithMetadata, SeoModel):
     tree = TreeManager()
     translated = TranslationProxy()
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def get_absolute_url(self) -> str:
+    def get_absolute_url(self):
         return reverse(
             "product:category", kwargs={"slug": self.slug, "category_id": self.id}
         )
@@ -85,10 +79,10 @@ class CategoryTranslation(SeoModelTranslation):
     class Meta:
         unique_together = (("language_code", "category"),)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         class_ = type(self)
         return "%s(pk=%r, name=%r, category_pk=%r)" % (
             class_.__name__,
@@ -110,10 +104,10 @@ class ProductType(ModelWithMetadata):
     class Meta:
         app_label = "product"
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         class_ = type(self)
         return "<%s.%s(pk=%r, name=%r)>" % (
             class_.__module__,
@@ -153,7 +147,7 @@ class ProductsQueryset(PublishedQuerySet):
             objs, batch_size=batch_size, ignore_conflicts=ignore_conflicts
         )
 
-    def collection_sorted(self, user: "User"):
+    def collection_sorted(self, user):
         qs = self.visible_to_user(user).prefetch_related(
             "collections__products__collectionproduct"
         )
@@ -306,7 +300,7 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
             setattr(self, "__variants", self.variants.all())
         return iter(getattr(self, "__variants"))
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         class_ = type(self)
         return "<%s.%s(pk=%r, name=%r)>" % (
             class_.__module__,
@@ -315,7 +309,7 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
             self.name,
         )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
     def save(
@@ -328,31 +322,31 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
         return super().save(force_insert, force_update, using, update_fields)
 
     @property
-    def plain_text_description(self) -> str:
+    def plain_text_description(self):
         if settings.USE_JSON_CONTENT:
             return json_content_to_raw_text(self.description_json)
         return strip_tags(self.description)
 
     @property
-    def is_available(self) -> bool:
+    def is_available(self):
         return self.is_visible and self.is_in_stock()
 
-    def get_absolute_url(self) -> str:
+    def get_absolute_url(self):
         return reverse(
             "product:details", kwargs={"slug": self.get_slug(), "product_id": self.id}
         )
 
-    def get_slug(self) -> str:
+    def get_slug(self):
         return slugify(smart_text(unidecode(self.name)))
 
-    def is_in_stock(self) -> bool:
+    def is_in_stock(self):
         return any(variant.is_in_stock() for variant in self)
 
     def get_first_image(self):
         images = list(self.images.all())
         return images[0] if images else None
 
-    def get_price_range(self, discounts: Iterable[DiscountInfo] = None) -> MoneyRange:
+    def get_price_range(self, discounts: Iterable[DiscountInfo] = None):
         if self.variants.all():
             prices = [variant.get_price(discounts) for variant in self]
             return MoneyRange(min(prices), max(prices))
@@ -374,10 +368,10 @@ class ProductTranslation(SeoModelTranslation):
     class Meta:
         unique_together = (("language_code", "product"),)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         class_ = type(self)
         return "%s(pk=%r, name=%r, product_pk=%r)" % (
             class_.__name__,
@@ -467,19 +461,19 @@ class ProductVariant(ModelWithMetadata):
     class Meta:
         app_label = "product"
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name or self.sku
 
     @property
-    def quantity_available(self) -> int:
+    def quantity_available(self):
         return max(self.quantity - self.quantity_allocated, 0)
 
     @property
-    def is_visible(self) -> bool:
+    def is_visible(self):
         return self.product.is_visible
 
     @property
-    def is_available(self) -> bool:
+    def is_available(self):
         return self.is_visible and self.is_in_stock()
 
     def check_quantity(self, quantity):
@@ -491,37 +485,37 @@ class ProductVariant(ModelWithMetadata):
             raise InsufficientStock(self)
 
     @property
-    def base_price(self) -> "Money":
+    def base_price(self):
         return (
             self.price_override
             if self.price_override is not None
             else self.product.price
         )
 
-    def get_price(self, discounts: Iterable[DiscountInfo] = None) -> "Money":
+    def get_price(self, discounts: Iterable[DiscountInfo] = None):
         return calculate_discounted_price(self.product, self.base_price, discounts)
 
     def get_weight(self):
         return self.weight or self.product.weight or self.product.product_type.weight
 
-    def get_absolute_url(self) -> str:
+    def get_absolute_url(self):
         slug = self.product.get_slug()
         product_id = self.product.id
         return reverse(
             "product:details", kwargs={"slug": slug, "product_id": product_id}
         )
 
-    def is_shipping_required(self) -> bool:
+    def is_shipping_required(self):
         return self.product.product_type.is_shipping_required
 
-    def is_digital(self) -> bool:
+    def is_digital(self):
         is_digital = self.product.product_type.is_digital
         return not self.is_shipping_required() and is_digital
 
-    def is_in_stock(self) -> bool:
+    def is_in_stock(self):
         return self.quantity_available > 0
 
-    def display_product(self, translated: bool = False) -> str:
+    def display_product(self, translated=False):
         if translated:
             product = self.product.translated
             variant_display = str(self.translated)
@@ -533,13 +527,9 @@ class ProductVariant(ModelWithMetadata):
         )
         return smart_text(product_display)
 
-    def get_first_image(self) -> "ProductImage":
+    def get_first_image(self):
         images = list(self.images.all())
         return images[0] if images else self.product.get_first_image()
-
-    def get_ajax_label(self, discounts=None) -> str:
-        price = self.get_price(discounts)
-        return "%s, %s, %s" % (self.sku, self.display_product(), prices.amount(price))
 
 
 class ProductVariantTranslation(models.Model):
@@ -615,13 +605,13 @@ class DigitalContentUrl(models.Model):
 
 class BaseAttributeQuerySet(models.QuerySet):
     @staticmethod
-    def user_has_access_to_all(user: "User") -> bool:
+    def user_has_access_to_all(user):
         return user.is_active and user.has_perm("product.manage_products")
 
     def get_public_attributes(self):
         raise NotImplementedError
 
-    def get_visible_to_user(self, user: "User"):
+    def get_visible_to_user(self, user):
         if self.user_has_access_to_all(user):
             return self.all()
         return self.get_public_attributes()
@@ -802,13 +792,13 @@ class Attribute(ModelWithMetadata):
     class Meta:
         ordering = ("storefront_search_position", "slug")
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def get_formfield_name(self) -> str:
+    def get_formfield_name(self):
         return slugify("attribute-%s-%s" % (self.slug, self.pk), allow_unicode=True)
 
-    def has_values(self) -> bool:
+    def has_values(self):
         return self.values.exists()
 
 
@@ -831,7 +821,7 @@ class AttributeTranslation(models.Model):
             self.attribute_id,
         )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
 
@@ -849,7 +839,7 @@ class AttributeValue(SortableModel):
         ordering = ("sort_order", "id")
         unique_together = ("slug", "attribute")
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
     @property
@@ -870,7 +860,7 @@ class AttributeValueTranslation(models.Model):
     class Meta:
         unique_together = (("language_code", "attribute_value"),)
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         class_ = type(self)
         return "%s(pk=%r, name=%r, attribute_value_pk=%r)" % (
             class_.__name__,
@@ -879,7 +869,7 @@ class AttributeValueTranslation(models.Model):
             self.attribute_value_id,
         )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
 
@@ -945,10 +935,10 @@ class Collection(SeoModel, ModelWithMetadata, PublishableModel):
     class Meta:
         ordering = ("slug",)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def get_absolute_url(self) -> str:
+    def get_absolute_url(self):
         return reverse("product:collection", kwargs={"pk": self.id, "slug": self.slug})
 
 
@@ -973,5 +963,5 @@ class CollectionTranslation(SeoModelTranslation):
             self.collection_id,
         )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name

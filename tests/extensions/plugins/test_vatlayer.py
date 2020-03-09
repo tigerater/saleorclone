@@ -262,9 +262,8 @@ def test_calculate_checkout_subtotal(
     expected_net,
     expected_gross,
     taxes_in_prices,
-    stock,
+    variant,
 ):
-    variant = stock.product_variant
     site_settings.include_taxes_in_prices = taxes_in_prices
     site_settings.save()
 

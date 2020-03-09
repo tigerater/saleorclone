@@ -209,13 +209,13 @@ def cancel_order(user, order, restock):
         charge_status=ChargeStatus.FULLY_REFUNDED
     )
 
-    from ..payment import gateway
+    from ..payment.utils import gateway_refund, gateway_void
 
     for payment in payments:
         if payment.can_refund():
-            gateway.refund(payment)
+            gateway_refund(payment)
         elif payment.can_void():
-            gateway.void(payment)
+            gateway_void(payment)
 
 
 def update_order_status(order):

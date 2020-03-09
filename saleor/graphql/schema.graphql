@@ -6,55 +6,24 @@ schema {
 type AccountAddressCreate {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
   address: Address
 }
 
 type AccountAddressDelete {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
   address: Address
 }
 
 type AccountAddressUpdate {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
   address: Address
 }
 
 type AccountDelete {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
-}
-
-type AccountError {
-  field: String
-  message: String
-  code: AccountErrorCode
-}
-
-enum AccountErrorCode {
-  ACTIVATE_OWN_ACCOUNT
-  ACTIVATE_SUPERUSER_ACCOUNT
-  DEACTIVATE_OWN_ACCOUNT
-  DEACTIVATE_SUPERUSER_ACCOUNT
-  DELETE_NON_STAFF_USER
-  DELETE_OWN_ACCOUNT
-  DELETE_STAFF_ACCOUNT
-  DELETE_SUPERUSER_ACCOUNT
-  GRAPHQL_ERROR
-  INVALID
-  INVALID_PASSWORD
-  NOT_FOUND
-  PASSWORD_ENTIRELY_NUMERIC
-  PASSWORD_TOO_COMMON
-  PASSWORD_TOO_SHORT
-  PASSWORD_TOO_SIMILAR
-  REQUIRED
-  UNIQUE
 }
 
 input AccountInput {
@@ -66,7 +35,6 @@ input AccountInput {
 
 type AccountRegister {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -77,18 +45,15 @@ input AccountRegisterInput {
 
 type AccountRequestDeletion {
   errors: [Error!]
-  accountErrors: [AccountError!]
 }
 
 type AccountSetDefaultAddress {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
 }
 
 type AccountUpdate {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -112,14 +77,12 @@ type Address implements Node {
 type AddressCreate {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
   address: Address
 }
 
 type AddressDelete {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
   address: Address
 }
 
@@ -140,7 +103,6 @@ input AddressInput {
 type AddressSetDefault {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
 }
 
 enum AddressTypeEnum {
@@ -151,7 +113,6 @@ enum AddressTypeEnum {
 type AddressUpdate {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
   address: Address
 }
 
@@ -178,7 +139,6 @@ type AddressValidationData {
 type AssignNavigation {
   errors: [Error!]
   menu: Menu
-  menuErrors: [MenuError!]
 }
 
 type Attribute implements Node {
@@ -203,7 +163,6 @@ type Attribute implements Node {
 type AttributeAssign {
   errors: [Error!]
   productType: ProductType
-  productErrors: [ProductError!]
 }
 
 input AttributeAssignInput {
@@ -214,18 +173,15 @@ input AttributeAssignInput {
 type AttributeBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type AttributeClearMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   attribute: Attribute
 }
 
 type AttributeClearPrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   attribute: Attribute
 }
 
@@ -243,7 +199,6 @@ type AttributeCountableEdge {
 type AttributeCreate {
   errors: [Error!]
   attribute: Attribute
-  productErrors: [ProductError!]
 }
 
 input AttributeCreateInput {
@@ -262,7 +217,6 @@ input AttributeCreateInput {
 
 type AttributeDelete {
   errors: [Error!]
-  productErrors: [ProductError!]
   attribute: Attribute
 }
 
@@ -290,7 +244,6 @@ enum AttributeInputTypeEnum {
 type AttributeReorderValues {
   errors: [Error!]
   attribute: Attribute
-  productErrors: [ProductError!]
 }
 
 scalar AttributeScalar
@@ -333,13 +286,11 @@ enum AttributeTypeEnum {
 type AttributeUnassign {
   errors: [Error!]
   productType: ProductType
-  productErrors: [ProductError!]
 }
 
 type AttributeUpdate {
   errors: [Error!]
   attribute: Attribute
-  productErrors: [ProductError!]
 }
 
 input AttributeUpdateInput {
@@ -358,13 +309,11 @@ input AttributeUpdateInput {
 
 type AttributeUpdateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   attribute: Attribute
 }
 
 type AttributeUpdatePrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   attribute: Attribute
 }
 
@@ -380,13 +329,11 @@ type AttributeValue implements Node {
 type AttributeValueBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type AttributeValueCreate {
   errors: [Error!]
   attribute: Attribute
-  productErrors: [ProductError!]
   attributeValue: AttributeValue
 }
 
@@ -397,7 +344,6 @@ input AttributeValueCreateInput {
 type AttributeValueDelete {
   errors: [Error!]
   attribute: Attribute
-  productErrors: [ProductError!]
   attributeValue: AttributeValue
 }
 
@@ -428,7 +374,6 @@ enum AttributeValueType {
 type AttributeValueUpdate {
   errors: [Error!]
   attribute: Attribute
-  productErrors: [ProductError!]
   attributeValue: AttributeValue
 }
 
@@ -441,14 +386,12 @@ type AuthorizationKeyAdd {
   errors: [Error!]
   authorizationKey: AuthorizationKey
   shop: Shop
-  shopErrors: [ShopError!]
 }
 
 type AuthorizationKeyDelete {
   errors: [Error!]
   authorizationKey: AuthorizationKey
   shop: Shop
-  shopErrors: [ShopError!]
 }
 
 input AuthorizationKeyInput {
@@ -490,18 +433,15 @@ type Category implements Node {
 type CategoryBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type CategoryClearMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
 }
 
 type CategoryClearPrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
 }
 
@@ -518,18 +458,12 @@ type CategoryCountableEdge {
 
 type CategoryCreate {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
 }
 
 type CategoryDelete {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
-}
-
-input CategoryFilterInput {
-  search: String
 }
 
 input CategoryInput {
@@ -559,19 +493,16 @@ type CategoryTranslation implements Node {
 
 type CategoryUpdate {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
 }
 
 type CategoryUpdateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
 }
 
 type CategoryUpdatePrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   category: Category
 }
 
@@ -607,31 +538,26 @@ type Checkout implements Node {
 type CheckoutAddPromoCode {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutBillingAddressUpdate {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutClearStoredMeta {
   errors: [Error!]
-  checkoutErrors: [CheckoutError!]
   checkout: Checkout
 }
 
 type CheckoutClearStoredPrivateMeta {
   errors: [Error!]
-  checkoutErrors: [CheckoutError!]
   checkout: Checkout
 }
 
 type CheckoutComplete {
   errors: [Error!]
   order: Order
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutCountableConnection {
@@ -648,7 +574,6 @@ type CheckoutCountableEdge {
 type CheckoutCreate {
   errors: [Error!]
   created: Boolean
-  checkoutErrors: [CheckoutError!]
   checkout: Checkout
 }
 
@@ -662,46 +587,16 @@ input CheckoutCreateInput {
 type CheckoutCustomerAttach {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutCustomerDetach {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutEmailUpdate {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
-}
-
-type CheckoutError {
-  field: String
-  message: String
-  code: CheckoutErrorCode
-}
-
-enum CheckoutErrorCode {
-  BILLING_ADDRESS_NOT_SET
-  CHECKOUT_NOT_FULLY_PAID
-  GRAPHQL_ERROR
-  INSUFFICIENT_STOCK
-  INVALID
-  INVALID_SHIPPING_METHOD
-  NOT_FOUND
-  PAYMENT_ERROR
-  QUANTITY_GREATER_THAN_LIMIT
-  REQUIRED
-  SHIPPING_ADDRESS_NOT_SET
-  SHIPPING_METHOD_NOT_APPLICABLE
-  SHIPPING_METHOD_NOT_SET
-  SHIPPING_NOT_REQUIRED
-  TAX_ERROR
-  UNIQUE
-  VOUCHER_NOT_APPLICABLE
-  ZERO_QUANTITY
 }
 
 type CheckoutLine implements Node {
@@ -726,7 +621,6 @@ type CheckoutLineCountableEdge {
 type CheckoutLineDelete {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 input CheckoutLineInput {
@@ -737,56 +631,47 @@ input CheckoutLineInput {
 type CheckoutLinesAdd {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutLinesUpdate {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutPaymentCreate {
   errors: [Error!]
   checkout: Checkout
   payment: Payment
-  paymentErrors: [PaymentError!]
 }
 
 type CheckoutRemovePromoCode {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutShippingAddressUpdate {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutShippingMethodUpdate {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type CheckoutUpdateMeta {
   errors: [Error!]
-  checkoutErrors: [CheckoutError!]
   checkout: Checkout
 }
 
 type CheckoutUpdatePrivateMeta {
   errors: [Error!]
-  checkoutErrors: [CheckoutError!]
   checkout: Checkout
 }
 
 type CheckoutUpdateVoucher {
   errors: [Error!]
   checkout: Checkout
-  checkoutErrors: [CheckoutError!]
 }
 
 type ChoiceValue {
@@ -814,30 +699,25 @@ type Collection implements Node {
 type CollectionAddProducts {
   errors: [Error!]
   collection: Collection
-  productErrors: [ProductError!]
 }
 
 type CollectionBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type CollectionBulkPublish {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type CollectionClearMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
 type CollectionClearPrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
@@ -854,7 +734,6 @@ type CollectionCountableEdge {
 
 type CollectionCreate {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
@@ -873,7 +752,6 @@ input CollectionCreateInput {
 
 type CollectionDelete {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
@@ -902,13 +780,11 @@ enum CollectionPublished {
 type CollectionRemoveProducts {
   errors: [Error!]
   collection: Collection
-  productErrors: [ProductError!]
 }
 
 type CollectionReorderProducts {
   errors: [Error!]
   collection: Collection
-  productErrors: [ProductError!]
 }
 
 type CollectionTranslate {
@@ -928,19 +804,16 @@ type CollectionTranslation implements Node {
 
 type CollectionUpdate {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
 type CollectionUpdateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
 type CollectionUpdatePrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   collection: Collection
 }
 
@@ -1244,18 +1117,15 @@ type CustomerAddressCreate {
 type CustomerBulkDelete {
   errors: [Error!]
   count: Int!
-  accountErrors: [AccountError!]
 }
 
 type CustomerCreate {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
 type CustomerDelete {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -1326,7 +1196,6 @@ type CustomerSetDefaultAddress {
 
 type CustomerUpdate {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -1374,13 +1243,11 @@ type DigitalContentCreate {
   errors: [Error!]
   variant: ProductVariant
   content: DigitalContent
-  productErrors: [ProductError!]
 }
 
 type DigitalContentDelete {
   errors: [Error!]
   variant: ProductVariant
-  productErrors: [ProductError!]
 }
 
 input DigitalContentInput {
@@ -1394,7 +1261,6 @@ type DigitalContentUpdate {
   errors: [Error!]
   variant: ProductVariant
   content: DigitalContent
-  productErrors: [ProductError!]
 }
 
 input DigitalContentUploadInput {
@@ -1416,7 +1282,6 @@ type DigitalContentUrl implements Node {
 
 type DigitalContentUrlCreate {
   errors: [Error!]
-  productErrors: [ProductError!]
   digitalContentUrl: DigitalContentUrl
 }
 
@@ -1444,18 +1309,15 @@ type Domain {
 type DraftOrderBulkDelete {
   errors: [Error!]
   count: Int!
-  orderErrors: [OrderError!]
 }
 
 type DraftOrderComplete {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 type DraftOrderCreate {
   errors: [Error!]
-  orderErrors: [OrderError!]
   order: Order
 }
 
@@ -1472,7 +1334,6 @@ input DraftOrderCreateInput {
 
 type DraftOrderDelete {
   errors: [Error!]
-  orderErrors: [OrderError!]
   order: Order
 }
 
@@ -1490,53 +1351,33 @@ type DraftOrderLineDelete {
   errors: [Error!]
   order: Order
   orderLine: OrderLine
-  orderErrors: [OrderError!]
 }
 
 type DraftOrderLineUpdate {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
   orderLine: OrderLine
 }
 
 type DraftOrderLinesBulkDelete {
   errors: [Error!]
   count: Int!
-  orderErrors: [OrderError!]
 }
 
 type DraftOrderLinesCreate {
   errors: [Error!]
   order: Order
   orderLines: [OrderLine!]
-  orderErrors: [OrderError!]
 }
 
 type DraftOrderUpdate {
   errors: [Error!]
-  orderErrors: [OrderError!]
   order: Order
 }
 
 type Error {
   field: String
   message: String
-}
-
-type ExtensionsError {
-  field: String
-  message: String
-  code: ExtensionsErrorCode
-}
-
-enum ExtensionsErrorCode {
-  GRAPHQL_ERROR
-  INVALID
-  PLUGIN_MISCONFIGURED
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
 }
 
 type Fulfillment implements Node {
@@ -1553,7 +1394,6 @@ type FulfillmentCancel {
   errors: [Error!]
   fulfillment: Fulfillment
   order: Order
-  orderErrors: [OrderError!]
 }
 
 input FulfillmentCancelInput {
@@ -1564,7 +1404,6 @@ type FulfillmentCreate {
   errors: [Error!]
   fulfillment: Fulfillment
   order: Order
-  orderErrors: [OrderError!]
 }
 
 input FulfillmentCreateInput {
@@ -1593,7 +1432,6 @@ type FulfillmentUpdateTracking {
   errors: [Error!]
   fulfillment: Fulfillment
   order: Order
-  orderErrors: [OrderError!]
 }
 
 input FulfillmentUpdateTrackingInput {
@@ -1631,7 +1469,6 @@ type GiftCard implements Node {
 type GiftCardActivate {
   errors: [Error!]
   giftCard: GiftCard
-  giftCardErrors: [GiftCardError!]
 }
 
 type GiftCardCountableConnection {
@@ -1647,7 +1484,6 @@ type GiftCardCountableEdge {
 
 type GiftCardCreate {
   errors: [Error!]
-  giftCardErrors: [GiftCardError!]
   giftCard: GiftCard
 }
 
@@ -1662,27 +1498,10 @@ input GiftCardCreateInput {
 type GiftCardDeactivate {
   errors: [Error!]
   giftCard: GiftCard
-  giftCardErrors: [GiftCardError!]
-}
-
-type GiftCardError {
-  field: String
-  message: String
-  code: GiftCardErrorCode
-}
-
-enum GiftCardErrorCode {
-  ALREADY_EXISTS
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
 }
 
 type GiftCardUpdate {
   errors: [Error!]
-  giftCardErrors: [GiftCardError!]
   giftCard: GiftCard
 }
 
@@ -1696,7 +1515,6 @@ input GiftCardUpdateInput {
 type HomepageCollectionUpdate {
   errors: [Error!]
   shop: Shop
-  shopErrors: [ShopError!]
 }
 
 type Image {
@@ -1781,7 +1599,6 @@ type Menu implements Node {
 type MenuBulkDelete {
   errors: [Error!]
   count: Int!
-  menuErrors: [MenuError!]
 }
 
 type MenuCountableConnection {
@@ -1797,7 +1614,6 @@ type MenuCountableEdge {
 
 type MenuCreate {
   errors: [Error!]
-  menuErrors: [MenuError!]
   menu: Menu
 }
 
@@ -1808,30 +1624,7 @@ input MenuCreateInput {
 
 type MenuDelete {
   errors: [Error!]
-  menuErrors: [MenuError!]
   menu: Menu
-}
-
-type MenuError {
-  field: String
-  message: String
-  code: MenuErrorCode
-}
-
-enum MenuErrorCode {
-  CANNOT_ASSIGN_NODE
-  GRAPHQL_ERROR
-  INVALID
-  INVALID_MENU_ITEM
-  NO_MENU_ITEM_PROVIDED
-  NOT_FOUND
-  REQUIRED
-  TOO_MANY_MENU_ITEMS
-  UNIQUE
-}
-
-input MenuFilterInput {
-  search: String
 }
 
 input MenuInput {
@@ -1856,7 +1649,6 @@ type MenuItem implements Node {
 type MenuItemBulkDelete {
   errors: [Error!]
   count: Int!
-  menuErrors: [MenuError!]
 }
 
 type MenuItemCountableConnection {
@@ -1872,7 +1664,6 @@ type MenuItemCountableEdge {
 
 type MenuItemCreate {
   errors: [Error!]
-  menuErrors: [MenuError!]
   menuItem: MenuItem
 }
 
@@ -1888,12 +1679,7 @@ input MenuItemCreateInput {
 
 type MenuItemDelete {
   errors: [Error!]
-  menuErrors: [MenuError!]
   menuItem: MenuItem
-}
-
-input MenuItemFilterInput {
-  search: String
 }
 
 input MenuItemInput {
@@ -1907,7 +1693,6 @@ input MenuItemInput {
 type MenuItemMove {
   errors: [Error!]
   menu: Menu
-  menuErrors: [MenuError!]
 }
 
 input MenuItemMoveInput {
@@ -1929,13 +1714,11 @@ type MenuItemTranslation implements Node {
 
 type MenuItemUpdate {
   errors: [Error!]
-  menuErrors: [MenuError!]
   menuItem: MenuItem
 }
 
 type MenuUpdate {
   errors: [Error!]
-  menuErrors: [MenuError!]
   menu: Menu
 }
 
@@ -1984,6 +1767,9 @@ input MoveProductInput {
 }
 
 type Mutations {
+  webhookCreate(input: WebhookCreateInput!): WebhookCreate
+  webhookDelete(id: ID!): WebhookDelete
+  webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
   authorizationKeyAdd(input: AuthorizationKeyInput!, keyType: AuthorizationKeyType!): AuthorizationKeyAdd
   authorizationKeyDelete(keyType: AuthorizationKeyType!): AuthorizationKeyDelete
   homepageCollectionUpdate(collection: ID): HomepageCollectionUpdate
@@ -2277,7 +2063,6 @@ type OrderAddNote {
   errors: [Error!]
   order: Order
   event: OrderEvent
-  orderErrors: [OrderError!]
 }
 
 input OrderAddNoteInput {
@@ -2287,19 +2072,16 @@ input OrderAddNoteInput {
 type OrderBulkCancel {
   errors: [Error!]
   count: Int!
-  orderErrors: [OrderError!]
 }
 
 type OrderCancel {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 type OrderCapture {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 type OrderCountableConnection {
@@ -2321,35 +2103,6 @@ enum OrderDirection {
 input OrderDraftFilterInput {
   customer: String
   created: DateRangeInput
-  search: String
-}
-
-type OrderError {
-  field: String
-  message: String
-  code: OrderErrorCode
-}
-
-enum OrderErrorCode {
-  CANNOT_CANCEL_FULFILLMENT
-  CANNOT_CANCEL_ORDER
-  CANNOT_DELETE
-  CANNOT_REFUND
-  CAPTURE_INACTIVE_PAYMENT
-  NOT_EDITABLE
-  FULFILL_ORDER_LINE
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  ORDER_NO_SHIPPING_ADDRESS
-  PAYMENT_ERROR
-  PAYMENT_MISSING
-  REQUIRED
-  SHIPPING_METHOD_NOT_APPLICABLE
-  SHIPPING_METHOD_REQUIRED
-  UNIQUE
-  VOID_INACTIVE_PAYMENT
-  ZERO_QUANTITY
 }
 
 type OrderEvent implements Node {
@@ -2426,7 +2179,6 @@ input OrderFilterInput {
   status: [OrderStatusFilter]
   customer: String
   created: DateRangeInput
-  search: String
 }
 
 type OrderLine implements Node {
@@ -2458,13 +2210,11 @@ input OrderLineInput {
 type OrderMarkAsPaid {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 type OrderRefund {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 enum OrderStatus {
@@ -2486,7 +2236,6 @@ enum OrderStatusFilter {
 
 type OrderUpdate {
   errors: [Error!]
-  orderErrors: [OrderError!]
   order: Order
 }
 
@@ -2499,7 +2248,6 @@ input OrderUpdateInput {
 type OrderUpdateShipping {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 input OrderUpdateShippingInput {
@@ -2509,7 +2257,6 @@ input OrderUpdateShippingInput {
 type OrderVoid {
   errors: [Error!]
   order: Order
-  orderErrors: [OrderError!]
 }
 
 type Page implements Node {
@@ -2555,10 +2302,6 @@ type PageCreate {
 type PageDelete {
   errors: [Error!]
   page: Page
-}
-
-input PageFilterInput {
-  search: String
 }
 
 type PageInfo {
@@ -2609,7 +2352,6 @@ type PageUpdate {
 type PasswordChange {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
 }
 
 type PasswordReset {
@@ -2642,7 +2384,6 @@ type Payment implements Node {
 type PaymentCapture {
   errors: [Error!]
   payment: Payment
-  paymentErrors: [PaymentError!]
 }
 
 enum PaymentChargeStatusEnum {
@@ -2664,23 +2405,6 @@ type PaymentCountableEdge {
   cursor: String!
 }
 
-type PaymentError {
-  field: String
-  message: String
-  code: PaymentErrorCode
-}
-
-enum PaymentErrorCode {
-  BILLING_ADDRESS_NOT_SET
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  PARTIAL_PAYMENT_NOT_ALLOWED
-  PAYMENT_ERROR
-  REQUIRED
-  UNIQUE
-}
-
 input PaymentInput {
   gateway: GatewaysEnum!
   token: String!
@@ -2691,13 +2415,11 @@ input PaymentInput {
 type PaymentRefund {
   errors: [Error!]
   payment: Payment
-  paymentErrors: [PaymentError!]
 }
 
 type PaymentSecureConfirm {
   errors: [Error!]
   payment: Payment
-  paymentErrors: [PaymentError!]
 }
 
 type PaymentSource {
@@ -2708,7 +2430,6 @@ type PaymentSource {
 type PaymentVoid {
   errors: [Error!]
   payment: Payment
-  paymentErrors: [PaymentError!]
 }
 
 type PermissionDisplay {
@@ -2731,6 +2452,7 @@ enum PermissionEnum {
   MANAGE_SHIPPING
   MANAGE_SETTINGS
   MANAGE_TRANSLATIONS
+  MANAGE_WEBHOOKS
 }
 
 type Plugin implements Node {
@@ -2752,15 +2474,9 @@ type PluginCountableEdge {
   cursor: String!
 }
 
-input PluginFilterInput {
-  active: Boolean
-  search: String
-}
-
 type PluginUpdate {
   errors: [Error!]
   plugin: Plugin
-  extensionsErrors: [ExtensionsError!]
 }
 
 input PluginUpdateInput {
@@ -2812,24 +2528,20 @@ type Product implements Node {
 type ProductBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type ProductBulkPublish {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type ProductClearMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
 }
 
 type ProductClearPrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
 }
 
@@ -2846,7 +2558,6 @@ type ProductCountableEdge {
 
 type ProductCreate {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
 }
 
@@ -2872,28 +2583,7 @@ input ProductCreateInput {
 
 type ProductDelete {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
-}
-
-type ProductError {
-  field: String
-  message: String
-  code: ProductErrorCode
-}
-
-enum ProductErrorCode {
-  ALREADY_EXISTS
-  ATTRIBUTE_ALREADY_ASSIGNED
-  ATTRIBUTE_CANNOT_BE_ASSIGNED
-  ATTRIBUTE_VARIANTS_DISABLED
-  GRAPHQL_ERROR
-  INVALID
-  NOT_PRODUCTS_IMAGE
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
-  VARIANT_NO_DIGITAL_CONTENT
 }
 
 input ProductFilterInput {
@@ -2918,14 +2608,12 @@ type ProductImage implements Node {
 type ProductImageBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type ProductImageCreate {
   errors: [Error!]
   product: Product
   image: ProductImage
-  productErrors: [ProductError!]
 }
 
 input ProductImageCreateInput {
@@ -2938,21 +2626,18 @@ type ProductImageDelete {
   errors: [Error!]
   product: Product
   image: ProductImage
-  productErrors: [ProductError!]
 }
 
 type ProductImageReorder {
   errors: [Error!]
   product: Product
   images: [ProductImage]
-  productErrors: [ProductError!]
 }
 
 type ProductImageUpdate {
   errors: [Error!]
   product: Product
   image: ProductImage
-  productErrors: [ProductError!]
 }
 
 input ProductImageUpdateInput {
@@ -2988,8 +2673,6 @@ enum ProductOrderField {
   PRICE
   MINIMAL_PRICE
   DATE
-  TYPE
-  PUBLISHED
 }
 
 type ProductPricingInfo {
@@ -3037,18 +2720,15 @@ type ProductType implements Node {
 type ProductTypeBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type ProductTypeClearMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
 type ProductTypeClearPrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
@@ -3070,13 +2750,11 @@ type ProductTypeCountableEdge {
 
 type ProductTypeCreate {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
 type ProductTypeDelete {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
@@ -3105,42 +2783,35 @@ input ProductTypeInput {
 type ProductTypeReorderAttributes {
   errors: [Error!]
   productType: ProductType
-  productErrors: [ProductError!]
 }
 
 type ProductTypeUpdate {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
 type ProductTypeUpdateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
 type ProductTypeUpdatePrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productType: ProductType
 }
 
 type ProductUpdate {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
 }
 
 type ProductUpdateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
 }
 
 type ProductUpdatePrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   product: Product
 }
 
@@ -3174,18 +2845,15 @@ type ProductVariant implements Node {
 type ProductVariantBulkDelete {
   errors: [Error!]
   count: Int!
-  productErrors: [ProductError!]
 }
 
 type ProductVariantClearMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
 type ProductVariantClearPrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
@@ -3202,7 +2870,6 @@ type ProductVariantCountableEdge {
 
 type ProductVariantCreate {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
@@ -3219,7 +2886,6 @@ input ProductVariantCreateInput {
 
 type ProductVariantDelete {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
@@ -3246,23 +2912,22 @@ type ProductVariantTranslation implements Node {
 
 type ProductVariantUpdate {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
 type ProductVariantUpdateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
 type ProductVariantUpdatePrivateMeta {
   errors: [Error!]
-  productErrors: [ProductError!]
   productVariant: ProductVariant
 }
 
 type Query {
+  webhook(id: ID!): Webhook
+  webhooks(before: String, after: String, first: Int, last: Int): WebhookCountableConnection
   translations(kind: TranslatableKinds!, before: String, after: String, first: Int, last: Int): TranslatableItemConnection
   shop: Shop
   shippingZone(id: ID!): ShippingZone
@@ -3271,7 +2936,7 @@ type Query {
   digitalContents(query: String, level: Int, before: String, after: String, first: Int, last: Int): DigitalContentCountableConnection
   attributes(query: String, inCategory: ID, inCollection: ID, filter: AttributeFilterInput, sortBy: AttributeSortingInput, before: String, after: String, first: Int, last: Int): AttributeCountableConnection
   attribute(id: ID!): Attribute
-  categories(query: String, filter: CategoryFilterInput, level: Int, before: String, after: String, first: Int, last: Int): CategoryCountableConnection
+  categories(query: String, level: Int, before: String, after: String, first: Int, last: Int): CategoryCountableConnection
   category(id: ID!): Category
   collection(id: ID!): Collection
   collections(filter: CollectionFilterInput, query: String, before: String, after: String, first: Int, last: Int): CollectionCountableConnection
@@ -3286,7 +2951,7 @@ type Query {
   payments(before: String, after: String, first: Int, last: Int): PaymentCountableConnection
   paymentClientToken(gateway: GatewaysEnum): String
   page(id: ID, slug: String): Page
-  pages(query: String, filter: PageFilterInput, before: String, after: String, first: Int, last: Int): PageCountableConnection
+  pages(query: String, before: String, after: String, first: Int, last: Int): PageCountableConnection
   homepageEvents(before: String, after: String, first: Int, last: Int): OrderEventCountableConnection
   order(id: ID!): Order
   orders(filter: OrderFilterInput, query: String, created: ReportingPeriod, status: OrderStatusFilter, before: String, after: String, first: Int, last: Int): OrderCountableConnection
@@ -3294,13 +2959,13 @@ type Query {
   ordersTotal(period: ReportingPeriod): TaxedMoney
   orderByToken(token: String!): Order
   menu(id: ID, name: String): Menu
-  menus(query: String, filter: MenuFilterInput, before: String, after: String, first: Int, last: Int): MenuCountableConnection
+  menus(query: String, before: String, after: String, first: Int, last: Int): MenuCountableConnection
   menuItem(id: ID!): MenuItem
-  menuItems(query: String, filter: MenuItemFilterInput, before: String, after: String, first: Int, last: Int): MenuItemCountableConnection
+  menuItems(query: String, before: String, after: String, first: Int, last: Int): MenuItemCountableConnection
   giftCard(id: ID!): GiftCard
   giftCards(before: String, after: String, first: Int, last: Int): GiftCardCountableConnection
   plugin(id: ID!): Plugin
-  plugins(filter: PluginFilterInput, before: String, after: String, first: Int, last: Int): PluginCountableConnection
+  plugins(before: String, after: String, first: Int, last: Int): PluginCountableConnection
   sale(id: ID!): Sale
   sales(filter: SaleFilterInput, query: String, before: String, after: String, first: Int, last: Int): SaleCountableConnection
   voucher(id: ID!): Voucher
@@ -3342,7 +3007,6 @@ enum ReportingPeriod {
 
 type RequestPasswordReset {
   errors: [Error!]
-  accountErrors: [AccountError!]
 }
 
 type Sale implements Node {
@@ -3457,7 +3121,6 @@ type ServiceAccount implements Node {
 
 type ServiceAccountClearStoredPrivateMeta {
   errors: [Error!]
-  accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }
 
@@ -3475,13 +3138,11 @@ type ServiceAccountCountableEdge {
 type ServiceAccountCreate {
   errors: [Error!]
   authToken: String
-  accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }
 
 type ServiceAccountDelete {
   errors: [Error!]
-  accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }
 
@@ -3498,13 +3159,11 @@ input ServiceAccountInput {
 
 type ServiceAccountUpdate {
   errors: [Error!]
-  accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }
 
 type ServiceAccountUpdatePrivateMeta {
   errors: [Error!]
-  accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }
 
@@ -3512,23 +3171,6 @@ type SetPassword {
   token: String
   errors: [Error]!
   user: User
-  accountErrors: [AccountError!]
-}
-
-type ShippingError {
-  field: String
-  message: String
-  code: ShippingErrorCode
-}
-
-enum ShippingErrorCode {
-  ALREADY_EXISTS
-  GRAPHQL_ERROR
-  INVALID
-  MAX_LESS_THAN_MIN
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
 }
 
 type ShippingMethod implements Node {
@@ -3557,13 +3199,11 @@ enum ShippingMethodTypeEnum {
 type ShippingPriceBulkDelete {
   errors: [Error!]
   count: Int!
-  shippingErrors: [ShippingError!]
 }
 
 type ShippingPriceCreate {
   errors: [Error!]
   shippingZone: ShippingZone
-  shippingErrors: [ShippingError!]
   shippingMethod: ShippingMethod
 }
 
@@ -3571,7 +3211,6 @@ type ShippingPriceDelete {
   errors: [Error!]
   shippingMethod: ShippingMethod
   shippingZone: ShippingZone
-  shippingErrors: [ShippingError!]
 }
 
 input ShippingPriceInput {
@@ -3593,7 +3232,6 @@ type ShippingPriceTranslate {
 type ShippingPriceUpdate {
   errors: [Error!]
   shippingZone: ShippingZone
-  shippingErrors: [ShippingError!]
   shippingMethod: ShippingMethod
 }
 
@@ -3609,7 +3247,6 @@ type ShippingZone implements Node {
 type ShippingZoneBulkDelete {
   errors: [Error!]
   count: Int!
-  shippingErrors: [ShippingError!]
 }
 
 type ShippingZoneCountableConnection {
@@ -3626,12 +3263,10 @@ type ShippingZoneCountableEdge {
 type ShippingZoneCreate {
   errors: [Error!]
   shippingZone: ShippingZone
-  shippingErrors: [ShippingError!]
 }
 
 type ShippingZoneDelete {
   errors: [Error!]
-  shippingErrors: [ShippingError!]
   shippingZone: ShippingZone
 }
 
@@ -3644,13 +3279,12 @@ input ShippingZoneInput {
 type ShippingZoneUpdate {
   errors: [Error!]
   shippingZone: ShippingZone
-  shippingErrors: [ShippingError!]
 }
 
 type Shop {
   geolocalization: Geolocalization
   authorizationKeys: [AuthorizationKey]!
-  countries(languageCode: LanguageCodeEnum): [CountryDisplay]!
+  countries: [CountryDisplay]!
   currencies: [String]!
   defaultCurrency: String!
   defaultCountry: CountryDisplay
@@ -3678,35 +3312,16 @@ type Shop {
 type ShopAddressUpdate {
   errors: [Error!]
   shop: Shop
-  shopErrors: [ShopError!]
 }
 
 type ShopDomainUpdate {
   errors: [Error!]
   shop: Shop
-  shopErrors: [ShopError!]
-}
-
-type ShopError {
-  field: String
-  message: String
-  code: ShopErrorCode
-}
-
-enum ShopErrorCode {
-  ALREADY_EXISTS
-  CANNOT_FETCH_TAX_RATES
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
 }
 
 type ShopFetchTaxRates {
   errors: [Error!]
   shop: Shop
-  shopErrors: [ShopError!]
 }
 
 input ShopSettingsInput {
@@ -3735,7 +3350,6 @@ input ShopSettingsTranslationInput {
 type ShopSettingsUpdate {
   errors: [Error!]
   shop: Shop
-  shopErrors: [ShopError!]
 }
 
 type ShopTranslation implements Node {
@@ -3753,12 +3367,10 @@ input SiteDomainInput {
 type StaffBulkDelete {
   errors: [Error!]
   count: Int!
-  accountErrors: [AccountError!]
 }
 
 type StaffCreate {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -3770,12 +3382,10 @@ input StaffCreateInput {
   note: String
   permissions: [PermissionEnum]
   sendPasswordEmail: Boolean
-  redirectUrl: String
 }
 
 type StaffDelete {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -3795,7 +3405,6 @@ enum StaffMemberStatus {
 
 type StaffUpdate {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -3958,30 +3567,25 @@ input UserAddressInput {
 type UserAvatarDelete {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
 }
 
 type UserAvatarUpdate {
   errors: [Error!]
   user: User
-  accountErrors: [AccountError!]
 }
 
 type UserBulkSetActive {
   errors: [Error!]
   count: Int!
-  accountErrors: [AccountError!]
 }
 
 type UserClearStoredMeta {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
 type UserClearStoredPrivateMeta {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -4005,18 +3609,15 @@ input UserCreateInput {
   isActive: Boolean
   note: String
   sendPasswordEmail: Boolean
-  redirectUrl: String
 }
 
 type UserUpdateMeta {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
 type UserUpdatePrivateMeta {
   errors: [Error!]
-  accountErrors: [AccountError!]
   user: User
 }
 
@@ -4030,14 +3631,12 @@ type VariantImageAssign {
   errors: [Error!]
   productVariant: ProductVariant
   image: ProductImage
-  productErrors: [ProductError!]
 }
 
 type VariantImageUnassign {
   errors: [Error!]
   productVariant: ProductVariant
   image: ProductImage
-  productErrors: [ProductError!]
 }
 
 type VariantPricingInfo {
@@ -4167,6 +3766,66 @@ enum VoucherTypeEnum {
 type VoucherUpdate {
   errors: [Error!]
   voucher: Voucher
+}
+
+type Webhook implements Node {
+  serviceAccount: ServiceAccount!
+  targetUrl: String!
+  isActive: Boolean!
+  secretKey: String
+  id: ID!
+  events: [WebhookEvent]
+}
+
+type WebhookCountableConnection {
+  pageInfo: PageInfo!
+  edges: [WebhookCountableEdge!]!
+  totalCount: Int
+}
+
+type WebhookCountableEdge {
+  node: Webhook!
+  cursor: String!
+}
+
+type WebhookCreate {
+  errors: [Error!]
+  webhook: Webhook
+}
+
+input WebhookCreateInput {
+  targetUrl: String
+  events: [WebhookEventTypeEnum]
+  serviceAccount: ID
+  isActive: Boolean
+  secretKey: String
+}
+
+type WebhookDelete {
+  errors: [Error!]
+  webhook: Webhook
+}
+
+type WebhookEvent {
+  eventType: String
+}
+
+enum WebhookEventTypeEnum {
+  ORDER_CREATED
+  CUSTOMER_CREATED
+}
+
+type WebhookUpdate {
+  errors: [Error!]
+  webhook: Webhook
+}
+
+input WebhookUpdateInput {
+  targetUrl: String
+  events: [WebhookEventTypeEnum]
+  serviceAccount: ID
+  isActive: Boolean
+  secretKey: String
 }
 
 type Weight {

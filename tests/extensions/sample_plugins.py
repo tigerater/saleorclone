@@ -13,7 +13,6 @@ from saleor.product.models import Product, ProductType
 if TYPE_CHECKING:
     # flake8: noqa
     from saleor.product.models import Product, ProductType
-    from django.db.models import QuerySet
 
 
 class PluginSample(BasePlugin):
@@ -119,14 +118,10 @@ class ActivePlugin(BasePlugin):
     PLUGIN_NAME = "Plugin1"
 
     @classmethod
-    def get_plugin_configuration(
-        cls, queryset: "QuerySet" = None
-    ) -> "PluginConfiguration":
-        if queryset:
-            configuration = queryset.filter(name="Active").first()
-            if configuration:
-                return configuration
-
+    def get_plugin_configuration(cls, queryset) -> "PluginConfiguration":
+        qs = queryset.filter(name="Active")
+        if qs.exists():
+            return qs[0]
         defaults = {
             "name": "Active",
             "description": "Not working",

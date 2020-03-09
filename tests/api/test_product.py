@@ -147,6 +147,7 @@ def test_product_query(staff_api_client, product, permission_manage_products):
                         }
                         variants {
                             name
+                            stockQuantity
                         }
                         isAvailable
                         pricing {
@@ -2305,140 +2306,98 @@ def test_report_product_sales(
     assert Decimal(amount) == line_b.quantity * line_b.unit_price_gross_amount
 
 
-@pytest.mark.parametrize(
-    "field, is_nested",
-    (
-        ("basePrice", True),
-        ("purchaseCost", True),
-        ("margin", True),
-        ("privateMeta", True),
-    ),
-)
-def test_product_restricted_fields_permissions(
-    staff_api_client,
-    permission_manage_products,
-    permission_manage_orders,
-    product,
-    field,
-    is_nested,
+def test_variant_revenue_permissions(
+    staff_api_client, permission_manage_products, permission_manage_orders, product
 ):
-    """Ensure non-public (restricted) fields are correctly requiring
-    the 'manage_products' permission.
-    """
     query = """
-    query Product($id: ID!) {
-        product(id: $id) {
-            %(field)s
-        }
-    }
-    """ % {
-        "field": field if not is_nested else "%s { __typename }" % field
-    }
-    variables = {"id": graphene.Node.to_global_id("Product", product.pk)}
-    permissions = [permission_manage_orders, permission_manage_products]
-    response = staff_api_client.post_graphql(query, variables, permissions)
-    content = get_graphql_content(response)
-    assert field in content["data"]["product"]
-
-
-@pytest.mark.parametrize(
-    "field, is_nested",
-    (
-        ("digitalContent", True),
-        ("margin", False),
-        ("costPrice", True),
-        ("priceOverride", True),
-        ("quantity", False),
-        ("quantityOrdered", False),
-        ("quantityAllocated", False),
-        ("privateMeta", True),
-    ),
-)
-def test_variant_restricted_fields_permissions(
-    staff_api_client,
-    permission_manage_products,
-    permission_manage_orders,
-    product,
-    field,
-    is_nested,
-):
-    """Ensure non-public (restricted) fields are correctly requiring
-    the 'manage_products' permission.
-    """
-    query = """
-    query ProductVariant($id: ID!) {
+    query VariantRevenue($id: ID!) {
         productVariant(id: $id) {
-            %(field)s
+            revenue(period: TODAY) {
+                gross {
+                    localized
+                }
+            }
         }
     }
-    """ % {
-        "field": field if not is_nested else "%s { __typename }" % field
-    }
+    """
     variant = product.variants.first()
     variables = {"id": graphene.Node.to_global_id("ProductVariant", variant.pk)}
     permissions = [permission_manage_orders, permission_manage_products]
     response = staff_api_client.post_graphql(query, variables, permissions)
     content = get_graphql_content(response)
-    assert field in content["data"]["productVariant"]
+    assert content["data"]["productVariant"]["revenue"]
 
 
-VARIANT_QUANTITY_AVAILABLE_IN_STOCK_QUERY = """
-    query ProductVariant($id: ID!) {
+def test_variant_quantity_permissions(
+    staff_api_client, permission_manage_products, product
+):
+    query = """
+    query Quantity($id: ID!) {
         productVariant(id: $id) {
-            stockQuantity
+            quantity
         }
     }
     """
-
-
-def test_variant_available_stock_quantity_is_capped_for_authorized_user(
-    staff_api_client, permission_manage_products, variant, settings
-):
-    """
-    The exact quantity available in stock should be accessible for a staff
-    user having the permission to manage products.
-    """
-    actual_stock_available = 60
-    expected_stock_available = settings.MAX_CHECKOUT_LINE_QUANTITY = 50
-
-    variant.quantity = actual_stock_available
-    variant.quantity_allocated = 0
-    variant.save(update_fields=["quantity", "quantity_allocated"])
-
-    query = VARIANT_QUANTITY_AVAILABLE_IN_STOCK_QUERY
+    variant = product.variants.first()
     variables = {"id": graphene.Node.to_global_id("ProductVariant", variant.pk)}
-    staff_api_client.user.user_permissions.add(permission_manage_products)
-
-    data = get_graphql_content(staff_api_client.post_graphql(query, variables))
-    stock_available = data["data"]["productVariant"]["stockQuantity"]
-
-    assert stock_available == expected_stock_available
+    permissions = [permission_manage_products]
+    response = staff_api_client.post_graphql(query, variables, permissions)
+    content = get_graphql_content(response)
+    assert "quantity" in content["data"]["productVariant"]
 
 
-@pytest.mark.parametrize(
-    "actual_stock_available, expected_stock_available",
-    ((60, 50), (50, 50), (49, 49), (0, 0)),
-)
-def test_variant_available_stock_quantity_is_capped_for_unauthorized_user(
-    api_client, variant, settings, actual_stock_available, expected_stock_available
+def test_variant_quantity_ordered_permissions(
+    staff_api_client, permission_manage_products, permission_manage_orders, product
 ):
+    query = """
+    query QuantityOrdered($id: ID!) {
+        productVariant(id: $id) {
+            quantityOrdered
+        }
+    }
     """
-    The exact quantity available in stock shouldn't be made available to customers
-    and unauthorized staff users. Instead it should be capped to a said value.
-    """
-    settings.MAX_CHECKOUT_LINE_QUANTITY = 50
-
-    variant.quantity = actual_stock_available
-    variant.quantity_allocated = 0
-    variant.save(update_fields=["quantity", "quantity_allocated"])
-
-    query = VARIANT_QUANTITY_AVAILABLE_IN_STOCK_QUERY
+    variant = product.variants.first()
     variables = {"id": graphene.Node.to_global_id("ProductVariant", variant.pk)}
+    permissions = [permission_manage_orders, permission_manage_products]
+    response = staff_api_client.post_graphql(query, variables, permissions)
+    content = get_graphql_content(response)
+    assert "quantityOrdered" in content["data"]["productVariant"]
 
-    data = get_graphql_content(api_client.post_graphql(query, variables))
-    stock_available = data["data"]["productVariant"]["stockQuantity"]
 
-    assert stock_available == expected_stock_available
+def test_variant_quantity_allocated_permissions(
+    staff_api_client, permission_manage_products, permission_manage_orders, product
+):
+    query = """
+    query QuantityAllocated($id: ID!) {
+        productVariant(id: $id) {
+            quantityAllocated
+        }
+    }
+    """
+    variant = product.variants.first()
+    variables = {"id": graphene.Node.to_global_id("ProductVariant", variant.pk)}
+    permissions = [permission_manage_orders, permission_manage_products]
+    response = staff_api_client.post_graphql(query, variables, permissions)
+    content = get_graphql_content(response)
+    assert "quantityAllocated" in content["data"]["productVariant"]
+
+
+def test_variant_margin_permissions(
+    staff_api_client, permission_manage_products, permission_manage_orders, product
+):
+    query = """
+    query Margin($id: ID!) {
+        productVariant(id: $id) {
+            margin
+        }
+    }
+    """
+    variant = product.variants.first()
+    variables = {"id": graphene.Node.to_global_id("ProductVariant", variant.pk)}
+    permissions = [permission_manage_orders, permission_manage_products]
+    response = staff_api_client.post_graphql(query, variables, permissions)
+    content = get_graphql_content(response)
+    assert "margin" in content["data"]["productVariant"]
 
 
 def test_variant_digital_content(

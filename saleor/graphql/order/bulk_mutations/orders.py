@@ -1,7 +1,5 @@
 import graphene
 
-from saleor.extensions.manager import get_extensions_manager
-
 from ....order import events, models
 from ....order.utils import cancel_order
 from ...core.mutations import BaseBulkMutation
@@ -42,7 +40,5 @@ class OrderBulkCancel(BaseBulkMutation):
                 events.fulfillment_restocked_items_event(
                     order=order, user=user, fulfillment=order
                 )
-            manager = get_extensions_manager()
-            manager.order_cancelled(order)
-            manager.order_updated(order)
+
             events.order_canceled_event(order=order, user=user)

@@ -1165,7 +1165,7 @@ def create_order(*, checkout: Checkout, order_data: dict, user: User) -> Order:
     checkout.payments.update(order=order)
 
     manager = get_extensions_manager()
-    manager.order_created(order)
+    manager.postprocess_order_creation(order)
 
     # Create the order placed
     events.order_created_event(order=order, user=user)

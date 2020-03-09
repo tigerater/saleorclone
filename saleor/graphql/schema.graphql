@@ -39,6 +39,7 @@ type AccountError {
 enum AccountErrorCode {
   ACTIVATE_OWN_ACCOUNT
   ACTIVATE_SUPERUSER_ACCOUNT
+  ASSIGN_NON_STAFF_MEMBER
   DEACTIVATE_OWN_ACCOUNT
   DEACTIVATE_SUPERUSER_ACCOUNT
   DELETE_NON_STAFF_USER
@@ -66,7 +67,6 @@ input AccountInput {
 
 type AccountRegister {
   errors: [Error!]
-  requiresConfirmation: Boolean
   accountErrors: [AccountError!]
   user: User
 }
@@ -74,7 +74,6 @@ type AccountRegister {
 input AccountRegisterInput {
   email: String!
   password: String!
-  redirectUrl: String!
 }
 
 type AccountRequestDeletion {
@@ -558,7 +557,6 @@ type CategoryDelete {
 
 input CategoryFilterInput {
   search: String
-  ids: [ID]
 }
 
 input CategoryInput {
@@ -924,7 +922,6 @@ type CollectionDelete {
 input CollectionFilterInput {
   published: CollectionPublished
   search: String
-  ids: [ID]
 }
 
 input CollectionInput {
@@ -1029,10 +1026,6 @@ enum ConfigurationTypeFieldEnum {
   BOOLEAN
   SECRET
   PASSWORD
-}
-
-type ConfirmAccount {
-  errors: [Error!]
 }
 
 type ConfirmEmailChange {
@@ -1768,6 +1761,24 @@ input GiftCardUpdateInput {
   userEmail: String
 }
 
+type Group implements Node {
+  id: ID!
+  name: String!
+  permissions: [PermissionDisplay]
+  users: [User]
+}
+
+type GroupCountableConnection {
+  pageInfo: PageInfo!
+  edges: [GroupCountableEdge!]!
+  totalCount: Int
+}
+
+type GroupCountableEdge {
+  node: Group!
+  cursor: String!
+}
+
 type HomepageCollectionUpdate {
   errors: [Error!]
   shop: Shop
@@ -2086,13 +2097,6 @@ type Mutation {
   webhookCreate(input: WebhookCreateInput!): WebhookCreate
   webhookDelete(id: ID!): WebhookDelete
   webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
-  createWarehouse(input: WarehouseCreateInput!): WarehouseCreate
-  updateWarehouse(id: ID!, input: WarehouseUpdateInput!): WarehouseUpdate
-  deleteWarehouse(id: ID!): WarehouseDelete
-  createStock(input: StockInput!): StockCreate
-  updateStock(id: ID!, input: StockInput!): StockUpdate
-  deleteStock(id: ID!): StockDelete
-  bulkDeleteStock(ids: [ID]!): StockBulkDelete
   authorizationKeyAdd(input: AuthorizationKeyInput!, keyType: AuthorizationKeyType!): AuthorizationKeyAdd
   authorizationKeyDelete(keyType: AuthorizationKeyType!): AuthorizationKeyDelete
   staffNotificationRecipientCreate(input: StaffNotificationRecipientInput!): StaffNotificationRecipientCreate
@@ -2283,7 +2287,6 @@ type Mutation {
   checkoutUpdatePrivateMetadata(id: ID!, input: MetaInput!): CheckoutUpdatePrivateMeta
   checkoutClearPrivateMetadata(id: ID!, input: MetaPath!): CheckoutClearPrivateMeta
   requestPasswordReset(email: String!, redirectUrl: String!): RequestPasswordReset
-  confirmAccount(email: String!, token: String!): ConfirmAccount
   setPassword(token: String!, email: String!, password: String!): SetPassword
   passwordChange(newPassword: String!, oldPassword: String!): PasswordChange
   requestEmailChange(newEmail: String!, password: String!, redirectUrl: String!): RequestEmailChange
@@ -2323,6 +2326,11 @@ type Mutation {
   serviceAccountClearPrivateMetadata(id: ID!, input: MetaPath!): ServiceAccountClearPrivateMeta
   serviceAccountTokenCreate(input: ServiceAccountTokenInput!): ServiceAccountTokenCreate
   serviceAccountTokenDelete(id: ID!): ServiceAccountTokenDelete
+  permissionGroupCreate(input: PermissionGroupCreateInput!): PermissionGroupCreate
+  permissionGroupUpdate(id: ID!, input: PermissionGroupInput!): PermissionGroupUpdate
+  permissionGroupDelete(id: ID!): PermissionGroupDelete
+  permissionGroupAssignUsers(id: ID!, input: UsersInput!): PermissionGroupAssignUsers
+  permissionGroupUnassignUsers(id: ID!, input: UsersInput!): PermissionGroupUnassignUsers
 }
 
 input NameTranslationInput {
@@ -2914,6 +2922,59 @@ enum PermissionEnum {
   MANAGE_CHECKOUTS
 }
 
+type PermissionGroupAssignUsers {
+  errors: [Error!]
+  group: Group
+  accountErrors: [AccountError!]
+}
+
+type PermissionGroupCreate {
+  errors: [Error!]
+  group: Group
+  accountErrors: [AccountError!]
+}
+
+input PermissionGroupCreateInput {
+  name: String!
+  permissions: [PermissionEnum!]
+}
+
+type PermissionGroupDelete {
+  errors: [Error!]
+  accountErrors: [AccountError!]
+  group: Group
+}
+
+input PermissionGroupFilterInput {
+  search: String
+}
+
+input PermissionGroupInput {
+  name: String
+  permissions: [PermissionEnum!]
+}
+
+enum PermissionGroupSortField {
+  NAME
+}
+
+input PermissionGroupSortingInput {
+  direction: OrderDirection!
+  field: PermissionGroupSortField!
+}
+
+type PermissionGroupUnassignUsers {
+  errors: [Error!]
+  group: Group
+  accountErrors: [AccountError!]
+}
+
+type PermissionGroupUpdate {
+  errors: [Error!]
+  group: Group
+  accountErrors: [AccountError!]
+}
+
 type Plugin implements Node {
   name: String!
   description: String!
@@ -3362,15 +3423,15 @@ type ProductVariant implements Node {
   sku: String!
   product: Product!
   trackInventory: Boolean!
+  quantityAllocated: Int!
   weight: Weight
   privateMeta: [MetaStore]!
   meta: [MetaStore]!
-  quantity: Int! @deprecated(reason: "This field will be removed in Saleor 2.11. Use the stock field instead.")
-  quantityAllocated: Int @deprecated(reason: "This field will be removed in Saleor 2.11. Use the stock field instead.")
-  stockQuantity: Int! @deprecated(reason: "This field will be removed in Saleor 2.11. Use the stock field instead.")
+  quantity: Int!
+  stockQuantity: Int!
   priceOverride: Money
   pricing: VariantPricingInfo
-  isAvailable: Boolean @deprecated(reason: "This field will be removed in Saleor 2.11. Use the stock field instead.")
+  isAvailable: Boolean
   attributes: [SelectedAttribute!]!
   costPrice: Money
   margin: Int
@@ -3379,7 +3440,6 @@ type ProductVariant implements Node {
   images: [ProductImage]
   translation(languageCode: LanguageCodeEnum!): ProductVariantTranslation
   digitalContent: DigitalContent
-  stock(country: String): [Stock]
 }
 
 type ProductVariantBulkCreate {
@@ -3502,12 +3562,8 @@ type Query {
   webhooks(sortBy: WebhookSortingInput, filter: WebhookFilterInput, before: String, after: String, first: Int, last: Int): WebhookCountableConnection
   webhookEvents: [WebhookEvent]
   webhookSamplePayload(eventType: WebhookEventTypeEnum!): JSONString
-  warehouse(id: ID!): Warehouse
-  warehouses(filter: WarehouseFilterInput, before: String, after: String, first: Int, last: Int): WarehouseCountableConnection
   translations(kind: TranslatableKinds!, before: String, after: String, first: Int, last: Int): TranslatableItemConnection
   translation(id: ID!, kind: TranslatableKinds!): TranslatableItem
-  stock(id: ID!): Stock
-  stocks(filter: StockFilterInput, before: String, after: String, first: Int, last: Int): StockCountableConnection
   shop: Shop
   shippingZone(id: ID!): ShippingZone
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection
@@ -3556,6 +3612,8 @@ type Query {
   addressValidationRules(countryCode: CountryCode!, countryArea: String, city: String, cityArea: String): AddressValidationData
   address(id: ID!): Address
   customers(filter: CustomerFilterInput, sortBy: UserSortingInput, before: String, after: String, first: Int, last: Int): UserCountableConnection
+  permissionGroups(filter: PermissionGroupFilterInput, sortBy: PermissionGroupSortingInput, before: String, after: String, first: Int, last: Int): GroupCountableConnection
+  permissionGroup(id: ID!): Group
   me: User
   staffUsers(filter: StaffUserInput, sortBy: UserSortingInput, before: String, after: String, first: Int, last: Int): UserCountableConnection
   serviceAccounts(filter: ServiceAccountFilterInput, sortBy: ServiceAccountSortingInput, before: String, after: String, first: Int, last: Int): ServiceAccountCountableConnection
@@ -4152,79 +4210,9 @@ input StaffUserInput {
   search: String
 }
 
-type Stock implements Node {
-  warehouse: Warehouse!
-  productVariant: ProductVariant!
-  quantity: Int!
-  quantityAllocated: Int!
-  id: ID!
-  stockQuantity: Int!
-}
-
 enum StockAvailability {
   IN_STOCK
   OUT_OF_STOCK
-}
-
-type StockBulkDelete {
-  errors: [Error!]
-  count: Int!
-  stockError: [StockError!]
-}
-
-type StockCountableConnection {
-  pageInfo: PageInfo!
-  edges: [StockCountableEdge!]!
-  totalCount: Int
-}
-
-type StockCountableEdge {
-  node: Stock!
-  cursor: String!
-}
-
-type StockCreate {
-  errors: [Error!]
-  stockErrors: [StockError!]
-  stock: Stock
-}
-
-type StockDelete {
-  errors: [Error!]
-  stock: Stock
-}
-
-enum StockErorrCode {
-  ALREADY_EXISTS
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
-}
-
-type StockError {
-  field: String
-  message: String
-  code: StockErorrCode
-}
-
-input StockFilterInput {
-  quantity: Float
-  quantityAllocated: Float
-  search: String
-}
-
-input StockInput {
-  productVariant: ID!
-  warehouse: ID!
-  quantity: Int
-}
-
-type StockUpdate {
-  errors: [Error!]
-  stockError: [StockError!]
-  stock: Stock
 }
 
 enum TaxRateType {
@@ -4445,6 +4433,10 @@ type UserUpdatePrivateMeta {
   user: User
 }
 
+input UsersInput {
+  users: [ID!]!
+}
+
 type VAT {
   countryCode: String!
   standardRate: Float
@@ -4612,90 +4604,6 @@ enum VoucherTypeEnum {
 type VoucherUpdate {
   errors: [Error!]
   voucher: Voucher
-}
-
-type Warehouse implements Node {
-  id: ID!
-  name: String!
-  companyName: String!
-  shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection!
-  address: Address!
-  email: String!
-}
-
-input WarehouseAddressInput {
-  streetAddress1: String!
-  streetAddress2: String
-  city: String!
-  cityArea: String
-  postalCode: String
-  country: CountryCode!
-  countryArea: String
-  phone: String
-}
-
-type WarehouseCountableConnection {
-  pageInfo: PageInfo!
-  edges: [WarehouseCountableEdge!]!
-  totalCount: Int
-}
-
-type WarehouseCountableEdge {
-  node: Warehouse!
-  cursor: String!
-}
-
-type WarehouseCreate {
-  errors: [Error!]
-  warehouseErrors: [WarehouseError!]
-  warehouse: Warehouse
-}
-
-input WarehouseCreateInput {
-  name: String!
-  companyName: String
-  shippingZones: [ID]
-  email: String
-  address: WarehouseAddressInput!
-}
-
-type WarehouseDelete {
-  errors: [Error!]
-  warehouseErrors: [WarehouseError!]
-  warehouse: Warehouse
-}
-
-type WarehouseError {
-  field: String
-  message: String
-  code: WarehouseErrorCode
-}
-
-enum WarehouseErrorCode {
-  ALREADY_EXISTS
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
-}
-
-input WarehouseFilterInput {
-  search: String
-}
-
-type WarehouseUpdate {
-  errors: [Error!]
-  warehouseErrors: [WarehouseError!]
-  warehouse: Warehouse
-}
-
-input WarehouseUpdateInput {
-  name: String!
-  companyName: String
-  shippingZones: [ID]
-  email: String
-  address: WarehouseAddressInput
 }
 
 type Webhook implements Node {
@@ -4880,7 +4788,7 @@ type WishlistRemoveProductVariantMutation {
 
 scalar _Any
 
-union _Entity = Address | ServiceAccount | User | ProductVariant | Product | ProductType | Collection | Category | ProductImage
+union _Entity = Address | ServiceAccount | User | Group | ProductVariant | Product | ProductType | Collection | Category | ProductImage
 
 type _Service {
   sdl: String

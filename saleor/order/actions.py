@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, List
 
 from django.db import transaction
+from django.utils.translation import pgettext_lazy
 
 from ..core import analytics
 from ..extensions.manager import get_extensions_manager
@@ -195,7 +196,7 @@ def mark_order_as_paid(order: "Order", request_user: "User"):
     )
     payment.charge_status = ChargeStatus.FULLY_CHARGED
     payment.captured_amount = order.total.gross.amount
-    payment.save(update_fields=["captured_amount", "charge_status"])
+    payment.save(update_fields=["captured_amount", "charge_status", "modified"])
 
     events.order_manually_marked_as_paid_event(order=order, user=request_user)
     manager = get_extensions_manager()
@@ -206,7 +207,12 @@ def mark_order_as_paid(order: "Order", request_user: "User"):
 def clean_mark_order_as_paid(order: "Order"):
     """Check if an order can be marked as paid."""
     if order.payments.exists():
-        raise PaymentError("Orders with payments can not be manually marked as paid.",)
+        raise PaymentError(
+            pgettext_lazy(
+                "Mark order as paid validation error",
+                "Orders with payments can not be manually marked as paid.",
+            )
+        )
 
 
 def fulfill_order_line(order_line, quantity):

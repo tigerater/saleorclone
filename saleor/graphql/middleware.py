@@ -1,7 +1,6 @@
 from typing import Optional
 
-import opentracing as ot
-import opentracing.tags
+import opentracing
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.utils.functional import SimpleLazyObject
@@ -47,11 +46,10 @@ def should_trace(info):
 class OpentracingGrapheneMiddleware:
     @staticmethod
     def resolve(next, root, info, **kwargs):
-        with ot.global_tracer().start_active_span(
+        with opentracing.global_tracer().start_span(
             operation_name=info.operation.operation
-        ) as scope:
-            span = scope.span
-            span.set_tag(ot.tags.COMPONENT, "graphql")
+        ) as span:
+            span.set_tag("component", "graphql")
             span.set_tag("graphql.parent_type", info.parent_type.name)
             span.set_tag("graphql.field_name", info.field_name)
             return next(root, info, **kwargs)

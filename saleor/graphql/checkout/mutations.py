@@ -33,7 +33,6 @@ from ...payment import PaymentError, gateway, models as payment_models
 from ...payment.interface import AddressData
 from ...payment.utils import store_customer_id
 from ...product import models as product_models
-from ...warehouse.availability import check_stock_quantity, get_available_quantity
 from ..account.i18n import I18nMixin
 from ..account.types import AddressInput, User
 from ..core.mutations import (
@@ -95,7 +94,7 @@ def update_checkout_shipping_method_if_invalid(checkout: models.Checkout, discou
         checkout.save(update_fields=["shipping_method"])
 
 
-def check_lines_quantity(variants, quantities, country):
+def check_lines_quantity(variants, quantities):
     """Check if stock is sufficient for each line in the list of dicts."""
     for variant, quantity in zip(variants, quantities):
         if quantity < 0:
@@ -118,14 +117,13 @@ def check_lines_quantity(variants, quantities, country):
                 }
             )
         try:
-            check_stock_quantity(variant, country, quantity)
+            variant.check_quantity(quantity)
         except InsufficientStock as e:
-            available_quantity = get_available_quantity(e.item, country)
             message = (
                 "Could not add item "
                 + "%(item_name)s. Only %(remaining)d remaining in stock."
                 % {
-                    "remaining": available_quantity,
+                    "remaining": e.item.quantity_available,
                     "item_name": e.item.display_product(),
                 }
             )
@@ -181,7 +179,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
 
     @classmethod
     def process_checkout_lines(
-        cls, lines, country
+        cls, lines
     ) -> Tuple[List[product_models.ProductVariant], List[int]]:
         variant_ids = [line.get("variant_id") for line in lines]
         variants = cls.get_nodes_or_error(
@@ -194,7 +192,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
         )
         quantities = [line.get("quantity") for line in lines]
 
-        check_lines_quantity(variants, quantities, country)
+        check_lines_quantity(variants, quantities)
 
         return variants, quantities
 
@@ -218,7 +216,6 @@ class CheckoutCreate(ModelMutation, I18nMixin):
     def clean_input(cls, info, instance: models.Checkout, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data)
         user = info.context.user
-        country = info.context.country.code
 
         # Resolve and process the lines, retrieving the variants and quantities
         lines = data.pop("lines", None)
@@ -226,7 +223,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
             (
                 cleaned_input["variants"],
                 cleaned_input["quantities"],
-            ) = cls.process_checkout_lines(lines, country)
+            ) = cls.process_checkout_lines(lines)
 
         cleaned_input["shipping_address"] = cls.retrieve_shipping_address(user, data)
         cleaned_input["billing_address"] = cls.retrieve_billing_address(user, data)
@@ -262,8 +259,6 @@ class CheckoutCreate(ModelMutation, I18nMixin):
     def save(cls, info, instance: models.Checkout, cleaned_input):
         # Create the checkout object
         instance.save()
-        country = info.context.country
-        instance.set_country(country.code, commit=True)
 
         # Retrieve the lines to create
         variants = cleaned_input.get("variants")
@@ -337,7 +332,7 @@ class CheckoutLinesAdd(BaseMutation):
         variants = cls.get_nodes_or_error(variant_ids, "variant_id", ProductVariant)
         quantities = [line.get("quantity") for line in lines]
 
-        check_lines_quantity(variants, quantities, checkout.get_country())
+        check_lines_quantity(variants, quantities)
 
         if variants and quantities:
             for variant, quantity in zip(variants, quantities):

@@ -3,6 +3,7 @@ from typing import List, Union
 
 import graphene
 import graphene_django_optimizer as gql_optimizer
+from django.conf import settings
 from django.db.models import Prefetch
 from graphene import relay
 from graphene_federation import key
@@ -20,13 +21,6 @@ from ....product.utils.availability import (
     get_variant_availability,
 )
 from ....product.utils.costs import get_margin_for_variant, get_product_costs_data
-from ....warehouse import models as stock_models
-from ....warehouse.availability import (
-    get_available_quantity,
-    get_available_quantity_for_customer,
-    is_product_in_stock,
-    is_variant_in_stock,
-)
 from ...core.connection import CountableDjangoObjectType
 from ...core.enums import ReportingPeriod, TaxRateType
 from ...core.fields import FilterInputConnectionField, PrefetchingConnectionField
@@ -49,7 +43,6 @@ from ...translations.types import (
     ProductVariantTranslation,
 )
 from ...utils import get_database_id, reporting_period_to_date
-from ...warehouse.types import Stock
 from ..filters import AttributeFilterInput
 from ..resolvers import resolve_attributes
 from .attributes import Attribute, SelectedAttribute
@@ -198,20 +191,9 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         required=True,
         description="Quantity of a product in the store's possession, "
         "including the allocated stock that is waiting for shipment.",
-        deprecation_reason="This field will be removed in Saleor 2.11. "
-        "Use the stock field instead.",
-    )
-    quantity_allocated = graphene.Int(
-        required=False,
-        description="Quantity allocated for orders",
-        deprecation_reason="This field will be removed in Saleor 2.11. "
-        "Use the stock field instead.",
     )
     stock_quantity = graphene.Int(
-        required=True,
-        description="Quantity of a product available for sale.",
-        deprecation_reason="This field will be removed in Saleor 2.11. "
-        "Use the stock field instead.",
+        required=True, description="Quantity of a product available for sale."
     )
     price_override = graphene.Field(
         Money,
@@ -228,11 +210,8 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         ),
     )
     is_available = graphene.Boolean(
-        description="Whether the variant is in stock and visible or not.",
-        deprecation_reason="This field will be removed in Saleor 2.11. "
-        "Use the stock field instead.",
+        description="Whether the variant is in stock and visible or not."
     )
-
     attributes = gql_optimizer.field(
         graphene.List(
             graphene.NonNull(SelectedAttribute),
@@ -268,14 +247,6 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         model_field="digital_content",
     )
 
-    stock = gql_optimizer.field(
-        graphene.Field(
-            Stock,
-            description="Stocks for the product variant.",
-            country=graphene.String(required=False),
-        )
-    )
-
     class Meta:
         description = (
             "Represents a version of a product such as different size or color."
@@ -284,6 +255,7 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
             "id",
             "name",
             "product",
+            "quantity_allocated",
             "sku",
             "track_inventory",
             "weight",
@@ -292,30 +264,14 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         model = models.ProductVariant
 
     @staticmethod
-    def resolve_stock(root: models.ProductVariant, info, country=None):
-        if country is not None:
-            return stock_models.Stock.objects.get_variant_stock_for_country(
-                country, root
-            )
-        return stock_models.Stock.objects.annotate_available_quantity().filter(
-            product_variant=root
-        )
-
-    @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
     def resolve_digital_content(root: models.ProductVariant, *_args):
         return getattr(root, "digital_content", None)
 
     @staticmethod
-    def resolve_stock_quantity(root: models.ProductVariant, info):
-        country = info.context.country
-        try:
-            stock = stock_models.Stock.objects.get_variant_stock_for_country(
-                country, root
-            )
-        except stock_models.Stock.DoesNotExist:
-            return 0
-        return get_available_quantity_for_customer(stock)
+    def resolve_stock_quantity(root: models.ProductVariant, _info):
+        exact_quantity_available = root.quantity_available
+        return min(exact_quantity_available, settings.MAX_CHECKOUT_LINE_QUANTITY)
 
     @staticmethod
     @gql_optimizer.resolver_hints(
@@ -356,9 +312,8 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
     resolve_availability = resolve_pricing
 
     @staticmethod
-    def resolve_is_available(root: models.ProductVariant, info):
-        country = info.context.country
-        return is_variant_in_stock(root, country)
+    def resolve_is_available(root: models.ProductVariant, _info):
+        return root.is_available
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
@@ -367,8 +322,8 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_quantity(root: models.ProductVariant, info):
-        return get_available_quantity(root, info.context.country)
+    def resolve_quantity(root: models.ProductVariant, *_args):
+        return root.quantity
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
@@ -377,11 +332,10 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
         # `resolve_report_product_sales` resolver.
         return getattr(root, "quantity_ordered", None)
 
+    @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_quantity_allocated(root: models.ProductVariant, info):
-        country = info.context.country
-        stock = stock_models.Stock.objects.get_variant_stock_for_country(country, root)
-        return stock.quantity_allocated
+    def resolve_quantity_allocated(root: models.ProductVariant, *_args):
+        return root.quantity_allocated
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
@@ -535,9 +489,7 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
     @staticmethod
     @gql_optimizer.resolver_hints(prefetch_related=("variants"))
     def resolve_is_available(root: models.Product, _info):
-        country = _info.context.country
-        in_stock = is_product_in_stock(root, country)
-        return root.is_visible and in_stock
+        return root.is_available
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)

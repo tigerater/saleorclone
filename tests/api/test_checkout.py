@@ -1,5 +1,4 @@
 import uuid
-from decimal import Decimal
 from unittest import mock
 from unittest.mock import ANY, patch
 
@@ -24,7 +23,6 @@ from saleor.payment import TransactionKind
 from saleor.payment.interface import GatewayResponse
 from saleor.shipping import ShippingMethodType
 from saleor.shipping.models import ShippingMethod
-from saleor.warehouse.models import Stock
 from tests.api.utils import get_graphql_content
 
 
@@ -123,9 +121,8 @@ MUTATION_CHECKOUT_CREATE = """
 """
 
 
-def test_checkout_create(api_client, stock, graphql_address_data):
+def test_checkout_create(api_client, variant, graphql_address_data):
     """Create checkout object using GraphQL API."""
-    variant = stock.product_variant
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     test_email = "test@example.com"
     shipping_address = graphql_address_data
@@ -184,13 +181,13 @@ def test_checkout_create(api_client, stock, graphql_address_data):
 )
 def test_checkout_create_cannot_add_invalid_quantities(
     api_client,
-    stock,
+    variant,
     graphql_address_data,
     quantity,
     expected_error_message,
     error_code,
 ):
-    variant = stock.product_variant
+
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     test_email = "test@example.com"
     shipping_address = graphql_address_data
@@ -218,11 +215,10 @@ def test_checkout_create_cannot_add_invalid_quantities(
     ]
 
 
-def test_checkout_create_reuse_checkout(checkout, user_api_client, stock):
+def test_checkout_create_reuse_checkout(checkout, user_api_client, variant):
     # assign user to the checkout
     checkout.user = user_api_client.user
     checkout.save()
-    variant = stock.product_variant
 
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     variables = {"checkoutInput": {"lines": [{"quantity": 1, "variantId": variant_id}]}}
@@ -241,8 +237,7 @@ def test_checkout_create_reuse_checkout(checkout, user_api_client, stock):
     assert checkout_data["lines"] == []
 
 
-def test_checkout_create_required_email(api_client, stock):
-    variant = stock.product_variant
+def test_checkout_create_required_email(api_client, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     variables = {
         "checkoutInput": {
@@ -263,8 +258,7 @@ def test_checkout_create_required_email(api_client, stock):
     assert checkout_errors[0]["code"] == CheckoutErrorCode.REQUIRED.name
 
 
-def test_checkout_create_default_email_for_logged_in_customer(user_api_client, stock):
-    variant = stock.product_variant
+def test_checkout_create_default_email_for_logged_in_customer(user_api_client, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     variables = {"checkoutInput": {"lines": [{"quantity": 1, "variantId": variant_id}]}}
     response = user_api_client.post_graphql(MUTATION_CHECKOUT_CREATE, variables)
@@ -278,8 +272,7 @@ def test_checkout_create_default_email_for_logged_in_customer(user_api_client, s
     assert new_checkout.email == customer.email
 
 
-def test_checkout_create_logged_in_customer(user_api_client, stock):
-    variant = stock.product_variant
+def test_checkout_create_logged_in_customer(user_api_client, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     variables = {
         "checkoutInput": {
@@ -310,8 +303,7 @@ def test_checkout_create_logged_in_customer(user_api_client, stock):
     assert customer.email == new_checkout.email
 
 
-def test_checkout_create_logged_in_customer_custom_email(user_api_client, stock):
-    variant = stock.product_variant
+def test_checkout_create_logged_in_customer_custom_email(user_api_client, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     customer = user_api_client.user
     custom_email = "custom@example.com"
@@ -335,9 +327,8 @@ def test_checkout_create_logged_in_customer_custom_email(user_api_client, stock)
 
 
 def test_checkout_create_logged_in_customer_custom_addresses(
-    user_api_client, stock, graphql_address_data
+    user_api_client, variant, graphql_address_data
 ):
-    variant = stock.product_variant
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     shipping_address = graphql_address_data
     billing_address = graphql_address_data
@@ -368,9 +359,8 @@ def test_checkout_create_logged_in_customer_custom_addresses(
 
 
 def test_checkout_create_check_lines_quantity(
-    user_api_client, stock, graphql_address_data
+    user_api_client, variant, graphql_address_data
 ):
-    variant = stock.product_variant
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.id)
     test_email = "test@example.com"
     shipping_address = graphql_address_data
@@ -561,9 +551,8 @@ MUTATION_CHECKOUT_LINES_ADD = """
     wraps=update_checkout_shipping_method_if_invalid,
 )
 def test_checkout_lines_add(
-    mocked_update_shipping_method, user_api_client, checkout_with_item, stock
+    mocked_update_shipping_method, user_api_client, checkout_with_item, variant
 ):
-    variant = stock.product_variant
     checkout = checkout_with_item
     line = checkout.lines.first()
     assert line.quantity == 3
@@ -586,8 +575,7 @@ def test_checkout_lines_add(
     mocked_update_shipping_method.assert_called_once_with(checkout, mock.ANY)
 
 
-def test_checkout_lines_add_too_many(user_api_client, checkout_with_item, stock):
-    variant = stock.product_variant
+def test_checkout_lines_add_too_many(user_api_client, checkout_with_item, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.pk)
     checkout_id = graphene.Node.to_global_id("Checkout", checkout_with_item.pk)
 
@@ -604,8 +592,7 @@ def test_checkout_lines_add_too_many(user_api_client, checkout_with_item, stock)
     ]
 
 
-def test_checkout_lines_add_empty_checkout(user_api_client, checkout, stock):
-    variant = stock.product_variant
+def test_checkout_lines_add_empty_checkout(user_api_client, checkout, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.pk)
     checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
 
@@ -623,8 +610,7 @@ def test_checkout_lines_add_empty_checkout(user_api_client, checkout, stock):
     assert line.quantity == 1
 
 
-def test_checkout_lines_add_check_lines_quantity(user_api_client, checkout, stock):
-    variant = stock.product_variant
+def test_checkout_lines_add_check_lines_quantity(user_api_client, checkout, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.pk)
     checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
 
@@ -641,8 +627,7 @@ def test_checkout_lines_add_check_lines_quantity(user_api_client, checkout, stoc
     assert data["errors"][0]["field"] == "quantity"
 
 
-def test_checkout_lines_invalid_variant_id(user_api_client, checkout, stock):
-    variant = stock.product_variant
+def test_checkout_lines_invalid_variant_id(user_api_client, checkout, variant):
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.pk)
     invalid_variant_id = "InvalidId"
     checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
@@ -751,13 +736,12 @@ def test_checkout_lines_update_check_lines_quantity(
 
 
 def test_checkout_lines_update_with_chosen_shipping(
-    user_api_client, checkout, stock, address, shipping_method
+    user_api_client, checkout, variant, address, shipping_method
 ):
     checkout.shipping_address = address
     checkout.shipping_method = shipping_method
     checkout.save()
 
-    variant = stock.product_variant
     variant_id = graphene.Node.to_global_id("ProductVariant", variant.pk)
     checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
 
@@ -1178,6 +1162,10 @@ def test_checkout_complete(
     checkout.shipping_address = address
     checkout.shipping_method = shipping_method
     checkout.billing_address = address
+    checkout.store_meta(namespace="PUBLIC", client="PLUGIN", item={"accepted": "true"})
+    checkout.store_private_meta(
+        namespace="PRIVATE", client="PLUGIN", item={"accepted": "true"},
+    )
     checkout.save()
 
     checkout_line = checkout.lines.first()
@@ -1209,6 +1197,8 @@ def test_checkout_complete(
     order = Order.objects.first()
     assert order.token == order_token
     assert order.total.gross == total.gross - gift_current_balance
+    assert order.meta == checkout.meta
+    assert order.private_meta == checkout.private_meta
 
     order_line = order.lines.first()
     assert checkout_line_quantity == order_line.quantity
@@ -1233,7 +1223,7 @@ ERROR_GATEWAY_RESPONSE = GatewayResponse(
     is_success=False,
     action_required=False,
     kind=TransactionKind.CAPTURE,
-    amount=Decimal(0),
+    amount=0.0,
     currency="usd",
     transaction_id="1234",
     error="ERROR",
@@ -1358,8 +1348,7 @@ def test_checkout_complete_insufficient_stock(
 ):
     checkout = checkout_with_item
     checkout_line = checkout.lines.first()
-    stock = Stock.objects.get(product_variant=checkout_line.variant)
-    quantity_available = stock.quantity_available
+    quantity_available = checkout_line.variant.quantity_available
     checkout_line.quantity = quantity_available + 1
     checkout_line.save()
     checkout.shipping_address = address

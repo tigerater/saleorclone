@@ -13,47 +13,18 @@ class WebhookEventType:
 
     PRODUCT_CREATED = "product_created"
 
-    DISPLAY_LABELS = {
-        ANY: "Any events",
-        ORDER_CREATED: "Order created",
-        ORDER_FULLYPAID: "Order paid",
-        ORDER_UPDATED: "Order updated",
-        ORDER_CANCELLED: "Order cancelled",
-        ORDER_FULFILLED: "Order fulfilled",
-        CUSTOMER_CREATED: "Customer created",
-        PRODUCT_CREATED: "Product created",
-    }
-
     CHOICES = [
-        (ANY, pgettext_lazy("Any events", DISPLAY_LABELS[ANY])),
-        (
-            ORDER_CREATED,
-            pgettext_lazy("Order has been placed", DISPLAY_LABELS[ORDER_CREATED]),
-        ),
-        (
-            ORDER_FULLYPAID,
-            pgettext_lazy("Order has been fully paid", DISPLAY_LABELS[ORDER_FULLYPAID]),
-        ),
-        (
-            ORDER_UPDATED,
-            pgettext_lazy("Order has been updated", DISPLAY_LABELS[ORDER_UPDATED]),
-        ),
-        (
-            ORDER_CANCELLED,
-            pgettext_lazy("Order has been cancelled", DISPLAY_LABELS[ORDER_CANCELLED]),
-        ),
+        (ANY, pgettext_lazy("Any events", "Any events")),
+        (ORDER_CREATED, pgettext_lazy("Order has been placed", "Order created")),
+        (ORDER_FULLYPAID, pgettext_lazy("Order has been fully paid", "Order paid")),
+        (ORDER_UPDATED, pgettext_lazy("Order has been updated", "Order updated")),
+        (ORDER_CANCELLED, pgettext_lazy("Order has been cancelled", "Order cancelled")),
         (
             CUSTOMER_CREATED,
-            pgettext_lazy(
-                "Customer has been created", DISPLAY_LABELS[CUSTOMER_CREATED]
-            ),
+            pgettext_lazy("Customer has been created", "Customer created"),
         ),
-        (
-            PRODUCT_CREATED,
-            pgettext_lazy("Product has been created", DISPLAY_LABELS[PRODUCT_CREATED]),
-        ),
+        (PRODUCT_CREATED, pgettext_lazy("Product has been created", "Product created")),
     ]
-
     PERMISSIONS = {
         ORDER_CREATED: "order.manage_orders",
         ORDER_FULLYPAID: "order.manage_orders",

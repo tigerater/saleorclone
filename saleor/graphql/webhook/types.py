@@ -1,24 +1,16 @@
 import graphene
 import graphene_django_optimizer as gql_optimizer
 
-from ...webhook import WebhookEventType, models
+from ...webhook import models
 from ..core.connection import CountableDjangoObjectType
 from .enums import WebhookEventTypeEnum
 
 
-class WebhookEvent(CountableDjangoObjectType):
-    name = graphene.String(description="Printable name of the event")
-    event_type = WebhookEventTypeEnum(description="Internal name of the event type.")
+class WebhookEvent(graphene.ObjectType):
+    event_type = WebhookEventTypeEnum(description="Name of the event type.")
 
     class Meta:
-        model = models.WebhookEvent
         description = "Webhook event."
-        only_fields = ["event_type", "name"]
-
-    @staticmethod
-    def resolve_name(info: models.WebhookEvent, *_args, **_kwargs):
-        name = WebhookEventType.DISPLAY_LABELS.get(info.event_type) or info.event_type
-        return name
 
 
 class Webhook(CountableDjangoObjectType):

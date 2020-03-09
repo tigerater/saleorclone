@@ -73,6 +73,7 @@ type AccountRegister {
 input AccountRegisterInput {
   email: String!
   password: String!
+  redirectOrigin: String!
 }
 
 type AccountRequestDeletion {
@@ -1027,6 +1028,10 @@ enum ConfigurationTypeFieldEnum {
   PASSWORD
 }
 
+type ConfirmAccount {
+  errors: [Error!]
+}
+
 type ConfirmEmailChange {
   errors: [Error!]
   user: User
@@ -1760,13 +1765,6 @@ input GiftCardUpdateInput {
   userEmail: String
 }
 
-type Group implements Node {
-  name: String!
-  permissions: [PermissionDisplay]
-  id: ID!
-  users: [User]
-}
-
 type HomepageCollectionUpdate {
   errors: [Error!]
   shop: Shop
@@ -2275,6 +2273,7 @@ type Mutation {
   checkoutUpdatePrivateMetadata(id: ID!, input: MetaInput!): CheckoutUpdatePrivateMeta
   checkoutClearPrivateMetadata(id: ID!, input: MetaPath!): CheckoutClearPrivateMeta
   requestPasswordReset(email: String!, redirectUrl: String!): RequestPasswordReset
+  confirmAccount(email: String!, token: String!): ConfirmAccount
   setPassword(token: String!, email: String!, password: String!): SetPassword
   passwordChange(newPassword: String!, oldPassword: String!): PasswordChange
   requestEmailChange(newEmail: String!, password: String!, redirectUrl: String!): RequestEmailChange
@@ -2314,9 +2313,6 @@ type Mutation {
   serviceAccountClearPrivateMetadata(id: ID!, input: MetaPath!): ServiceAccountClearPrivateMeta
   serviceAccountTokenCreate(input: ServiceAccountTokenInput!): ServiceAccountTokenCreate
   serviceAccountTokenDelete(id: ID!): ServiceAccountTokenDelete
-  permissionGroupCreate(input: PermissionGroupCreateInput!): PermissionGroupCreate
-  permissionGroupUpdate(id: ID!, input: PermissionGroupInput!): PermissionGroupUpdate
-  permissionGroupDelete(id: ID!): PermissionGroupDelete
 }
 
 input NameTranslationInput {
@@ -2906,34 +2902,6 @@ enum PermissionEnum {
   MANAGE_TRANSLATIONS
   MANAGE_WEBHOOKS
   MANAGE_CHECKOUTS
-}
-
-type PermissionGroupCreate {
-  errors: [Error!]
-  group: Group
-  accountErrors: [AccountError!]
-}
-
-input PermissionGroupCreateInput {
-  name: String!
-  permissions: [PermissionEnum!]
-}
-
-type PermissionGroupDelete {
-  errors: [Error!]
-  accountErrors: [AccountError!]
-  group: Group
-}
-
-input PermissionGroupInput {
-  name: String
-  permissions: [PermissionEnum!]
-}
-
-type PermissionGroupUpdate {
-  errors: [Error!]
-  group: Group
-  accountErrors: [AccountError!]
 }
 
 type Plugin implements Node {
@@ -4743,7 +4711,7 @@ type WishlistRemoveProductVariantMutation {
 
 scalar _Any
 
-union _Entity = Address | ServiceAccount | User | Group | ProductVariant | Product | ProductType | Collection | Category | ProductImage
+union _Entity = Address | ServiceAccount | User | ProductVariant | Product | ProductType | Collection | Category | ProductImage
 
 type _Service {
   sdl: String

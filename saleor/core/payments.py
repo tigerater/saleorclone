@@ -2,18 +2,12 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    # flake8: noqa
-    from saleor.payment.interface import (
-        PaymentData,
-        GatewayResponse,
-        TokenConfig,
-        CustomerSource,
-    )
+    from saleor.payment.interface import PaymentData, GatewayResponse, TokenConfig
 
 
 class PaymentInterface(ABC):
     @abstractmethod
-    def list_payment_gateways(self, active_only: bool) -> List[dict]:
+    def list_payment_gateways(self, active_only: bool) -> List[str]:
         pass
 
     @abstractmethod

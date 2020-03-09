@@ -22,16 +22,12 @@ from .mutations.account import (
     RequestEmailChange,
 )
 from .mutations.base import (
+    ConfirmAccount,
     PasswordChange,
     RequestPasswordReset,
     SetPassword,
     UserClearMeta,
     UserUpdateMeta,
-)
-from .mutations.permission_group import (
-    PermissionGroupCreate,
-    PermissionGroupDelete,
-    PermissionGroupUpdate,
 )
 from .mutations.service_account import (
     ServiceAccountClearPrivateMeta,
@@ -188,6 +184,7 @@ class AccountQueries(graphene.ObjectType):
 class AccountMutations(graphene.ObjectType):
     # Base mutations
     request_password_reset = RequestPasswordReset.Field()
+    confirm_account = ConfirmAccount.Field()
     set_password = SetPassword.Field()
     password_change = PasswordChange.Field()
     request_email_change = RequestEmailChange.Field()
@@ -206,7 +203,7 @@ class AccountMutations(graphene.ObjectType):
 
     account_update_meta = AccountUpdateMeta.Field()
 
-    # Staff mutations
+    # Staff mutation
     address_create = AddressCreate.Field()
     address_update = AddressUpdate.Field()
     address_delete = AddressDelete.Field()
@@ -241,8 +238,3 @@ class AccountMutations(graphene.ObjectType):
 
     service_account_token_create = ServiceAccountTokenCreate.Field()
     service_account_token_delete = ServiceAccountTokenDelete.Field()
-
-    # Permission group mutations
-    permission_group_create = PermissionGroupCreate.Field()
-    permission_group_update = PermissionGroupUpdate.Field()
-    permission_group_delete = PermissionGroupDelete.Field()

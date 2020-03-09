@@ -5,6 +5,7 @@ from ...core.permissions import AccountPermissions
 from ..core.fields import FilterInputConnectionField
 from ..core.types import FilterInputObjectType
 from ..decorators import one_of_permissions_required, permission_required
+from ..descriptions import DESCRIPTIONS
 from .bulk_mutations import CustomerBulkDelete, StaffBulkDelete, UserBulkSetActive
 from .enums import CountryCodeEnum
 from .filters import CustomerFilter, ServiceAccountFilter, StaffUserFilter
@@ -52,7 +53,6 @@ from .mutations.staff import (
     UserUpdatePrivateMeta,
 )
 from .resolvers import (
-    resolve_address,
     resolve_address_validation_rules,
     resolve_customers,
     resolve_service_accounts,
@@ -60,7 +60,7 @@ from .resolvers import (
     resolve_user,
 )
 from .sorters import ServiceAccountSortingInput, UserSortingInput
-from .types import Address, AddressValidationData, ServiceAccount, User
+from .types import AddressValidationData, ServiceAccount, User
 
 
 class CustomerFilterInput(FilterInputObjectType):
@@ -95,18 +95,12 @@ class AccountQueries(graphene.ObjectType):
             graphene.String, description="Sublocality like a district."
         ),
     )
-    address = graphene.Field(
-        Address,
-        id=graphene.Argument(
-            graphene.ID, description="ID of an address.", required=True
-        ),
-        description="Look up an address by ID.",
-    )
     customers = FilterInputConnectionField(
         User,
         filter=CustomerFilterInput(description="Filtering options for customers."),
         sort_by=UserSortingInput(description="Sort customers."),
         description="List of the shop's customers.",
+        query=graphene.String(description=DESCRIPTIONS["user"]),
     )
     me = graphene.Field(User, description="Return the currently authenticated user.")
     staff_users = FilterInputConnectionField(
@@ -114,6 +108,7 @@ class AccountQueries(graphene.ObjectType):
         filter=StaffUserInput(description="Filtering options for staff users."),
         sort_by=UserSortingInput(description="Sort staff users."),
         description="List of the shop's staff users.",
+        query=graphene.String(description=DESCRIPTIONS["user"]),
     )
     service_accounts = FilterInputConnectionField(
         ServiceAccount,
@@ -173,9 +168,6 @@ class AccountQueries(graphene.ObjectType):
     )
     def resolve_user(self, info, id):
         return resolve_user(info, id)
-
-    def resolve_address(self, info, id):
-        return resolve_address(info, id)
 
 
 class AccountMutations(graphene.ObjectType):

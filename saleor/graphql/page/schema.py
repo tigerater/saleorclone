@@ -1,6 +1,7 @@
 import graphene
 
 from ..core.fields import FilterInputConnectionField
+from ..descriptions import DESCRIPTIONS
 from ..translations.mutations import PageTranslate
 from .bulk_mutations import PageBulkDelete, PageBulkPublish
 from .filters import PageFilterInput
@@ -19,6 +20,7 @@ class PageQueries(graphene.ObjectType):
     )
     pages = FilterInputConnectionField(
         Page,
+        query=graphene.String(description=DESCRIPTIONS["page"]),
         sort_by=PageSortingInput(description="Sort pages."),
         filter=PageFilterInput(description="Filtering options for pages."),
         description="List of the shop's pages.",

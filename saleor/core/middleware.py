@@ -130,6 +130,7 @@ class ReadOnlyMiddleware:
         "checkoutPaymentCreate",
         "checkoutShippingAddressUpdate",
         "checkoutShippingMethodUpdate",
+        "checkoutUpdateVoucher",
         "checkoutUpdateMetadata",
         "checkoutClearMetadata",
         "checkoutUpdatePrivateMetadata",

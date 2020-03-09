@@ -7,7 +7,6 @@ from django.db import transaction
 from django.utils import timezone
 
 from ...checkout import models
-from ...checkout.error_codes import CheckoutErrorCode
 from ...checkout.utils import (
     abort_order_data,
     add_promo_code_to_checkout,
@@ -29,9 +28,9 @@ from ...core import analytics
 from ...core.exceptions import InsufficientStock
 from ...core.taxes import TaxError
 from ...discount import models as voucher_model
-from ...payment import PaymentError, gateway
+from ...payment import PaymentError
 from ...payment.interface import AddressData
-from ...payment.utils import store_customer_id
+from ...payment.utils import gateway_process_payment, store_customer_id
 from ...product import models as product_models
 from ..account.i18n import I18nMixin
 from ..account.types import AddressInput, User
@@ -41,7 +40,6 @@ from ..core.mutations import (
     ModelMutation,
     UpdateMetaBaseMutation,
 )
-from ..core.types.common import CheckoutError
 from ..core.utils import from_global_id_strict_type
 from ..order.types import Order
 from ..product.types import ProductVariant
@@ -61,15 +59,12 @@ def clean_shipping_method(
         return True
 
     if not checkout.is_shipping_required():
-        raise ValidationError(
-            ERROR_DOES_NOT_SHIP, code=CheckoutErrorCode.SHIPPING_NOT_REQUIRED
-        )
+        raise ValidationError("This checkout does not requires shipping.")
 
     if not checkout.shipping_address:
         raise ValidationError(
             "Cannot choose a shipping method for a checkout without the "
-            "shipping address.",
-            code=CheckoutErrorCode.SHIPPING_ADDRESS_NOT_SET,
+            "shipping address."
         )
 
     valid_methods = get_valid_shipping_methods_for_checkout(checkout, discounts)
@@ -92,23 +87,15 @@ def update_checkout_shipping_method_if_invalid(checkout: models.Checkout, discou
 def check_lines_quantity(variants, quantities):
     """Check if stock is sufficient for each line in the list of dicts."""
     for variant, quantity in zip(variants, quantities):
-        if quantity < 0:
+        if quantity < 1:
             raise ValidationError(
-                {
-                    "quantity": ValidationError(
-                        "The quantity should be higher than zero.",
-                        code=CheckoutErrorCode.ZERO_QUANTITY,
-                    )
-                }
+                {"quantity": "The quantity should be higher than zero."}
             )
         if quantity > settings.MAX_CHECKOUT_LINE_QUANTITY:
             raise ValidationError(
                 {
-                    "quantity": ValidationError(
-                        "Cannot add more than %d times this item."
-                        "" % settings.MAX_CHECKOUT_LINE_QUANTITY,
-                        code=CheckoutErrorCode.QUANTITY_GREATER_THAN_LIMIT,
-                    )
+                    "quantity": "Cannot add more than %d times this item."
+                    "" % settings.MAX_CHECKOUT_LINE_QUANTITY
                 }
             )
         try:
@@ -122,7 +109,7 @@ def check_lines_quantity(variants, quantities):
                     "item_name": e.item.display_product(),
                 }
             )
-            raise ValidationError({"quantity": ValidationError(message, code=e.code)})
+            raise ValidationError({"quantity": message})
 
 
 class CheckoutLineInput(graphene.InputObjectType):
@@ -169,8 +156,6 @@ class CheckoutCreate(ModelMutation, I18nMixin):
         description = "Create a new checkout."
         model = models.Checkout
         return_field_name = "checkout"
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def process_checkout_lines(
@@ -264,9 +249,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
                 try:
                     add_variant_to_checkout(instance, variant, quantity)
                 except InsufficientStock as exc:
-                    raise ValidationError(
-                        f"Insufficient product stock: {exc.item}", code=exc.code
-                    )
+                    raise ValidationError(f"Insufficient product stock: {exc.item}")
 
         # Save provided addresses and associate them to the checkout
         cls.save_addresses(instance, cleaned_input)
@@ -313,8 +296,6 @@ class CheckoutLinesAdd(BaseMutation):
 
     class Meta:
         description = "Adds a checkout line to the existing checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, lines, replace=False):
@@ -336,9 +317,7 @@ class CheckoutLinesAdd(BaseMutation):
                         checkout, variant, quantity, replace=replace
                     )
                 except InsufficientStock as exc:
-                    raise ValidationError(
-                        f"Insufficient product stock: {exc.item}", code=exc.code
-                    )
+                    raise ValidationError(f"Insufficient product stock: {exc.item}")
 
         recalculate_checkout_discount(checkout, info.context.discounts)
 
@@ -350,8 +329,6 @@ class CheckoutLinesUpdate(CheckoutLinesAdd):
 
     class Meta:
         description = "Updates CheckoutLine in the existing Checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, root, info, checkout_id, lines):
@@ -367,8 +344,6 @@ class CheckoutLineDelete(BaseMutation):
 
     class Meta:
         description = "Deletes a CheckoutLine."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, line_id):
@@ -397,8 +372,6 @@ class CheckoutCustomerAttach(BaseMutation):
 
     class Meta:
         description = "Sets the customer as the owner of the Checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, customer_id):
@@ -421,8 +394,6 @@ class CheckoutCustomerDetach(BaseMutation):
 
     class Meta:
         description = "Removes the user assigned as the owner of the checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id):
@@ -446,12 +417,12 @@ class CheckoutShippingAddressUpdate(BaseMutation, I18nMixin):
 
     class Meta:
         description = "Update shipping address in the existing Checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, shipping_address):
-        pk = from_global_id_strict_type(checkout_id, Checkout, field="checkout_id")
+        pk = from_global_id_strict_type(
+            info, checkout_id, Checkout, field="checkout_id"
+        )
 
         try:
             checkout = models.Checkout.objects.prefetch_related(
@@ -459,23 +430,11 @@ class CheckoutShippingAddressUpdate(BaseMutation, I18nMixin):
             ).get(pk=pk)
         except ObjectDoesNotExist:
             raise ValidationError(
-                {
-                    "checkout_id": ValidationError(
-                        f"Couldn't resolve to a node: {checkout_id}",
-                        code=CheckoutErrorCode.NOT_FOUND,
-                    )
-                }
+                {"checkout_id": f"Couldn't resolve to a node: {checkout_id}"}
             )
 
         if not checkout.is_shipping_required():
-            raise ValidationError(
-                {
-                    "shipping_address": ValidationError(
-                        ERROR_DOES_NOT_SHIP,
-                        code=CheckoutErrorCode.SHIPPING_NOT_REQUIRED,
-                    )
-                }
-            )
+            raise ValidationError({"shipping_address": ERROR_DOES_NOT_SHIP})
 
         shipping_address = cls.validate_address(
             shipping_address, instance=checkout.shipping_address
@@ -502,8 +461,6 @@ class CheckoutBillingAddressUpdate(CheckoutShippingAddressUpdate):
 
     class Meta:
         description = "Update billing address in the existing Checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, billing_address):
@@ -529,8 +486,6 @@ class CheckoutEmailUpdate(BaseMutation):
 
     class Meta:
         description = "Updates email address in the existing Checkout object."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, email):
@@ -553,13 +508,11 @@ class CheckoutShippingMethodUpdate(BaseMutation):
 
     class Meta:
         description = "Updates the shipping address of the checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, shipping_method_id):
         pk = from_global_id_strict_type(
-            checkout_id, only_type=Checkout, field="checkout_id"
+            info, checkout_id, only_type=Checkout, field="checkout_id"
         )
 
         try:
@@ -569,23 +522,11 @@ class CheckoutShippingMethodUpdate(BaseMutation):
             ).get(pk=pk)
         except ObjectDoesNotExist:
             raise ValidationError(
-                {
-                    "checkout_id": ValidationError(
-                        f"Couldn't resolve to a node: {checkout_id}",
-                        code=CheckoutErrorCode.NOT_FOUND,
-                    )
-                }
+                {"checkout_id": f"Couldn't resolve to a node: {checkout_id}"}
             )
 
         if not checkout.is_shipping_required():
-            raise ValidationError(
-                {
-                    "shipping_method": ValidationError(
-                        ERROR_DOES_NOT_SHIP,
-                        code=CheckoutErrorCode.SHIPPING_NOT_REQUIRED,
-                    )
-                }
-            )
+            raise ValidationError({"shipping_method": ERROR_DOES_NOT_SHIP})
 
         shipping_method = cls.get_node_or_error(
             info,
@@ -600,12 +541,7 @@ class CheckoutShippingMethodUpdate(BaseMutation):
 
         if not shipping_method_is_valid:
             raise ValidationError(
-                {
-                    "shipping_method": ValidationError(
-                        "This shipping method is not applicable.",
-                        code=CheckoutErrorCode.SHIPPING_METHOD_NOT_APPLICABLE,
-                    )
-                }
+                {"shipping_method": "This shipping method is not applicable."}
             )
 
         checkout.shipping_method = shipping_method
@@ -633,8 +569,6 @@ class CheckoutComplete(BaseMutation):
             "a payment charge is made. This action requires a successful "
             "payment before it can be performed."
         )
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, store_source):
@@ -655,18 +589,12 @@ class CheckoutComplete(BaseMutation):
                     discounts=info.context.discounts,
                 )
             except InsufficientStock as e:
-                raise ValidationError(
-                    f"Insufficient product stock: {e.item}", code=e.code
-                )
+                raise ValidationError(f"Insufficient product stock: {e.item}")
             except voucher_model.NotApplicable:
-                raise ValidationError(
-                    "Voucher not applicable",
-                    code=CheckoutErrorCode.VOUCHER_NOT_APPLICABLE,
-                )
+                raise ValidationError("Voucher not applicable")
             except TaxError as tax_error:
                 return ValidationError(
-                    "Unable to calculate taxes - %s" % str(tax_error),
-                    code=CheckoutErrorCode.TAX_ERROR,
+                    "Unable to calculate taxes - %s" % str(tax_error)
                 )
 
         billing_address = order_data["billing_address"]
@@ -678,8 +606,12 @@ class CheckoutComplete(BaseMutation):
             shipping_address = AddressData(**shipping_address.as_data())
 
         try:
-            txn = gateway.process_payment(
-                payment=payment, token=payment.token, store_source=store_source
+            txn = gateway_process_payment(
+                payment=payment,
+                payment_token=payment.token,
+                billing_address=billing_address,
+                shipping_address=shipping_address,
+                store_source=store_source,
             )
 
             if not txn.is_success:
@@ -687,7 +619,7 @@ class CheckoutComplete(BaseMutation):
 
         except PaymentError as e:
             abort_order_data(order_data)
-            raise ValidationError(str(e), code=CheckoutErrorCode.PAYMENT_ERROR)
+            raise ValidationError(str(e))
 
         if txn.customer_id and user.is_authenticated:
             store_customer_id(user, payment.gateway, txn.customer_id)
@@ -715,8 +647,6 @@ class CheckoutUpdateVoucher(BaseMutation):
             "or CheckoutRemovePromoCode instead. Adds voucher to the checkout. Query "
             "it without voucher_code field to remove voucher from checkout."
         )
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, voucher_code=None):
@@ -731,24 +661,14 @@ class CheckoutUpdateVoucher(BaseMutation):
                 )
             except voucher_model.Voucher.DoesNotExist:
                 raise ValidationError(
-                    {
-                        "voucher_code": ValidationError(
-                            "Voucher with given code does not exist.",
-                            code=CheckoutErrorCode.NOT_FOUND,
-                        )
-                    }
+                    {"voucher_code": "Voucher with given code does not exist."}
                 )
 
             try:
                 add_voucher_to_checkout(checkout, voucher)
             except voucher_model.NotApplicable:
                 raise ValidationError(
-                    {
-                        "voucher_code": ValidationError(
-                            "Voucher is not applicable to that checkout.",
-                            code=CheckoutErrorCode.VOUCHER_NOT_APPLICABLE,
-                        )
-                    }
+                    {"voucher_code": "Voucher is not applicable to that checkout."}
                 )
         else:
             existing_voucher = get_voucher_for_checkout(checkout)
@@ -771,8 +691,6 @@ class CheckoutAddPromoCode(BaseMutation):
 
     class Meta:
         description = "Adds a gift card or a voucher to a checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, promo_code):
@@ -796,8 +714,6 @@ class CheckoutRemovePromoCode(BaseMutation):
 
     class Meta:
         description = "Remove a gift card or a voucher from a checkout."
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, promo_code):
@@ -814,8 +730,6 @@ class CheckoutUpdateMeta(UpdateMetaBaseMutation):
         permissions = ("order.manage_orders",)
         model = models.Checkout
         public = True
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
 
 class CheckoutUpdatePrivateMeta(UpdateMetaBaseMutation):
@@ -824,8 +738,6 @@ class CheckoutUpdatePrivateMeta(UpdateMetaBaseMutation):
         permissions = ("order.manage_orders",)
         model = models.Checkout
         public = False
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
 
 class CheckoutClearStoredMeta(ClearMetaBaseMutation):
@@ -834,8 +746,6 @@ class CheckoutClearStoredMeta(ClearMetaBaseMutation):
         permissions = ("order.manage_orders",)
         model = models.Checkout
         public = True
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"
 
 
 class CheckoutClearStoredPrivateMeta(ClearMetaBaseMutation):
@@ -844,5 +754,3 @@ class CheckoutClearStoredPrivateMeta(ClearMetaBaseMutation):
         permissions = ("order.manage_orders",)
         model = models.Checkout
         public = False
-        error_type_class = CheckoutError
-        error_type_field = "checkout_errors"

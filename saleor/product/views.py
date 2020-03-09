@@ -29,6 +29,7 @@ from .utils import (
     products_for_products_list,
     products_with_details,
 )
+from .utils.attributes import get_product_attributes_data
 from .utils.availability import get_product_availability
 from .utils.digital_products import (
     digital_content_url_is_valid,
@@ -90,9 +91,10 @@ def product_details(request, slug, product_id, form=None):
         request.currency,
         request.country,
     )
+    product_attributes = get_product_attributes_data(product)
     # show_variant_picker determines if variant picker is used or select input
     show_variant_picker = all([v.attributes for v in product.variants.all()])
-    json_ld_data = product_json_ld(product)
+    json_ld_data = product_json_ld(product, product_attributes)
     ctx = {
         "description_json": product.translated.description_json,
         "description_html": product.translated.description,
@@ -100,6 +102,7 @@ def product_details(request, slug, product_id, form=None):
         "form": form,
         "availability": availability,
         "product": product,
+        "product_attributes": product_attributes,
         "product_images": product_images,
         "show_variant_picker": show_variant_picker,
         "variant_picker_data": json.dumps(

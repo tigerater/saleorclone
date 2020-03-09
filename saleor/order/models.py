@@ -219,6 +219,11 @@ class Order(ModelWithMetadata):
     def __str__(self):
         return "#%d" % (self.id,)
 
+    # Deprecated. To remove in #5022
+    @staticmethod
+    def get_absolute_url():
+        return ""
+
     def get_last_payment(self):
         return max(self.payments.all(), default=None, key=attrgetter("pk"))
 
@@ -495,3 +500,10 @@ class OrderEvent(models.Model):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(type={self.type!r}, user={self.user!r})"
+
+
+class Invoice(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    number = models.CharField(max_length=64)
+    created = models.DateTimeField(auto_now_add=True)
+    url = models.URLField(max_length=256)

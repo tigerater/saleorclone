@@ -512,13 +512,14 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
 
     @staticmethod
     @gql_optimizer.resolver_hints(prefetch_related="images")
-    def resolve_thumbnail(root: models.Product, info, *, size=255):
+    def resolve_thumbnail(root: models.Product, info, *, size=None):
         image = root.get_first_image()
-        if image:
-            url = get_product_image_thumbnail(image, size, method="thumbnail")
-            alt = image.alt
-            return Image(alt=alt, url=info.context.build_absolute_uri(url))
-        return None
+        if not size:
+            size = 255
+        url = get_product_image_thumbnail(image, size, method="thumbnail")
+        url = info.context.build_absolute_uri(url)
+        alt = image.alt if image else None
+        return Image(alt=alt, url=url)
 
     @staticmethod
     def resolve_url(root: models.Product, *_args):
@@ -543,7 +544,6 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
     resolve_availability = resolve_pricing
 
     @staticmethod
-    @gql_optimizer.resolver_hints(prefetch_related=("variants"))
     def resolve_is_available(root: models.Product, _info):
         return root.is_available
 

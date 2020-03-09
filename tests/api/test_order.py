@@ -109,7 +109,10 @@ def test_orderline_query(staff_api_client, permission_manage_orders, fulfilled_o
     response = staff_api_client.post_graphql(query)
     content = get_graphql_content(response)
     order_data = content["data"]["orders"]["edges"][0]["node"]
-    assert order_data["lines"][0]["thumbnail"] is None
+    assert (
+        "/static/images/placeholder540x540.png"
+        in order_data["lines"][0]["thumbnail"]["url"]
+    )
     variant_id = graphene.Node.to_global_id("ProductVariant", line.variant.pk)
     assert order_data["lines"][0]["variant"]["id"] == variant_id
 

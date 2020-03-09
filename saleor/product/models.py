@@ -837,7 +837,7 @@ class AttributeValue(SortableModel):
 
     class Meta:
         ordering = ("sort_order", "id")
-        unique_together = ("slug", "attribute")
+        unique_together = ("name", "attribute")
 
     def __str__(self):
         return self.name

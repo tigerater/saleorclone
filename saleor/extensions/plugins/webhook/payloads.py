@@ -1,15 +1,11 @@
-import json
-from typing import Optional
+from typing import TYPE_CHECKING
 
-from django.db.models import Model, QuerySet
+from .serializers import WebhookSerializer
 
-from ..account.models import User
-from ..order import FulfillmentStatus, OrderStatus
-from ..order.models import Order
-from ..payment import ChargeStatus
-from ..product.models import Product
-from . import WebhookEventType
-from .payload_serializers import PayloadSerializer
+if TYPE_CHECKING:
+    from ....order.models import Order
+    from ....account.models import User
+    from ....product.models import Product
 
 ADDRESS_FIELDS = (
     "first_name",
@@ -27,7 +23,7 @@ ADDRESS_FIELDS = (
 
 
 def generate_order_payload(order: "Order"):
-    serializer = PayloadSerializer()
+    serializer = WebhookSerializer()
     fulfillment_fields = ("status", "tracking_number", "shipping_date")
     payment_fields = (
         "gateway"
@@ -78,8 +74,6 @@ def generate_order_payload(order: "Order"):
         "discount_name",
         "translated_discount_name",
         "weight",
-        "private_meta",
-        "meta",
     )
     order_data = serializer.serialize(
         [order],
@@ -97,7 +91,7 @@ def generate_order_payload(order: "Order"):
 
 
 def generate_customer_payload(customer: "User"):
-    serializer = PayloadSerializer()
+    serializer = WebhookSerializer()
     data = serializer.serialize(
         [customer],
         fields=[
@@ -106,8 +100,8 @@ def generate_customer_payload(customer: "User"):
             "last_name",
             "is_active",
             "date_joined",
-            "private_meta",
-            "meta",
+            "default_shipping_address",
+            "default_billing_address",
         ],
         additional_fields={
             "default_shipping_address": (
@@ -124,7 +118,7 @@ def generate_customer_payload(customer: "User"):
 
 
 def generate_product_payload(product: "Product"):
-    serializer = PayloadSerializer()
+    serializer = WebhookSerializer()
 
     product_fields = (
         "name",
@@ -136,22 +130,16 @@ def generate_product_payload(product: "Product"):
         "updated_at",
         "charge_taxes",
         "weight",
-        "publication_date",
-        "is_published",
-        "private_meta",
-        "meta",
     )
     product_variant_fields = (
-        "sku",
-        "name",
-        "currency",
-        "price_override_amount",
-        "track_inventory",
-        "quantity",
-        "quantity_allocated",
-        "cost_price_amount",
-        "private_meta",
-        "meta",
+        "sku"
+        "name"
+        "currency"
+        "price_override_amount"
+        "track_inventory"
+        "quantity"
+        "quantity_allocated"
+        "cost_price_amount"
     )
     product_payload = serializer.serialize(
         [product],
@@ -163,51 +151,3 @@ def generate_product_payload(product: "Product"):
         },
     )
     return product_payload
-
-
-def _get_sample_object(qs: QuerySet) -> Optional[Model]:
-    """Return random object from query."""
-    random_object = qs.order_by("?").first()
-    return random_object
-
-
-def _generate_sample_order_payload(event_name):
-    order_qs = Order.objects.prefetch_related(
-        "payments",
-        "lines",
-        "shipping_method",
-        "shipping_address",
-        "billing_address",
-        "fulfillments",
-    )
-    order = None
-    if event_name == WebhookEventType.ORDER_CREATED:
-        order = _get_sample_object(order_qs.filter(status=OrderStatus.UNFULFILLED))
-    elif event_name == WebhookEventType.ORDER_FULLY_PAID:
-        order = _get_sample_object(
-            order_qs.filter(payments__charge_status=ChargeStatus.FULLY_CHARGED)
-        )
-    elif event_name == WebhookEventType.ORDER_FULFILLED:
-        order = _get_sample_object(
-            order_qs.filter(fulfillments__status=FulfillmentStatus.FULFILLED)
-        )
-    elif event_name in [
-        WebhookEventType.ORDER_CANCELLED,
-        WebhookEventType.ORDER_UPDATED,
-    ]:
-        order = _get_sample_object(order_qs.filter(status=OrderStatus.CANCELED))
-    return generate_order_payload(order) if order else None
-
-
-def generate_sample_payload(event_name: str) -> Optional[dict]:
-    if event_name == WebhookEventType.CUSTOMER_CREATED:
-        user = _get_sample_object(User.objects.filter(is_staff=False, is_active=True))
-        payload = generate_customer_payload(user) if user else None
-    elif event_name == WebhookEventType.PRODUCT_CREATED:
-        product = _get_sample_object(
-            Product.objects.prefetch_related("category", "collections", "variants")
-        )
-        payload = generate_product_payload(product) if product else None
-    else:
-        payload = _generate_sample_order_payload(event_name)
-    return json.loads(payload) if payload else None

@@ -81,7 +81,7 @@ def update_checkout_shipping_method_if_invalid(checkout: models.Checkout, discou
     # remove shipping method when empty checkout
     if checkout.quantity == 0 or not checkout.is_shipping_required():
         checkout.shipping_method = None
-        checkout.save(update_fields=["shipping_method"])
+        checkout.save(update_fields=["shipping_method", "last_change"])
 
     is_valid = clean_shipping_method(
         checkout=checkout, method=checkout.shipping_method, discounts=discounts
@@ -92,7 +92,7 @@ def update_checkout_shipping_method_if_invalid(checkout: models.Checkout, discou
             checkout, discounts
         ).first()
         checkout.shipping_method = cheapest_alternative
-        checkout.save(update_fields=["shipping_method"])
+        checkout.save(update_fields=["shipping_method", "last_change"])
 
 
 def check_lines_quantity(variants, quantities, country):
@@ -243,7 +243,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
         shipping_address = cleaned_input.get("shipping_address")
         billing_address = cleaned_input.get("billing_address")
 
-        updated_fields = []
+        updated_fields = ["last_change"]
 
         if shipping_address and instance.is_shipping_required():
             shipping_address.save()
@@ -420,7 +420,7 @@ class CheckoutCustomerAttach(BaseMutation):
             info, customer_id, only_type=User, field="customer_id"
         )
         checkout.user = customer
-        checkout.save(update_fields=["user"])
+        checkout.save(update_fields=["user", "last_change"])
         return CheckoutCustomerAttach(checkout=checkout)
 
 
@@ -441,7 +441,7 @@ class CheckoutCustomerDetach(BaseMutation):
             info, checkout_id, only_type=Checkout, field="checkout_id"
         )
         checkout.user = None
-        checkout.save(update_fields=["user"])
+        checkout.save(update_fields=["user", "last_change"])
         return CheckoutCustomerDetach(checkout=checkout)
 
 
@@ -551,7 +551,7 @@ class CheckoutEmailUpdate(BaseMutation):
 
         checkout.email = email
         cls.clean_instance(info, checkout)
-        checkout.save(update_fields=["email"])
+        checkout.save(update_fields=["email", "last_change"])
         return CheckoutEmailUpdate(checkout=checkout)
 
 
@@ -620,7 +620,7 @@ class CheckoutShippingMethodUpdate(BaseMutation):
             )
 
         checkout.shipping_method = shipping_method
-        checkout.save(update_fields=["shipping_method"])
+        checkout.save(update_fields=["shipping_method", "last_change"])
         recalculate_checkout_discount(checkout, info.context.discounts)
 
         return CheckoutShippingMethodUpdate(checkout=checkout)
@@ -628,6 +628,13 @@ class CheckoutShippingMethodUpdate(BaseMutation):
 
 class CheckoutComplete(BaseMutation):
     order = graphene.Field(Order, description="Placed order.")
+    confirmation_needed = graphene.Boolean(
+        required=False,
+        description=(
+            "Set to true if payment needs to be confirmed"
+            " before checkout is complete."
+        ),
+    )
 
     class Arguments:
         checkout_id = graphene.ID(description="Checkout ID.", required=True)
@@ -709,10 +716,14 @@ class CheckoutComplete(BaseMutation):
         if shipping_address is not None:
             shipping_address = AddressData(**shipping_address.as_data())
 
+        payment_confirmation = payment.to_confirm
         try:
-            txn = gateway.process_payment(
-                payment=payment, token=payment.token, store_source=store_source
-            )
+            if payment_confirmation:
+                txn = gateway.confirm(payment)
+            else:
+                txn = gateway.process_payment(
+                    payment=payment, token=payment.token, store_source=store_source
+                )
 
             if not txn.is_success:
                 raise PaymentError(txn.error)
@@ -733,19 +744,23 @@ class CheckoutComplete(BaseMutation):
                     {"redirect_url": error}, code=AccountErrorCode.INVALID
                 )
 
-        # create the order into the database
-        order = create_order(
-            checkout=checkout,
-            order_data=order_data,
-            user=user,
-            redirect_url=redirect_url,
-        )
+        order = None
+        if not txn.action_required:
+            # create the order into the database
+            order = create_order(
+                checkout=checkout,
+                order_data=order_data,
+                user=user,
+                redirect_url=redirect_url,
+            )
 
-        # remove checkout after order is successfully paid
-        checkout.delete()
+            # remove checkout after order is successfully paid
+            checkout.delete()
 
-        # return the success response with the newly created order data
-        return CheckoutComplete(order=order)
+            # return the success response with the newly created order data
+            return CheckoutComplete(order=order)
+
+        return CheckoutComplete(order=None, confirmation_needed=True)
 
 
 class CheckoutAddPromoCode(BaseMutation):

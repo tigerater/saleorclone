@@ -525,13 +525,11 @@ def test_draft_order_create(
     query = """
     mutation draftCreate(
         $user: ID, $discount: Decimal, $lines: [OrderLineCreateInput],
-        $shippingAddress: AddressInput, $shippingMethod: ID, $voucher: ID,
-        $customerNote: String) {
+        $shippingAddress: AddressInput, $shippingMethod: ID, $voucher: ID) {
             draftOrderCreate(
                 input: {user: $user, discount: $discount,
                 lines: $lines, shippingAddress: $shippingAddress,
-                shippingMethod: $shippingMethod, voucher: $voucher,
-                customerNote: $customerNote}) {
+                shippingMethod: $shippingMethod, voucher: $voucher}) {
                     errors {
                         field
                         message
@@ -553,7 +551,7 @@ def test_draft_order_create(
                         voucher {
                             code
                         }
-                        customerNote
+
                     }
                 }
         }
@@ -569,7 +567,6 @@ def test_draft_order_create(
     variant_1.save()
     variant_1_id = graphene.Node.to_global_id("ProductVariant", variant_1.id)
     discount = "10"
-    customer_note = "Test note"
     variant_list = [
         {"variantId": variant_0_id, "quantity": 2},
         {"variantId": variant_1_id, "quantity": 1},
@@ -584,7 +581,6 @@ def test_draft_order_create(
         "shippingAddress": shipping_address,
         "shippingMethod": shipping_id,
         "voucher": voucher_id,
-        "customerNote": customer_note,
     }
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_orders]
@@ -594,7 +590,6 @@ def test_draft_order_create(
     data = content["data"]["draftOrderCreate"]["order"]
     assert data["status"] == OrderStatus.DRAFT.upper()
     assert data["voucher"]["code"] == voucher.code
-    assert data["customerNote"] == customer_note
 
     order = Order.objects.first()
     assert order.user == customer_user
@@ -620,11 +615,9 @@ def test_draft_order_update(
 ):
     order = order_with_lines
     assert not order.voucher
-    assert not order.customer_note
     query = """
-        mutation draftUpdate($id: ID!, $voucher: ID!, $customerNote: String) {
-            draftOrderUpdate(id: $id,
-                             input: {voucher: $voucher, customerNote: $customerNote}) {
+        mutation draftUpdate($id: ID!, $voucher: ID!) {
+            draftOrderUpdate(id: $id, input: {voucher: $voucher}) {
                 errors {
                     field
                     message
@@ -637,8 +630,7 @@ def test_draft_order_update(
         """
     order_id = graphene.Node.to_global_id("Order", order.id)
     voucher_id = graphene.Node.to_global_id("Voucher", voucher.id)
-    customer_note = "Test customer note"
-    variables = {"id": order_id, "voucher": voucher_id, "customerNote": customer_note}
+    variables = {"id": order_id, "voucher": voucher_id}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_orders]
     )
@@ -647,7 +639,6 @@ def test_draft_order_update(
     assert not data["errors"]
     order.refresh_from_db()
     assert order.voucher
-    assert order.customer_note == customer_note
 
 
 def test_draft_order_update_doing_nothing_generates_no_events(

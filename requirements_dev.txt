@@ -171,9 +171,6 @@ django-babel==0.6.2 \
     --hash=sha256:b62084a6f0cbf2e7af719bd129abfe54608a52645c0677aff5a728f586873af7
 django-bootstrap4==1.0.1 \
     --hash=sha256:3da770392819267eda2f774bcf832460af00db21089b94caf4df94be8a48c48c
-django-cache-url==3.0.0 \
-    --hash=sha256:235950e2d7cb16164082167c2974301e2f0fb2313d40bfacc9d24f5b09c3514b \
-    --hash=sha256:964120787dc80e568a355385a3880a19f2f00219c251903956f3137d1583d097
 django-countries==5.5 \
     --hash=sha256:1cefad9ec804d6a0318b91c5394b5aef00336755928f44d0a6420507719d65c8 \
     --hash=sha256:22e96236101783cfe5222ef5174972242a7e8176336d119a4dc111aedce35897
@@ -182,9 +179,6 @@ django-debug-toolbar==2.1 \
     --hash=sha256:77cfba1d6e91b9bc3d36dc7dc74a9bb80be351948db5f880f2562a0cbf20b6c5
 django-debug-toolbar-request-history==0.1.0 \
     --hash=sha256:b258919bc9f0b863a20783ceda51e4a52c187f93a859de0fcb289423d9aff453
-django-elasticsearch-dsl==0.5.1 \
-    --hash=sha256:8c96714d8eef30763e820a2909663b236df765e5c6c8508721489dc9713dfef7 \
-    --hash=sha256:114889f0f70d584e300953b9fc75f312b447e3ff96136dad03028654ba9f4cbd
 django-extensions==2.2.5 \
     --hash=sha256:b58320d3fe3d6ae7d1d8e38959713fa92272f4921e662d689058d942a5b444f7 \
     --hash=sha256:a9db7c56a556d244184f589f2437b4228de86ee45e5ebb837fb20c6d54e95ea5
@@ -195,8 +189,6 @@ django-graphiql-debug-toolbar==0.1.4 \
     --hash=sha256:946fba21418b3fd57e7e357d4cd110fb7881e08d3b7a0a8a00400fa2e75965f5
 django-graphql-jwt==0.2.1 \
     --hash=sha256:6dcf9dd4990098e289d76ab4220edbf436a2e26dc6af1d4a526ac699ad93bf14
-django-impersonate==1.4.1 \
-    --hash=sha256:63b62d06f93b0318698c68f7314c78473914c262d4164eb66ad860bb83e04771
 django-js-asset==1.2.2 \
     --hash=sha256:c163ae80d2e0b22d8fb598047cd0dcef31f81830e127cfecae278ad574167260 \
     --hash=sha256:8ec12017f26eec524cab436c64ae73033368a372970af4cf42d9354fcb166bdd
@@ -236,21 +228,12 @@ django-templated-email==2.3.0 \
 django-versatileimagefield==1.11 \
     --hash=sha256:8322ee9d7bf5ffa5360990320d2cc2efc7017feff35422636d49f625721edf82 \
     --hash=sha256:90e1614db9ee593f502f4e5ec0942611589e1d91567a20447c8cf48459ee52d5
-django-webpack-loader==0.6.0 \
-    --hash=sha256:60bab6b9a037a5346fad12d2a70a6bc046afb33154cf75ed640b93d3ebd5f520 \
-    --hash=sha256:970b968c2a8975fb7eff56a3bab5d0d90d396740852d1e0c50c5cfe2b824199a
 docutils==0.15.2 \
     --hash=sha256:9e4d7ecfc600058e07ba661411a2b7de2fd0fafa17d1a7f7361cd47b1175c827 \
     --hash=sha256:6c4f696463b79f1fb8ba0c594b63840ebd41f059e92b31957c46b74a4599b6d0 \
     --hash=sha256:a2aeea129088da402665e92e0b25b04b073c04b2dce4ab65caaa38b7ce2e1a99
 draftjs-sanitizer==1.0.0 \
     --hash=sha256:4603a9296153cd06d5a1d76a45a1ff0295363516af983d8dde28cafc5cd67583
-elasticsearch==6.3.1 \
-    --hash=sha256:7546cc08e3899716e12fe67d12d7cfe9a64647014d1134b014c3c392b63cad42 \
-    --hash=sha256:aada5cfdc4a543c47098eb3aca6663848ef5d04b4324935ced441debc11ec98b
-elasticsearch-dsl==6.0.1 \
-    --hash=sha256:8c340995388544662598299a63357acd576579eb939e500956d58a5fd8c17cd1 \
-    --hash=sha256:e4254061442fded9721d4ed07db398f66453c402ab60409a2b9a88be433c27ba
 entrypoints==0.3 \
     --hash=sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19 \
     --hash=sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451
@@ -324,9 +307,6 @@ idna==2.8 \
 importlib-metadata==0.23 \
     --hash=sha256:d5f18a79777f3aa179c145737780282e27b508fc8fd688cb17c7a813e8bd39af \
     --hash=sha256:aa18d7378b00b40847790e7c27e11673d7fed219354109d0e7b9e5b25dc3ad26
-ipaddress==1.0.23 \
-    --hash=sha256:6e0f4a39e66cb5bb9a137b00276a2eff74f93b71dcbdad6f10ff7df9d3557fcc \
-    --hash=sha256:b7f8e0369580bb4a24d5ba1d7cc29660a4a6987763faf1d8a8046830e020e7e2
 isort==4.3.21 \
     --hash=sha256:6e811fcb295968434526407adb8796944f1988c5b65e8139058f2014cbe100fd \
     --hash=sha256:54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1

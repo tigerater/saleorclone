@@ -1667,7 +1667,7 @@ type FulfillmentUpdateTracking {
 
 input FulfillmentUpdateTrackingInput {
   trackingNumber: String
-  notifyCustomer: Boolean = false
+  notifyCustomer: Boolean
 }
 
 type GatewayConfigLine {

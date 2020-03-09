@@ -142,8 +142,6 @@ def resolve_products(
 ):
 
     user = info.context.user
-    if user.is_anonymous and info.context.service_account:
-        user = info.context.service_account
     qs = models.Product.objects.visible_to_user(user)
     qs = sort_products(qs, sort_by)
 

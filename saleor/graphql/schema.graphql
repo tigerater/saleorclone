@@ -2349,8 +2349,8 @@ type Mutation {
   permissionGroupCreate(input: PermissionGroupCreateInput!): PermissionGroupCreate
   permissionGroupUpdate(id: ID!, input: PermissionGroupInput!): PermissionGroupUpdate
   permissionGroupDelete(id: ID!): PermissionGroupDelete
-  permissionGroupAssignUsers(id: ID!, users: [ID!]!): PermissionGroupAssignUsers
-  permissionGroupUnassignUsers(id: ID!, users: [ID!]!): PermissionGroupUnassignUsers
+  permissionGroupAssignUsers(id: ID!, input: UsersInput!): PermissionGroupAssignUsers
+  permissionGroupUnassignUsers(id: ID!, input: UsersInput!): PermissionGroupUnassignUsers
 }
 
 input NameTranslationInput {
@@ -4551,6 +4551,10 @@ type UserUpdatePrivateMeta {
   errors: [Error!]
   accountErrors: [AccountError!]
   user: User
+}
+
+input UsersInput {
+  users: [ID!]!
 }
 
 type VAT {

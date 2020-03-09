@@ -4,7 +4,6 @@ All notable, unreleased changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- Account confirmation email - #5126 by @tomaszszymanski129
 - Relocate Checkout and CheckoutLine methods into separate module and update checkout related plugins to use them - #4980 by @krzysztofwolski
 - Fix problem with free shipping voucher - #4942 by @IKarbowiak
 - Add sub-categories to random data - #4949 by @IKarbowiak
@@ -44,6 +43,7 @@ All notable, unreleased changes to this project will be documented in this file.
 - Add `checkout_quantity_changed` webhook - #5042 by @derenio
 - Remove unnecessary manage_orders permission - #5142 by @kswiatek92
 - Mutation to change user email - #5076 by @kswiatek92
+- Move extracting user or service_account from context to utils - #5152 by @kswiatek92
 
 ## 2.9.0
 

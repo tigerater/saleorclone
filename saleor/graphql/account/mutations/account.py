@@ -1,5 +1,4 @@
 import graphene
-from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 
@@ -48,9 +47,6 @@ class AccountRegister(ModelMutation):
     def save(cls, info, user, cleaned_input):
         password = cleaned_input["password"]
         user.set_password(password)
-        if settings.ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL:
-            user.is_active = False
-            emails.send_account_confirmation_email(user)
         user.save()
         account_events.customer_account_created_event(user=user)
         info.context.extensions.customer_created(customer=user)

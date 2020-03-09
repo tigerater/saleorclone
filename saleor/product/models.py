@@ -65,6 +65,11 @@ class Category(MPTTModel, ModelWithMetadata, SeoModel):
     def __str__(self) -> str:
         return self.name
 
+    # Deprecated. To remove in #5022
+    @staticmethod
+    def get_absolute_url() -> str:
+        return ""
+
 
 class CategoryTranslation(SeoModelTranslation):
     language_code = models.CharField(max_length=10)
@@ -321,6 +326,11 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
             return json_content_to_raw_text(self.description_json)
         return strip_tags(self.description)
 
+    # Deprecated. To remove in #5022
+    @staticmethod
+    def get_absolute_url() -> str:
+        return ""
+
     def get_first_image(self):
         images = list(self.images.all())
         return images[0] if images else None
@@ -455,6 +465,11 @@ class ProductVariant(ModelWithMetadata):
 
     def get_weight(self):
         return self.weight or self.product.weight or self.product.product_type.weight
+
+    # Deprecated. To remove in #5022
+    @staticmethod
+    def get_absolute_url() -> str:
+        return ""
 
     def is_shipping_required(self) -> bool:
         return self.product.product_type.is_shipping_required
@@ -880,6 +895,11 @@ class Collection(SeoModel, ModelWithMetadata, PublishableModel):
 
     def __str__(self) -> str:
         return self.name
+
+    # Deprecated. To remove in #5022
+    @staticmethod
+    def get_absolute_url() -> str:
+        return ""
 
 
 class CollectionTranslation(SeoModelTranslation):

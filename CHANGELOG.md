@@ -56,7 +56,6 @@ All notable, unreleased changes to this project will be documented in this file.
 - Drop unused resolver `resolve_availability` - #5190 by @maarcingebala
 - Fix permission for `checkoutCustomerAttach` mutation - #5192 by @maarcingebala
 - Restrict access to user field - #5194 by @maarcingebala
-- Add anonymization to GraphQL's `webhookSamplePayload` endpoint - #5161 @derenio
 
 ## 2.9.0
 

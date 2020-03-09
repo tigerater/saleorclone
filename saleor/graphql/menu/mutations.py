@@ -1,11 +1,10 @@
-from collections import defaultdict
-from dataclasses import dataclass
-from typing import Dict, List, Optional
+from collections import namedtuple
+from typing import List
 
 import graphene
 from django.core.exceptions import ValidationError
-from django.db import transaction
-from django.db.models import Model, QuerySet
+from django.db.models import Model
+from graphql_relay import from_global_id
 
 from ...menu import models
 from ...menu.error_codes import MenuErrorCode
@@ -14,8 +13,6 @@ from ...page import models as page_models
 from ...product import models as product_models
 from ..core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
 from ..core.types.common import MenuError
-from ..core.utils import from_global_id_strict_type
-from ..core.utils.reordering import perform_reordering
 from ..page.types import Page
 from ..product.types import Category, Collection
 from .enums import NavigationType
@@ -256,12 +253,9 @@ class MenuItemDelete(ModelDeleteMutation):
         return response
 
 
-@dataclass(frozen=True)
-class _MenuMoveOperation:
-    menu_item: models.MenuItem
-    parent_changed: bool
-    new_parent: Optional[models.MenuItem]
-    sort_order: int
+_MenuMoveOperation = namedtuple(
+    "_MenuMoveOperation", ("menu_item", "parent", "sort_order")
+)
 
 
 class MenuItemMove(BaseMutation):
@@ -280,13 +274,13 @@ class MenuItemMove(BaseMutation):
         error_type_field = "menu_errors"
 
     @staticmethod
-    def clean_move(move: MenuItemMoveInput):
+    def clean_move(move):
         """Validate if the given move could be possibly possible."""
         if move.parent_id:
             if move.item_id == move.parent_id:
                 raise ValidationError(
                     {
-                        "parent_id": ValidationError(
+                        "parent": ValidationError(
                             "Cannot assign a node to itself.",
                             code=MenuErrorCode.CANNOT_ASSIGN_NODE,
                         )
@@ -297,11 +291,11 @@ class MenuItemMove(BaseMutation):
     def clean_operation(operation: _MenuMoveOperation):
         """Validate if the given move will be actually possible."""
 
-        if operation.new_parent is not None:
-            if operation.menu_item.is_ancestor_of(operation.new_parent):
+        if operation.parent:
+            if operation.menu_item.is_ancestor_of(operation.parent):
                 raise ValidationError(
                     {
-                        "parent_id": ValidationError(
+                        "parent": ValidationError(
                             (
                                 "Cannot assign a node as child of "
                                 "one of its descendants."
@@ -312,87 +306,66 @@ class MenuItemMove(BaseMutation):
                 )
 
     @classmethod
-    def get_operation(
-        cls, info, menu: models.Menu, move: MenuItemMoveInput
-    ) -> _MenuMoveOperation:
-        menu_item = cls.get_node_or_error(
-            info, move.item_id, field="item", only_type="MenuItem", qs=menu.items
-        )
-        new_parent, parent_changed = None, False
+    def get_operation(cls, info, menu_id: int, move) -> _MenuMoveOperation:
+        parent_node = None
+
+        _type, menu_item_id = from_global_id(move.item_id)  # type: str, int
+        assert _type == "MenuItem", "The menu item node must be of type MenuItem."
+
+        menu_item = models.MenuItem.objects.get(pk=menu_item_id, menu_id=menu_id)
 
         if move.parent_id is not None:
-            parent_pk = from_global_id_strict_type(
-                move.parent_id, only_type=MenuItem, field="parent_id"
+            parent_node = cls.get_node_or_error(
+                info, move.parent_id, field="parent_id", only_type=MenuItem
             )
-            if int(parent_pk) != menu_item.parent_id:
-                new_parent = cls.get_node_or_error(
-                    info,
-                    move.parent_id,
-                    field="parent_id",
-                    only_type=MenuItem,
-                    qs=menu.items,
-                )
-                parent_changed = True
-        elif move.parent_id is None and menu_item.parent_id is not None:
-            parent_changed = True
 
         return _MenuMoveOperation(
-            menu_item=menu_item,
-            new_parent=new_parent,
-            parent_changed=parent_changed,
-            sort_order=move.sort_order,
+            menu_item=menu_item, parent=parent_node, sort_order=move.sort_order
         )
 
     @classmethod
     def clean_moves(
-        cls, info, menu: models.Menu, move_operations: List[MenuItemMoveInput]
+        cls, info, menu_id: int, move_operations: List
     ) -> List[_MenuMoveOperation]:
 
         operations = []
         for move in move_operations:
             cls.clean_move(move)
-            operation = cls.get_operation(info, menu, move)
+            operation = cls.get_operation(info, menu_id, move)
             cls.clean_operation(operation)
             operations.append(operation)
         return operations
 
     @staticmethod
-    def perform_change_parent_operation(operation: _MenuMoveOperation):
+    def perform_operation(operation: _MenuMoveOperation):
         menu_item = operation.menu_item  # type: models.MenuItem
 
-        if not operation.parent_changed:
-            return
+        # Move the parent if provided
+        if operation.parent:
+            menu_item.move_to(operation.parent)
+        # Remove the menu item's parent if was set to none (root node)
+        elif menu_item.parent_id:
+            menu_item.parent_id = None
 
-        # Move the parent
-        menu_item.move_to(operation.new_parent)
-        menu_item.sort_order = None
+        # Move the menu item
+        if operation.sort_order is not None:
+            menu_item.sort_order = operation.sort_order
+
         menu_item.save()
 
     @classmethod
-    @transaction.atomic
-    def perform_mutation(cls, _root, info, menu: str, moves):
-        qs = models.Menu.objects.prefetch_related("items")
-        menu = cls.get_node_or_error(info, menu, only_type=Menu, field="menu", qs=qs)
+    def perform_mutation(cls, _root, info, menu, moves):
+        _type, menu_id = from_global_id(menu)  # type: str, int
+        assert _type == "Menu", "Expected a menu of type Menu"
 
-        operations = cls.clean_moves(info, menu, moves)
-        sort_operations: Dict[Optional[int], Dict[int, int]] = defaultdict(dict)
-        sort_querysets: Dict[Optional[int], QuerySet] = {}
+        operations = cls.clean_moves(info, menu_id, moves)
 
         for operation in operations:
-            cls.perform_change_parent_operation(operation)
+            cls.perform_operation(operation)
 
-            menu_item = operation.menu_item
-            parent_pk = operation.menu_item.parent_id
-
-            sort_operations[parent_pk][menu_item.pk] = operation.sort_order
-            sort_querysets[parent_pk] = menu_item.get_ordering_queryset()
-
-        for parent_pk, operations in sort_operations.items():
-            ordering_qs = sort_querysets[parent_pk]
-            perform_reordering(ordering_qs, operations)
-
-        menu = qs.get(pk=menu.pk)
-        return MenuItemMove(menu=menu)
+        menu = models.Menu.objects.get(pk=menu_id)
+        update_menu(menu)
+        return cls(menu=menu)
 
 
 class AssignNavigation(BaseMutation):

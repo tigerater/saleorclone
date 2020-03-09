@@ -22,13 +22,7 @@ class Webhook(CountableDjangoObjectType):
         description = "Webhook"
         model = models.Webhook
         interfaces = [graphene.relay.Node]
-        only_fields = [
-            "service_account",
-            "target_url",
-            "is_active",
-            "secret_key",
-            "name",
-        ]
+        only_fields = ["service_account", "target_url", "is_active", "secret_key"]
 
     @staticmethod
     @gql_optimizer.resolver_hints(prefetch_related=("events",))

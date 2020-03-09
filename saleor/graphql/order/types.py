@@ -231,14 +231,12 @@ class OrderLine(CountableDjangoObjectType):
     def resolve_thumbnail(root: models.OrderLine, info, *, size=None):
         if not root.variant_id:
             return None
+        if not size:
+            size = 255
         image = root.variant.get_first_image()
-        if image:
-            if not size:
-                size = 255
-            url = get_product_image_thumbnail(image, size, method="thumbnail")
-            alt = image.alt
-            return Image(alt=alt, url=info.context.build_absolute_uri(url))
-        return None
+        url = get_product_image_thumbnail(image, size, method="thumbnail")
+        alt = image.alt if image else None
+        return Image(alt=alt, url=info.context.build_absolute_uri(url))
 
     @staticmethod
     def resolve_unit_price(root: models.OrderLine, _info):

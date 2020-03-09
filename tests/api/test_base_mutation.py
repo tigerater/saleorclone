@@ -27,21 +27,21 @@ class Mutation(BaseMutation):
         return Mutation(name=product.name)
 
 
-class ErrorCodeTest(Enum):
+class TestErrorCode(Enum):
     INVALID = "invalid"
 
 
-ErrorCodeTest = graphene.Enum.from_enum(ErrorCodeTest)
+TestErrorCode = graphene.Enum.from_enum(TestErrorCode)
 
 
-class ErrorTest(Error):
-    code = ErrorCodeTest()
+class TestError(Error):
+    code = TestErrorCode()
 
 
 class MutationWithCustomErrors(Mutation):
     class Meta:
         description = "Base mutation with custom errors"
-        error_type_class = ErrorTest
+        error_type_class = Error
         error_type_field = "custom_errors"
 
 

@@ -4,7 +4,6 @@ from graphene import Node
 from prices import TaxedMoney
 
 from saleor.account.models import Address
-from saleor.checkout.error_codes import CheckoutErrorCode
 from saleor.checkout.models import Checkout
 from saleor.checkout.utils import add_variant_to_checkout
 from saleor.order.models import Order
@@ -26,12 +25,6 @@ def checkout_with_digital_item(checkout, digital_content):
     checkout.email = "customer@example.com"
     checkout.save()
     return checkout
-
-
-@pytest.fixture(autouse=True)
-def enable_dummy_gateway(settings):
-    settings.PLUGINS = ["saleor.payment.gateways.dummy.plugin.DummyGatewayPlugin"]
-    return settings
 
 
 @pytest.mark.parametrize("with_shipping_address", (True, False))
@@ -119,14 +112,6 @@ def test_checkout_update_shipping_address(
 
     assert data["errors"] == [
         {"field": "shippingAddress", "message": "This checkout doesn't need shipping"}
-    ]
-
-    assert data["checkoutErrors"] == [
-        {
-            "field": "shippingAddress",
-            "message": "This checkout doesn't need shipping",
-            "code": CheckoutErrorCode.SHIPPING_NOT_REQUIRED.name,
-        }
     ]
 
     # Ensure the address was unchanged

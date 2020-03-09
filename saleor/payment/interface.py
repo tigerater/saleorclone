@@ -91,7 +91,6 @@ class GatewayConfig:
     # a unified structure
     connection_params: Dict[str, Any]
     store_customer: bool = False
-    require_3d_secure: bool = False
 
 
 @dataclass

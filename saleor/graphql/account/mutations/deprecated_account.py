@@ -2,7 +2,6 @@ import graphene
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from ....account import events as account_events, models, utils
-from ....account.error_codes import AccountErrorCode
 from ....checkout import AddressType
 from ...account.enums import AddressTypeEnum
 from ...account.types import Address, AddressInput, User
@@ -38,6 +37,7 @@ class CustomerRegister(ModelMutation):
         user.set_password(password)
         user.save()
         account_events.customer_account_created_event(user=user)
+        info.context.extensions.customer_created(customer=user)
 
 
 class LoggedUserUpdate(BaseCustomerCreate):
@@ -55,8 +55,8 @@ class LoggedUserUpdate(BaseCustomerCreate):
         model = models.User
 
     @classmethod
-    def check_permissions(cls, user):
-        return user.is_authenticated
+    def check_permissions(cls, context):
+        return context.user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -92,8 +92,8 @@ class CustomerAddressCreate(ModelMutation):
         exclude = ["user_addresses"]
 
     @classmethod
-    def check_permissions(cls, user):
-        return user.is_authenticated
+    def check_permissions(cls, context):
+        return context.user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, root, info, **data):
@@ -129,8 +129,8 @@ class CustomerSetDefaultAddress(BaseMutation):
         )
 
     @classmethod
-    def check_permissions(cls, user):
-        return user.is_authenticated
+    def check_permissions(cls, context):
+        return context.user.is_authenticated
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -138,14 +138,7 @@ class CustomerSetDefaultAddress(BaseMutation):
         user = info.context.user
 
         if address not in user.addresses.all():
-            raise ValidationError(
-                {
-                    "id": ValidationError(
-                        "The address doesn't belong to that user.",
-                        code=AccountErrorCode.INVALID,
-                    )
-                }
-            )
+            raise ValidationError({"id": "The address doesn't belong to that user."})
 
         if data.get("type") == AddressTypeEnum.BILLING.value:
             address_type = AddressType.BILLING
@@ -181,14 +174,7 @@ class CustomerPasswordReset(BaseMutation):
         try:
             user = models.User.objects.get(email=email)
         except ObjectDoesNotExist:
-            raise ValidationError(
-                {
-                    "email": ValidationError(
-                        "User with this email doesn't exist",
-                        code=AccountErrorCode.NOT_FOUND,
-                    )
-                }
-            )
+            raise ValidationError({"email": "User with this email doesn't exist"})
         site = info.context.site
         send_user_password_reset_email(user, site)
         return CustomerPasswordReset()

@@ -4,13 +4,11 @@ from django.core.exceptions import ValidationError
 from django.core.management import call_command
 
 from ...account.models import Address
-from ...core.error_codes import ShopErrorCode
 from ...site import models as site_models
 from ..account.i18n import I18nMixin
 from ..account.types import AddressInput
 from ..core.enums import WeightUnitsEnum
 from ..core.mutations import BaseMutation
-from ..core.types.common import ShopError
 from ..product.types import Collection
 from .types import AuthorizationKey, AuthorizationKeyType, Shop
 
@@ -54,8 +52,6 @@ class ShopSettingsUpdate(BaseMutation):
     class Meta:
         description = "Updates shop settings"
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -79,8 +75,6 @@ class ShopAddressUpdate(BaseMutation, I18nMixin):
     class Meta:
         description = "Update shop address"
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -107,8 +101,6 @@ class ShopDomainUpdate(BaseMutation):
     class Meta:
         description = "Updates site domain of the shop"
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -131,16 +123,13 @@ class ShopFetchTaxRates(BaseMutation):
     class Meta:
         description = "Fetch tax rates"
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     @classmethod
     def perform_mutation(cls, _root, _info):
         if not settings.VATLAYER_ACCESS_KEY:
             raise ValidationError(
                 "Could not fetch tax rates. Make sure you have supplied a "
-                "valid API Access Key.",
-                code=ShopErrorCode.CANNOT_FETCH_TAX_RATES,
+                "valid API Access Key."
             )
         call_command("get_vat_rates")
         return ShopFetchTaxRates(shop=Shop())
@@ -155,8 +144,6 @@ class HomepageCollectionUpdate(BaseMutation):
     class Meta:
         description = "Updates homepage collection of the shop"
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, collection=None):
@@ -186,8 +173,6 @@ class AuthorizationKeyAdd(BaseMutation):
     class Meta:
         description = "Adds an authorization key."
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     class Arguments:
         key_type = AuthorizationKeyType(
@@ -200,14 +185,7 @@ class AuthorizationKeyAdd(BaseMutation):
     @classmethod
     def perform_mutation(cls, _root, info, key_type, **data):
         if site_models.AuthorizationKey.objects.filter(name=key_type).exists():
-            raise ValidationError(
-                {
-                    "key_type": ValidationError(
-                        "Authorization key already exists.",
-                        code=ShopErrorCode.ALREADY_EXISTS,
-                    )
-                }
-            )
+            raise ValidationError({"key_type": "Authorization key already exists."})
 
         site_settings = info.context.site.settings
         instance = site_models.AuthorizationKey(
@@ -232,8 +210,6 @@ class AuthorizationKeyDelete(BaseMutation):
     class Meta:
         description = "Deletes an authorization key."
         permissions = ("site.manage_settings",)
-        error_type_class = ShopError
-        error_type_field = "shop_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, key_type):
@@ -243,14 +219,7 @@ class AuthorizationKeyDelete(BaseMutation):
                 name=key_type, site_settings=site_settings
             )
         except site_models.AuthorizationKey.DoesNotExist:
-            raise ValidationError(
-                {
-                    "key_type": ValidationError(
-                        "Couldn't resolve authorization key",
-                        code=ShopErrorCode.NOT_FOUND,
-                    )
-                }
-            )
+            raise ValidationError({"key_type": "Couldn't resolve authorization key"})
 
         instance.delete()
         return AuthorizationKeyDelete(authorization_key=instance, shop=Shop())

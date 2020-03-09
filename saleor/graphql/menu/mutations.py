@@ -7,12 +7,10 @@ from django.db.models import Model
 from graphql_relay import from_global_id
 
 from ...menu import models
-from ...menu.error_codes import MenuErrorCode
 from ...menu.utils import update_menu
 from ...page import models as page_models
 from ...product import models as product_models
 from ..core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
-from ..core.types.common import MenuError
 from ..page.types import Page
 from ..product.types import Category, Collection
 from .enums import NavigationType
@@ -63,8 +61,6 @@ class MenuCreate(ModelMutation):
         description = "Creates a new Menu"
         model = models.Menu
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
     @classmethod
     def clean_input(cls, info, instance, data):
@@ -76,14 +72,7 @@ class MenuCreate(ModelMutation):
             page = item.get("page")
             url = item.get("url")
             if len([i for i in [category, collection, page, url] if i]) > 1:
-                raise ValidationError(
-                    {
-                        "items": ValidationError(
-                            "More than one item provided.",
-                            code=MenuErrorCode.TOO_MANY_MENU_ITEMS,
-                        )
-                    }
-                )
+                raise ValidationError({"items": "More than one item provided."})
 
             if category:
                 category = cls.get_node_or_error(
@@ -99,14 +88,7 @@ class MenuCreate(ModelMutation):
                 page = cls.get_node_or_error(info, page, field="items", only_type=Page)
                 item["page"] = page
             elif not url:
-                raise ValidationError(
-                    {
-                        "items": ValidationError(
-                            "No menu item provided.",
-                            code=MenuErrorCode.NO_MENU_ITEM_PROVIDED,
-                        )
-                    }
-                )
+                raise ValidationError({"items": "No menu item provided."})
             items.append(item)
 
         cleaned_input["items"] = items
@@ -131,8 +113,6 @@ class MenuUpdate(ModelMutation):
         description = "Updates a menu."
         model = models.Menu
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
 
 class MenuDelete(ModelDeleteMutation):
@@ -143,8 +123,6 @@ class MenuDelete(ModelDeleteMutation):
         description = "Deletes a menu."
         model = models.Menu
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
 
 def _validate_menu_item_instance(
@@ -158,9 +136,7 @@ def _validate_menu_item_instance(
                 f"Enter a valid {expected_model._meta.verbose_name} ID "
                 f"(got {item._meta.verbose_name} ID)."
             )
-            raise ValidationError(
-                {field: ValidationError(msg, code=MenuErrorCode.INVALID_MENU_ITEM)}
-            )
+            raise ValidationError({field: msg})
 
 
 class MenuItemCreate(ModelMutation):
@@ -176,8 +152,6 @@ class MenuItemCreate(ModelMutation):
         description = "Creates a new menu item."
         model = models.MenuItem
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
     @classmethod
     def clean_input(cls, info, instance, data):
@@ -197,9 +171,7 @@ class MenuItemCreate(ModelMutation):
         ]
         items = [item for item in items if item is not None]
         if len(items) > 1:
-            raise ValidationError(
-                "More than one item provided.", code=MenuErrorCode.TOO_MANY_MENU_ITEMS
-            )
+            raise ValidationError("More than one item provided.")
         return cleaned_input
 
     @classmethod
@@ -222,8 +194,6 @@ class MenuItemUpdate(MenuItemCreate):
         description = "Updates a menu item."
         model = models.MenuItem
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
     @classmethod
     def construct_instance(cls, instance, cleaned_data):
@@ -243,8 +213,6 @@ class MenuItemDelete(ModelDeleteMutation):
         description = "Deletes a menu item."
         model = models.MenuItem
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -270,22 +238,13 @@ class MenuItemMove(BaseMutation):
     class Meta:
         description = "Moves items of menus"
         permissions = ("menu.manage_menus",)
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
     @staticmethod
     def clean_move(move):
         """Validate if the given move could be possibly possible."""
         if move.parent_id:
             if move.item_id == move.parent_id:
-                raise ValidationError(
-                    {
-                        "parent": ValidationError(
-                            "Cannot assign a node to itself.",
-                            code=MenuErrorCode.CANNOT_ASSIGN_NODE,
-                        )
-                    }
-                )
+                raise ValidationError({"parent": "Cannot assign a node to itself."})
 
     @staticmethod
     def clean_operation(operation: _MenuMoveOperation):
@@ -295,12 +254,9 @@ class MenuItemMove(BaseMutation):
             if operation.menu_item.is_ancestor_of(operation.parent):
                 raise ValidationError(
                     {
-                        "parent": ValidationError(
-                            (
-                                "Cannot assign a node as child of "
-                                "one of its descendants."
-                            ),
-                            code=MenuErrorCode.CANNOT_ASSIGN_NODE,
+                        "parent": (
+                            "Cannot assign a node as child of "
+                            "one of its descendants."
                         )
                     }
                 )
@@ -381,8 +337,6 @@ class AssignNavigation(BaseMutation):
     class Meta:
         description = "Assigns storefront's navigation menus."
         permissions = ("menu.manage_menus", "site.manage_settings")
-        error_type_class = MenuError
-        error_type_field = "menu_errors"
 
     @classmethod
     def perform_mutation(cls, _root, info, navigation_type, menu=None):

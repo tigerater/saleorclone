@@ -132,7 +132,7 @@ input AddressInput {
   city: String
   cityArea: String
   postalCode: String
-  country: CountryCode
+  country: String
   countryArea: String
   phone: String
 }
@@ -1553,8 +1553,6 @@ type Fulfillment implements Node {
   status: FulfillmentStatus!
   trackingNumber: String!
   shippingDate: DateTime!
-  privateMeta: [MetaStore]!
-  meta: [MetaStore]!
   lines: [FulfillmentLine]
   statusDisplay: String
 }
@@ -1568,16 +1566,6 @@ type FulfillmentCancel {
 
 input FulfillmentCancelInput {
   restock: Boolean
-}
-
-type FulfillmentClearMeta {
-  errors: [Error!]
-  fulfillment: Fulfillment
-}
-
-type FulfillmentClearPrivateMeta {
-  errors: [Error!]
-  fulfillment: Fulfillment
 }
 
 type FulfillmentCreate {
@@ -1607,16 +1595,6 @@ input FulfillmentLineInput {
 enum FulfillmentStatus {
   FULFILLED
   CANCELED
-}
-
-type FulfillmentUpdateMeta {
-  errors: [Error!]
-  fulfillment: Fulfillment
-}
-
-type FulfillmentUpdatePrivateMeta {
-  errors: [Error!]
-  fulfillment: Fulfillment
 }
 
 type FulfillmentUpdateTracking {
@@ -2138,10 +2116,6 @@ type Mutation {
   orderFulfillmentCancel(id: ID!, input: FulfillmentCancelInput!): FulfillmentCancel
   orderFulfillmentCreate(input: FulfillmentCreateInput!, order: ID): FulfillmentCreate
   orderFulfillmentUpdateTracking(id: ID!, input: FulfillmentUpdateTrackingInput!): FulfillmentUpdateTracking
-  orderFulfillmentClearMeta(id: ID!, input: MetaPath!): FulfillmentClearMeta
-  orderFulfillmentClearPrivateMeta(id: ID!, input: MetaPath!): FulfillmentClearPrivateMeta
-  orderFulfillmentUpdateMeta(id: ID!, input: MetaInput!): FulfillmentUpdateMeta
-  orderFulfillmentUpdatePrivateMeta(id: ID!, input: MetaInput!): FulfillmentUpdatePrivateMeta
   orderMarkAsPaid(id: ID!): OrderMarkAsPaid
   orderRefund(amount: Decimal!, id: ID!): OrderRefund
   orderUpdate(id: ID!, input: OrderUpdateInput!): OrderUpdate
@@ -3793,7 +3767,6 @@ type Shop {
   defaultDigitalMaxDownloads: Int
   defaultDigitalUrlValidDays: Int
   companyAddress: Address
-  customerSetPasswordUrl: String
 }
 
 type ShopAddressUpdate {
@@ -3843,7 +3816,6 @@ input ShopSettingsInput {
   defaultDigitalUrlValidDays: Int
   defaultMailSenderName: String
   defaultMailSenderAddress: String
-  customerSetPasswordUrl: String
 }
 
 type ShopSettingsTranslate {

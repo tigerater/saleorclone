@@ -7,9 +7,8 @@ from saleor.webhook.models import Webhook
 from .utils import assert_no_permission, get_graphql_content
 
 WEBHOOK_CREATE_BY_SERVICE_ACCOUNT = """
-    mutation webhookCreate($name: String, $target_url: String,
-            $events: [WebhookEventTypeEnum]){
-      webhookCreate(input:{name: $name, targetUrl:$target_url, events:$events}){
+    mutation webhookCreate($target_url: String, $events: [WebhookEventTypeEnum]){
+      webhookCreate(input:{targetUrl:$target_url, events:$events}){
         errors{
           field
           message
@@ -28,14 +27,12 @@ def test_webhook_create_by_service_account(
     service_account.permissions.add(permission_manage_orders)
     query = WEBHOOK_CREATE_BY_SERVICE_ACCOUNT
     variables = {
-        "name": "New integration",
         "target_url": "https://www.example.com",
         "events": [WebhookEventTypeEnum.ORDER_CREATED.name],
     }
     response = service_account_api_client.post_graphql(query, variables=variables)
     get_graphql_content(response)
     new_webhook = Webhook.objects.get()
-    assert new_webhook.name == "New integration"
     assert new_webhook.target_url == "https://www.example.com"
     events = new_webhook.events.all()
     assert len(events) == 1
@@ -52,7 +49,6 @@ def test_webhook_create_inactive_service_account(
     variables = {
         "target_url": "https://www.example.com",
         "events": [WebhookEventTypeEnum.ORDER_CREATED.name],
-        "name": "",
     }
 
     response = service_account_api_client.post_graphql(query, variables=variables)
@@ -68,7 +64,6 @@ def test_webhook_create_without_service_account(
     variables = {
         "target_url": "https://www.example.com",
         "events": [WebhookEventTypeEnum.ORDER_CREATED.name],
-        "name": "",
     }
     response = service_account_api_client.post_graphql(query, variables=variables)
     assert_no_permission(response)
@@ -83,7 +78,6 @@ def test_webhook_create_service_account_doesnt_exist(
     variables = {
         "target_url": "https://www.example.com",
         "events": [WebhookEventTypeEnum.ORDER_CREATED.name],
-        "name": "",
     }
     response = service_account_api_client.post_graphql(query, variables=variables)
     assert_no_permission(response)

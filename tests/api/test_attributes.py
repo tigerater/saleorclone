@@ -792,10 +792,9 @@ CREATE_ATTRIBUTE_VALUE_QUERY = """
         $attributeId: ID!, $name: String!) {
     attributeValueCreate(
         attribute: $attributeId, input: {name: $name}) {
-        productErrors {
+        errors {
             field
             message
-            code
         }
         attribute {
             values {
@@ -825,7 +824,7 @@ def test_create_attribute_value(
     )
     content = get_graphql_content(response)
     data = content["data"]["attributeValueCreate"]
-    assert not data["productErrors"]
+    assert not data["errors"]
 
     attr_data = data["attributeValue"]
     assert attr_data["name"] == name
@@ -847,27 +846,9 @@ def test_create_attribute_value_not_unique_name(
     )
     content = get_graphql_content(response)
     data = content["data"]["attributeValueCreate"]
-    assert data["productErrors"]
-    assert data["productErrors"][0]["code"] == ProductErrorCode.ALREADY_EXISTS.name
-    assert data["productErrors"][0]["field"] == "name"
-
-
-def test_create_attribute_value_capitalized_name(
-    staff_api_client, color_attribute, permission_manage_products
-):
-    attribute = color_attribute
-    query = CREATE_ATTRIBUTE_VALUE_QUERY
-    attribute_id = graphene.Node.to_global_id("Attribute", attribute.id)
-    value_name = attribute.values.first().name
-    variables = {"name": value_name.upper(), "attributeId": attribute_id}
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_products]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["attributeValueCreate"]
-    assert data["productErrors"]
-    assert data["productErrors"][0]["code"] == ProductErrorCode.ALREADY_EXISTS.name
-    assert data["productErrors"][0]["field"] == "name"
+    assert data["errors"]
+    assert data["errors"][0]["message"]
+    assert data["errors"][0]["field"] == "name"
 
 
 UPDATE_ATTRIBUTE_VALUE_QUERY = """

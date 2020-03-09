@@ -463,6 +463,13 @@ enum AuthorizationKeyType {
   GOOGLE_OAUTH2
 }
 
+type BulkProductError {
+  field: String
+  message: String
+  code: ProductErrorCode
+  index: Int
+}
+
 input CatalogueInput {
   products: [ID]
   categories: [ID]
@@ -597,7 +604,7 @@ type Checkout implements Node {
   privateMeta: [MetaStore]!
   meta: [MetaStore]!
   availableShippingMethods: [ShippingMethod]!
-  availablePaymentGateways: [String]!
+  availablePaymentGateways: [PaymentGateway]!
   email: String!
   isShippingRequired: Boolean!
   lines: [CheckoutLine]
@@ -1603,6 +1610,11 @@ input FulfillmentUpdateTrackingInput {
   notifyCustomer: Boolean
 }
 
+type GatewayConfigLine {
+  field: String!
+  value: String
+}
+
 scalar GenericScalar
 
 type Geolocalization {
@@ -2068,6 +2080,7 @@ type Mutations {
   digitalContentUrlCreate(input: DigitalContentUrlCreateInput!): DigitalContentUrlCreate
   productVariantCreate(input: ProductVariantCreateInput!): ProductVariantCreate
   productVariantDelete(id: ID!): ProductVariantDelete
+  productVariantBulkCreate(product: ID!, variants: [ProductVariantBulkCreateInput]!): ProductVariantBulkCreate
   productVariantBulkDelete(ids: [ID]!): ProductVariantBulkDelete
   productVariantUpdate(id: ID!, input: ProductVariantInput!): ProductVariantUpdate
   productVariantTranslate(id: ID!, input: NameTranslationInput!, languageCode: LanguageCodeEnum!): ProductVariantTranslate
@@ -2681,6 +2694,11 @@ enum PaymentErrorCode {
   UNIQUE
 }
 
+type PaymentGateway {
+  name: String!
+  config: [GatewayConfigLine!]!
+}
+
 input PaymentInput {
   gateway: String!
   token: String!
@@ -3173,6 +3191,23 @@ type ProductVariant implements Node {
   digitalContent: DigitalContent
 }
 
+type ProductVariantBulkCreate {
+  errors: [Error!]
+  count: Int!
+  productVariants: [ProductVariant!]!
+  bulkProductErrors: [BulkProductError!]
+}
+
+input ProductVariantBulkCreateInput {
+  attributes: [AttributeValueInput]!
+  costPrice: Decimal
+  priceOverride: Decimal
+  sku: String!
+  quantity: Int
+  trackInventory: Boolean
+  weight: WeightScalar
+}
+
 type ProductVariantBulkDelete {
   errors: [Error!]
   count: Int!
@@ -3478,7 +3513,6 @@ type ServiceAccountCountableEdge {
 
 type ServiceAccountCreate {
   errors: [Error!]
-  authToken: String
   accountErrors: [AccountError!]
   serviceAccount: ServiceAccount
 }

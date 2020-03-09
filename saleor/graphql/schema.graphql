@@ -4315,11 +4315,11 @@ enum WebhookErrorCode {
 }
 
 type WebhookEvent {
-  eventType: WebhookEventTypeEnum
+  eventType: String
 }
 
 enum WebhookEventTypeEnum {
-  ANY_EVENTS
+  ALL_EVENTS
   ORDER_CREATED
   ORDER_FULLY_PAID
   ORDER_UPDATED

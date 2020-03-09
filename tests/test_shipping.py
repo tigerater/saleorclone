@@ -4,6 +4,7 @@ from prices import Money
 
 from saleor.core.utils import format_money
 from saleor.shipping.models import ShippingMethod, ShippingMethodType, ShippingZone
+from saleor.shipping.utils import default_shipping_zone_exists
 
 from .utils import money
 
@@ -149,16 +150,8 @@ def test_use_default_shipping_zone(shipping_zone):
     assert result[0] == weight_method
 
 
-@pytest.mark.parametrize(
-    "countries, result",
-    (
-        (["PL"], "Poland"),
-        (["PL", "DE", "IT"], "Poland, Germany, Italy"),
-        (["PL", "DE", "IT", "LE"], "4 countries"),
-        ([], "0 countries"),
-    ),
-)
-def test_countries_display(shipping_zone, countries, result):
-    shipping_zone.countries = countries
+def test_default_shipping_zone_exists(shipping_zone):
+    shipping_zone.default = True
     shipping_zone.save()
-    assert shipping_zone.countries_display() == result
+    assert default_shipping_zone_exists()
+    assert not default_shipping_zone_exists(shipping_zone.pk)

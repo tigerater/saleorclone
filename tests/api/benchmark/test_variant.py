@@ -4,15 +4,12 @@ import graphene
 import pytest
 
 from saleor.product.models import ProductVariant
-from saleor.warehouse.models import Stock
 from tests.api.utils import get_graphql_content
 
 
 @pytest.mark.django_db
 @pytest.mark.count_queries(autouse=False)
-def test_retrieve_variant_list(
-    product_variant_list, api_client, count_queries, warehouse
-):
+def test_retrieve_variant_list(product_variant_list, api_client, count_queries):
     query = """
         fragment BasicProductFields on Product {
           id
@@ -89,12 +86,7 @@ def test_retrieve_variant_list(
           }
         }
     """
-    Stock.objects.bulk_create(
-        [
-            Stock(product_variant=variant, warehouse=warehouse)
-            for variant in product_variant_list
-        ]
-    )
+
     variables = {
         "ids": [
             graphene.Node.to_global_id("ProductVariant", variant.pk)

@@ -12,12 +12,12 @@ from ...utils.random_data import (
     create_menus,
     create_orders,
     create_page,
+    create_permission_groups,
     create_product_sales,
     create_products_by_schema,
     create_shipping_zones,
     create_users,
     create_vouchers,
-    create_warehouses,
     set_homepage_collection,
 )
 
@@ -88,8 +88,6 @@ class Command(BaseCommand):
         create_images = not options["withoutimages"]
         for msg in create_shipping_zones():
             self.stdout.write(msg)
-        create_warehouses()
-        self.stdout.write("Created warehouses")
         create_products_by_schema(self.placeholders_dir, create_images)
         self.stdout.write("Created products")
         for msg in create_product_sales(5):
@@ -116,3 +114,6 @@ class Command(BaseCommand):
             add_address_to_admin(credentials["email"])
         if not options["skipsequencereset"]:
             self.sequence_reset()
+
+        for msg in create_permission_groups():
+            self.stdout.write(msg)

@@ -3052,6 +3052,7 @@ type Product implements Node {
   publicationDate: Date
   isPublished: Boolean!
   productType: ProductType!
+  slug: String!
   category: Category
   updatedAt: DateTime
   chargeTaxes: Boolean!
@@ -3073,7 +3074,6 @@ type Product implements Node {
   images: [ProductImage]
   collections: [Collection]
   translation(languageCode: LanguageCodeEnum!): ProductTranslation
-  slug: String!
 }
 
 type ProductBulkDelete {
@@ -3127,6 +3127,7 @@ input ProductCreateInput {
   descriptionJson: JSONString
   isPublished: Boolean
   name: String
+  slug: String
   basePrice: Decimal
   taxCode: String
   seo: SeoInput
@@ -3238,6 +3239,7 @@ input ProductInput {
   descriptionJson: JSONString
   isPublished: Boolean
   name: String
+  slug: String
   basePrice: Decimal
   taxCode: String
   seo: SeoInput
@@ -3300,6 +3302,7 @@ type ProductTranslation implements Node {
 type ProductType implements Node {
   id: ID!
   name: String!
+  slug: String!
   hasVariants: Boolean!
   isShippingRequired: Boolean!
   isDigital: Boolean!
@@ -3374,6 +3377,7 @@ input ProductTypeFilterInput {
 
 input ProductTypeInput {
   name: String
+  slug: String
   hasVariants: Boolean
   productAttributes: [ID]
   variantAttributes: [ID]
@@ -3583,7 +3587,7 @@ type Query {
   webhookEvents: [WebhookEvent]
   webhookSamplePayload(eventType: WebhookEventTypeEnum!): JSONString
   warehouse(id: ID!): Warehouse
-  warehouses(filter: WarehouseFilterInput, sortBy: WarehouseSortingInput, before: String, after: String, first: Int, last: Int): WarehouseCountableConnection
+  warehouses(filter: WarehouseFilterInput, before: String, after: String, first: Int, last: Int): WarehouseCountableConnection
   translations(kind: TranslatableKinds!, before: String, after: String, first: Int, last: Int): TranslatableItemConnection
   translation(id: ID!, kind: TranslatableKinds!): TranslatableItem
   stock(id: ID!): Stock
@@ -4703,6 +4707,7 @@ type VoucherUpdate {
 type Warehouse implements Node {
   id: ID!
   name: String!
+  slug: String!
   companyName: String!
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection!
   address: Address!
@@ -4739,6 +4744,7 @@ type WarehouseCreate {
 
 input WarehouseCreateInput {
   name: String!
+  slug: String
   companyName: String
   shippingZones: [ID]
   email: String
@@ -4770,15 +4776,6 @@ input WarehouseFilterInput {
   search: String
 }
 
-enum WarehouseSortField {
-  NAME
-}
-
-input WarehouseSortingInput {
-  direction: OrderDirection!
-  field: WarehouseSortField!
-}
-
 type WarehouseUpdate {
   errors: [Error!]
   warehouseErrors: [WarehouseError!]
@@ -4787,6 +4784,7 @@ type WarehouseUpdate {
 
 input WarehouseUpdateInput {
   name: String!
+  slug: String
   companyName: String
   shippingZones: [ID]
   email: String

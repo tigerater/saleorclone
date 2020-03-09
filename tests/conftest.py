@@ -1,17 +1,21 @@
-import datetime
 import uuid
+from contextlib import contextmanager
 from decimal import Decimal
+from functools import partial
 from io import BytesIO
-from typing import List
+from typing import List, Optional
 from unittest.mock import MagicMock, Mock
 
 import pytest
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import connection
 from django.forms import ModelForm
 from django.test.client import Client
+from django.test.utils import CaptureQueriesContext as BaseCaptureQueriesContext
 from django_countries import countries
 from PIL import Image
 from prices import Money, TaxedMoney
@@ -23,16 +27,22 @@ from saleor.checkout.models import Checkout
 from saleor.checkout.utils import add_variant_to_checkout
 from saleor.core.payments import PaymentInterface
 from saleor.discount import DiscountInfo, DiscountValueType, VoucherType
-from saleor.discount.models import Sale, Voucher, VoucherCustomer, VoucherTranslation
+from saleor.discount.models import (
+    Sale,
+    SaleTranslation,
+    Voucher,
+    VoucherCustomer,
+    VoucherTranslation,
+)
 from saleor.giftcard.models import GiftCard
-from saleor.menu.models import Menu, MenuItem
+from saleor.menu.models import Menu, MenuItem, MenuItemTranslation
 from saleor.menu.utils import update_menu
 from saleor.order import OrderStatus
 from saleor.order.actions import fulfill_order_line
 from saleor.order.events import OrderEvents
 from saleor.order.models import FulfillmentStatus, Order, OrderEvent
 from saleor.order.utils import recalculate_order
-from saleor.page.models import Page
+from saleor.page.models import Page, PageTranslation
 from saleor.payment import ChargeStatus, TransactionKind
 from saleor.payment.models import Payment
 from saleor.product import AttributeInputType
@@ -40,8 +50,11 @@ from saleor.product.models import (
     Attribute,
     AttributeTranslation,
     AttributeValue,
+    AttributeValueTranslation,
     Category,
+    CategoryTranslation,
     Collection,
+    CollectionTranslation,
     DigitalContent,
     DigitalContentUrl,
     Product,
@@ -49,14 +62,105 @@ from saleor.product.models import (
     ProductTranslation,
     ProductType,
     ProductVariant,
+    ProductVariantTranslation,
 )
 from saleor.product.utils.attributes import associate_attribute_values_to_instance
-from saleor.shipping.models import ShippingMethod, ShippingMethodType, ShippingZone
+from saleor.shipping.models import (
+    ShippingMethod,
+    ShippingMethodTranslation,
+    ShippingMethodType,
+    ShippingZone,
+)
 from saleor.site import AuthenticationBackends
 from saleor.site.models import AuthorizationKey, SiteSettings
 from saleor.webhook import WebhookEventType
 from saleor.webhook.models import Webhook
 from tests.utils import create_image
+
+
+class CaptureQueriesContext(BaseCaptureQueriesContext):
+    IGNORED_QUERIES = settings.PATTERNS_IGNORED_IN_QUERY_CAPTURES
+
+    @property
+    def captured_queries(self):
+        # flake8: noqa
+        base_queries = self.connection.queries[
+            self.initial_queries : self.final_queries
+        ]
+        new_queries = []
+
+        def is_query_ignored(sql):
+            for pattern in self.IGNORED_QUERIES:
+                # Ignore the query if matches
+                if pattern.match(sql):
+                    return True
+            return False
+
+        for query in base_queries:
+            if not is_query_ignored(query["sql"]):
+                new_queries.append(query)
+
+        return new_queries
+
+
+def _assert_num_queries(context, *, config, num, exact=True, info=None):
+    """
+    Extracted from pytest_django.fixtures._assert_num_queries
+    """
+    yield context
+
+    verbose = config.getoption("verbose") > 0
+    num_performed = len(context)
+
+    if exact:
+        failed = num != num_performed
+    else:
+        failed = num_performed > num
+
+    if not failed:
+        return
+
+    msg = "Expected to perform {} queries {}{}".format(
+        num,
+        "" if exact else "or less ",
+        "but {} done".format(
+            num_performed == 1 and "1 was" or "%d were" % (num_performed,)
+        ),
+    )
+    if info:
+        msg += "\n{}".format(info)
+    if verbose:
+        sqls = (q["sql"] for q in context.captured_queries)
+        msg += "\n\nQueries:\n========\n\n%s" % "\n\n".join(sqls)
+    else:
+        msg += " (add -v option to show queries)"
+    pytest.fail(msg)
+
+
+@pytest.fixture
+def capture_queries(pytestconfig):
+    cfg = pytestconfig
+
+    @contextmanager
+    def _capture_queries(
+        num: Optional[int] = None, msg: Optional[str] = None, exact=False
+    ):
+        with CaptureQueriesContext(connection) as ctx:
+            yield ctx
+            if num is not None:
+                _assert_num_queries(ctx, config=cfg, num=num, exact=exact, info=msg)
+
+    return _capture_queries
+
+
+@pytest.fixture
+def assert_num_queries(capture_queries):
+    return partial(capture_queries, exact=True)
+
+
+@pytest.fixture
+def assert_max_num_queries(capture_queries):
+    return partial(capture_queries, exact=False)
 
 
 @pytest.fixture(autouse=True)
@@ -420,26 +524,9 @@ def categories_tree(db, product_type):  # pylint: disable=W0613
         price=Money(10, "USD"),
         product_type=product_type,
         category=child,
-        is_published=True,
     )
 
     associate_attribute_values_to_instance(product, product_attr, attr_value)
-    return parent
-
-
-@pytest.fixture
-def categories_tree_with_published_products(categories_tree, product):
-    parent = categories_tree
-    parent_product = product
-    parent_product.category = parent
-
-    child = parent.children.first()
-    child_product = child.products.first()
-
-    for product in [child_product, parent_product]:
-        product.publication_date = datetime.date.today()
-        product.is_published = True
-        product.save()
     return parent
 
 
@@ -501,7 +588,6 @@ def product(product_type, category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
 
     associate_attribute_values_to_instance(product, product_attr, product_attr_value)
@@ -534,7 +620,6 @@ def product_with_two_variants(color_attribute, size_attribute, category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
 
     variant = ProductVariant.objects.create(
@@ -583,7 +668,6 @@ def product_with_default_variant(product_type_without_variant, category):
         price=Money(10, "USD"),
         product_type=product_type_without_variant,
         category=category,
-        is_published=True,
     )
     ProductVariant.objects.create(
         product=product, sku="1234", track_inventory=True, quantity=100
@@ -626,17 +710,8 @@ def product_without_shipping(category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     ProductVariant.objects.create(product=product, sku="SKU_B")
-    return product
-
-
-@pytest.fixture
-def product_without_category(product):
-    product.category = None
-    product.is_published = False
-    product.save()
     return product
 
 
@@ -783,7 +858,6 @@ def product_with_images(product_type, category, media_root):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     file_mock_0 = MagicMock(spec=File, name="FileMock0")
     file_mock_0.name = "image0.jpg"
@@ -843,7 +917,7 @@ def voucher_customer(voucher, customer_user):
     return VoucherCustomer.objects.create(voucher=voucher, customer_email=email)
 
 
-@pytest.fixture()
+@pytest.fixture
 def order_line(order, variant):
     net = variant.get_price()
     gross = Money(amount=net.amount * Decimal(1.23), currency=net.currency)
@@ -887,14 +961,13 @@ def gift_card_created_by_staff(staff_user):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def order_with_lines(order, product_type, category, shipping_zone):
     product = Product.objects.create(
         name="Test product",
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     variant = ProductVariant.objects.create(
         product=product,
@@ -921,7 +994,6 @@ def order_with_lines(order, product_type, category, shipping_zone):
         price=Money("20.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     variant = ProductVariant.objects.create(
         product=product,
@@ -1179,7 +1251,6 @@ def collection_with_image(db, image, media_root):
         slug="collection",
         description="Test description",
         background_image=image,
-        is_published=True,
     )
     return collection
 
@@ -1188,9 +1259,9 @@ def collection_with_image(db, image, media_root):
 def collection_list(db):
     collections = Collection.objects.bulk_create(
         [
-            Collection(name="Collection 1", is_published="True"),
-            Collection(name="Collection 2", is_published="True"),
-            Collection(name="Collection 3", is_published="True"),
+            Collection(name="Collection 1"),
+            Collection(name="Collection 2"),
+            Collection(name="Collection 3"),
         ]
     )
     return collections
@@ -1223,30 +1294,15 @@ def unpublished_collection():
 
 @pytest.fixture
 def page(db):
-    data = {
-        "slug": "test-url",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
+    data = {"slug": "test-url", "title": "Test page", "content": "test content"}
     page = Page.objects.create(**data)
     return page
 
 
 @pytest.fixture
 def page_list(db):
-    data_1 = {
-        "slug": "test-url",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
-    data_2 = {
-        "slug": "test-url-2",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
+    data_1 = {"slug": "test-url", "title": "Test page", "content": "test content"}
+    data_2 = {"slug": "test-url-2", "title": "Test page", "content": "test content"}
     pages = Page.objects.bulk_create([Page(**data_1), Page(**data_2)])
     return pages
 
@@ -1315,7 +1371,16 @@ def translated_variant_fr(product):
 def translated_attribute(product):
     attribute = product.product_type.product_attributes.first()
     return AttributeTranslation.objects.create(
-        language_code="fr", attribute=attribute, name="Name tranlsated to french"
+        language_code="fr", attribute=attribute, name="French attribute name"
+    )
+
+
+@pytest.fixture
+def translated_attribute_value(pink_attribute_value):
+    return AttributeValueTranslation.objects.create(
+        language_code="fr",
+        attribute_value=pink_attribute_value,
+        name="French attribute value name",
     )
 
 
@@ -1333,6 +1398,66 @@ def product_translation_fr(product):
         product=product,
         name="French name",
         description="French description",
+    )
+
+
+@pytest.fixture
+def variant_translation_fr(variant):
+    return ProductVariantTranslation.objects.create(
+        language_code="fr", product_variant=variant, name="French product variant name"
+    )
+
+
+@pytest.fixture
+def collection_translation_fr(collection):
+    return CollectionTranslation.objects.create(
+        language_code="fr",
+        collection=collection,
+        name="French collection name",
+        description="French description",
+    )
+
+
+@pytest.fixture
+def category_translation_fr(category):
+    return CategoryTranslation.objects.create(
+        language_code="fr",
+        category=category,
+        name="French category name",
+        description="French category description",
+    )
+
+
+@pytest.fixture
+def page_translation_fr(page):
+    return PageTranslation.objects.create(
+        language_code="fr",
+        page=page,
+        title="French page title",
+        content="French page content",
+    )
+
+
+@pytest.fixture
+def shipping_method_translation_fr(shipping_method):
+    return ShippingMethodTranslation.objects.create(
+        language_code="fr",
+        shipping_method=shipping_method,
+        name="French shipping method name",
+    )
+
+
+@pytest.fixture
+def sale_translation_fr(sale):
+    return SaleTranslation.objects.create(
+        language_code="fr", sale=sale, name="French sale name"
+    )
+
+
+@pytest.fixture
+def menu_item_translation_fr(menu_item):
+    return MenuItemTranslation.objects.create(
+        language_code="fr", menu_item=menu_item, name="French manu item name"
     )
 
 
@@ -1375,7 +1500,6 @@ def digital_content(category, media_root) -> DigitalContent:
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     product_variant = ProductVariant.objects.create(
         product=product,

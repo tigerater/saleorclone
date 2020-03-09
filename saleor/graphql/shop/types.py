@@ -149,10 +149,6 @@ class Shop(graphene.ObjectType):
     company_address = graphene.Field(
         Address, description="Company address.", required=False
     )
-    customer_set_password_url = graphene.String(
-        description="URL of a view where customers can set their password.",
-        required=False,
-    )
 
     class Meta:
         description = (
@@ -292,10 +288,6 @@ class Shop(graphene.ObjectType):
     @staticmethod
     def resolve_company_address(_, info):
         return info.context.site.settings.company_address
-
-    @staticmethod
-    def resolve_customer_set_password_url(_, info):
-        return info.context.site.settings.customer_set_password_url
 
     @staticmethod
     def resolve_translation(_, info, language_code):

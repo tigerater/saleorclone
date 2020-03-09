@@ -128,12 +128,7 @@ class RequestPasswordReset(BaseMutation):
     def perform_mutation(cls, _root, info, **data):
         email = data["email"]
         redirect_url = data["redirect_url"]
-        try:
-            validate_storefront_url(redirect_url)
-        except ValidationError as error:
-            raise ValidationError(
-                {"redirect_url": error}, code=AccountErrorCode.INVALID
-            )
+        validate_storefront_url(redirect_url)
 
         try:
             user = models.User.objects.get(email=email)
@@ -302,11 +297,7 @@ class CustomerInput(UserInput, UserAddressInput):
 
 class UserCreateInput(CustomerInput):
     send_password_email = graphene.Boolean(
-        description=(
-            "DEPRECATED: Will be removed in Saleor 2.10, if mutation has `redirect_url`"
-            " in input then customer get email with link to set a password. "
-            "Send an email with a link to set a password."
-        )
+        description="Send an email with a link to set a password."
     )
     redirect_url = graphene.String(
         description=(
@@ -346,8 +337,6 @@ class BaseCustomerCreate(ModelMutation, I18nMixin):
             )
             cleaned_input[BILLING_ADDRESS_FIELD] = billing_address
 
-        # DEPRECATED: We should remove this condition when dropping
-        # `send_password_email` from mutation input.
         if cleaned_input.get("send_password_email"):
             if not cleaned_input.get("redirect_url"):
                 raise ValidationError(
@@ -358,14 +347,7 @@ class BaseCustomerCreate(ModelMutation, I18nMixin):
                         )
                     }
                 )
-
-        if cleaned_input.get("redirect_url"):
-            try:
-                validate_storefront_url(cleaned_input.get("redirect_url"))
-            except ValidationError as error:
-                raise ValidationError(
-                    {"redirect_url": error}, code=AccountErrorCode.INVALID
-                )
+            validate_storefront_url(cleaned_input.get("redirect_url"))
 
         return cleaned_input
 
@@ -375,10 +357,16 @@ class BaseCustomerCreate(ModelMutation, I18nMixin):
         # FIXME: save address in user.addresses as well
         default_shipping_address = cleaned_input.get(SHIPPING_ADDRESS_FIELD)
         if default_shipping_address:
+            info.context.extensions.change_user_address(
+                instance, default_shipping_address, "shipping"
+            )
             default_shipping_address.save()
             instance.default_shipping_address = default_shipping_address
         default_billing_address = cleaned_input.get(BILLING_ADDRESS_FIELD)
         if default_billing_address:
+            info.context.extensions.change_user_address(
+                instance, default_billing_address, "billing"
+            )
             default_billing_address.save()
             instance.default_billing_address = default_billing_address
 
@@ -390,7 +378,7 @@ class BaseCustomerCreate(ModelMutation, I18nMixin):
             info.context.extensions.customer_created(customer=instance)
             account_events.customer_account_created_event(user=instance)
 
-        if cleaned_input.get("redirect_url"):
+        if cleaned_input.get("send_password_email"):
             send_set_password_email_with_url(
                 cleaned_input.get("redirect_url"), instance
             )

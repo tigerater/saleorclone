@@ -13,6 +13,7 @@ In the end, it does not really matter unless you travel between
 different planets.
 """
 from django.contrib.sites.models import Site
+from django.utils.translation import pgettext_lazy
 from measurement.measures import Weight
 
 
@@ -23,10 +24,10 @@ class WeightUnits:
     GRAM = "g"
 
     CHOICES = [
-        (KILOGRAM, "kg"),
-        (POUND, "lb"),
-        (OUNCE, "oz"),
-        (GRAM, "g"),
+        (KILOGRAM, pgettext_lazy("Kilogram weight unit symbol", "kg")),
+        (POUND, pgettext_lazy("Pound weight unit symbol", "lb")),
+        (OUNCE, pgettext_lazy("Ounce weight unit symbol", "oz")),
+        (GRAM, pgettext_lazy("Gram weight unit symbol", "g")),
     ]
 
 

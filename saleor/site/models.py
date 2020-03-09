@@ -7,6 +7,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
+from django.utils.translation import pgettext_lazy
 
 from ..core.permissions import SitePermissions
 from ..core.utils.translations import TranslationProxy
@@ -23,7 +24,9 @@ def email_sender_name_validators():
         RegexValidator(
             r"[\n\r]",
             inverse_match=True,
-            message="New lines are not allowed.",
+            message=pgettext_lazy(
+                "Email sender name validation error", "New lines are not allowed."
+            ),
             code=SiteErrorCode.FORBIDDEN_CHARACTER.value,
         ),
         MaxLengthValidator(settings.DEFAULT_MAX_EMAIL_DISPLAY_NAME_LENGTH),
@@ -72,8 +75,14 @@ class SiteSettings(models.Model):
 
     class Meta:
         permissions = (
-            (SitePermissions.MANAGE_SETTINGS.codename, "Manage settings."),
-            (SitePermissions.MANAGE_TRANSLATIONS.codename, "Manage translations."),
+            (
+                SitePermissions.MANAGE_SETTINGS.codename,
+                pgettext_lazy("Permission description", "Manage settings."),
+            ),
+            (
+                SitePermissions.MANAGE_TRANSLATIONS.codename,
+                pgettext_lazy("Permission description", "Manage translations."),
+            ),
         )
 
     def __str__(self):

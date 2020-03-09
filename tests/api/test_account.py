@@ -1,3 +1,4 @@
+import json
 import re
 import uuid
 from unittest.mock import ANY, MagicMock, Mock, patch
@@ -9,6 +10,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.validators import URLValidator
+from django.shortcuts import reverse
 from freezegun import freeze_time
 from prices import Money
 
@@ -75,7 +77,7 @@ def query_staff_users_with_filter():
     return query
 
 
-def test_create_token_mutation(api_client, staff_user, settings):
+def test_create_token_mutation(admin_client, staff_user, settings):
     query = """
     mutation TokenCreate($email: String!, $password: String!) {
         tokenCreate(email: $email, password: $password) {
@@ -88,7 +90,11 @@ def test_create_token_mutation(api_client, staff_user, settings):
     }
     """
     variables = {"email": staff_user.email, "password": "password"}
-    response = api_client.post_graphql(query, variables)
+    response = admin_client.post(
+        reverse("api"),
+        json.dumps({"query": query, "variables": variables}),
+        content_type="application/json",
+    )
     content = get_graphql_content(response)
     token_data = content["data"]["tokenCreate"]
     token = jwt.decode(token_data["token"], settings.SECRET_KEY)
@@ -98,7 +104,11 @@ def test_create_token_mutation(api_client, staff_user, settings):
     assert token_data["errors"] == []
 
     incorrect_variables = {"email": staff_user.email, "password": "incorrect"}
-    response = api_client.post_graphql(query, incorrect_variables)
+    response = admin_client.post(
+        reverse("api"),
+        json.dumps({"query": query, "variables": incorrect_variables}),
+        content_type="application/json",
+    )
     content = get_graphql_content(response)
     token_data = content["data"]["tokenCreate"]
     errors = token_data["errors"]

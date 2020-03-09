@@ -83,7 +83,6 @@ All notable, unreleased changes to this project will be documented in this file.
 - Fixed the internal error filtering pages by URL in the dashboard 1.0 - #4776 by @NyanKiyoshi
 - Added product variant bulk create mutation - #4735 by @fowczarek
 - Added product variant bulk create mutation - #4749 by @fowczarek
-- availablePaymentGateways extended with configuration data in GraphQL schema - #4774 by @salwator
 
 ## 2.8.0
 

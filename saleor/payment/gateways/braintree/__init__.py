@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import braintree as braintree_sdk
 from django.core.exceptions import ImproperlyConfigured
@@ -111,9 +111,7 @@ def get_braintree_gateway(sandbox_mode, merchant_id, public_key, private_key):
     return gateway
 
 
-def get_client_token(
-    config: GatewayConfig, token_config: Optional[TokenConfig] = None
-) -> str:
+def get_client_token(config: GatewayConfig, token_config: TokenConfig = None) -> str:
     gateway = get_braintree_gateway(**config.connection_params)
     if not token_config:
         return gateway.client_token.generate()

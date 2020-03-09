@@ -14,29 +14,6 @@ from ..giftcard.types import GiftCard
 from ..shipping.types import ShippingMethod
 
 
-class GatewayConfigLine(graphene.ObjectType):
-    field = graphene.String(required=True, description="Gateway config key.")
-    value = graphene.String(description="Gateway config value for key.")
-
-    class Meta:
-        description = "Payment gateway client configuration key and value pair."
-
-
-class PaymentGateway(graphene.ObjectType):
-    name = graphene.String(required=True, description="Payment gateway name.")
-    config = graphene.List(
-        graphene.NonNull(GatewayConfigLine),
-        required=True,
-        description="Payment gateway client configuration.",
-    )
-
-    class Meta:
-        description = (
-            "Available payment gateway backend with configuration "
-            "necessary to setup client."
-        )
-
-
 class CheckoutLine(CountableDjangoObjectType):
     total_price = graphene.Field(
         TaxedMoney,
@@ -71,7 +48,9 @@ class Checkout(MetadataObjectType, CountableDjangoObjectType):
         description="Shipping methods that can be used with this order.",
     )
     available_payment_gateways = graphene.List(
-        PaymentGateway, description="List of available payment gateways.", required=True
+        graphene.String,
+        description="List of available payment gateways.",
+        required=True,
     )
     email = graphene.String(description="Email of a customer", required=True)
     gift_cards = gql_optimizer.field(

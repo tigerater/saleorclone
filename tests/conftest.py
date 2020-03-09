@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Permission
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -78,7 +78,6 @@ from saleor.shipping.models import (
 )
 from saleor.site import AuthenticationBackends
 from saleor.site.models import AuthorizationKey, SiteSettings
-from saleor.warehouse.models import Stock, Warehouse
 from saleor.webhook.event_types import WebhookEventType
 from saleor.webhook.models import Webhook
 from saleor.wishlist.models import Wishlist
@@ -86,7 +85,7 @@ from tests.utils import create_image
 
 
 class CaptureQueriesContext(BaseCaptureQueriesContext):
-    IGNORED_QUERIES = settings.PATTERNS_IGNORED_IN_QUERY_CAPTURES  # type: ignore
+    IGNORED_QUERIES = settings.PATTERNS_IGNORED_IN_QUERY_CAPTURES
 
     @property
     def captured_queries(self):
@@ -208,9 +207,7 @@ def site_settings(db, settings) -> SiteSettings:
 
 @pytest.fixture
 def checkout(db):
-    checkout = Checkout.objects.create()
-    checkout.set_country("US", commit=True)
-    return checkout
+    return Checkout.objects.create()
 
 
 @pytest.fixture
@@ -353,7 +350,22 @@ def customer_user(address):  # pylint: disable=W0613
 
 @pytest.fixture
 def user_checkout(customer_user):
-    return Checkout.objects.get_or_create(user=customer_user)[0]
+    checkout = Checkout.objects.create(
+        user=customer_user,
+        billing_address=customer_user.default_billing_address,
+        shipping_address=customer_user.default_shipping_address,
+        note="Test notes",
+    )
+    return checkout
+
+
+@pytest.fixture
+def user_checkout_with_items(user_checkout, product_list):
+    for product in product_list:
+        variant = product.variants.get()
+        add_variant_to_checkout(user_checkout, variant, 1)
+    user_checkout.refresh_from_db()
+    return user_checkout
 
 
 @pytest.fixture
@@ -591,7 +603,7 @@ def product_type_without_variant():
 
 
 @pytest.fixture
-def product(product_type, category, warehouse):
+def product(product_type, category):
     product_attr = product_type.product_attributes.first()
     product_attr_value = product_attr.values.first()
 
@@ -609,10 +621,11 @@ def product(product_type, category, warehouse):
     variant_attr_value = variant_attr.values.first()
 
     variant = ProductVariant.objects.create(
-        product=product, sku="123", cost_price=Money("1.00", "USD")
-    )
-    Stock.objects.create(
-        warehouse=warehouse, product_variant=variant, quantity=10, quantity_allocated=1
+        product=product,
+        sku="123",
+        cost_price=Money("1.00", "USD"),
+        quantity=10,
+        quantity_allocated=1,
     )
 
     associate_attribute_values_to_instance(variant, variant_attr, variant_attr_value)
@@ -620,7 +633,7 @@ def product(product_type, category, warehouse):
 
 
 @pytest.fixture
-def product_with_single_variant(product_type, category, warehouse):
+def product_with_single_variant(product_type, category):
     product = Product.objects.create(
         name="Test product with single variant",
         price=Money("1.99", "USD"),
@@ -629,16 +642,17 @@ def product_with_single_variant(product_type, category, warehouse):
         is_published=True,
     )
     variant = ProductVariant.objects.create(
-        product=product, sku="SKU_SINGLE_VARIANT", cost_price=Money("1.00", "USD"),
-    )
-    Stock.objects.create(
-        product_variant=variant, warehouse=warehouse, quantity=101, quantity_allocated=1
+        product=product,
+        sku="SKU_SINGLE_VARIANT",
+        cost_price=Money("1.00", "USD"),
+        quantity=101,
+        quantity_allocated=1,
     )
     return product
 
 
 @pytest.fixture
-def product_with_two_variants(product_type, category, warehouse):
+def product_with_two_variants(product_type, category):
     product = Product.objects.create(
         name="Test product with two variants",
         price=Money("10.00", "USD"),
@@ -646,24 +660,16 @@ def product_with_two_variants(product_type, category, warehouse):
         category=category,
     )
 
-    variants = [
-        ProductVariant(
-            product=product,
-            sku=f"Product variant #{i}",
-            cost_price=Money("1.00", "USD"),
-        )
-        for i in (1, 2)
-    ]
-    ProductVariant.objects.bulk_create(variants)
-    Stock.objects.bulk_create(
+    ProductVariant.objects.bulk_create(
         [
-            Stock(
-                warehouse=warehouse,
-                product_variant=variant,
+            ProductVariant(
+                product=product,
+                sku=f"Product variant #{i}",
+                cost_price=Money("1.00", "USD"),
                 quantity=10,
                 quantity_allocated=1,
             )
-            for variant in variants
+            for i in (1, 2)
         ]
     )
 
@@ -671,9 +677,7 @@ def product_with_two_variants(product_type, category, warehouse):
 
 
 @pytest.fixture
-def product_with_variant_with_two_attributes(
-    color_attribute, size_attribute, category, warehouse
-):
+def product_with_variant_with_two_attributes(color_attribute, size_attribute, category):
     product_type = ProductType.objects.create(
         name="Type with two variants", has_variants=True, is_shipping_required=True
     )
@@ -689,10 +693,11 @@ def product_with_variant_with_two_attributes(
     )
 
     variant = ProductVariant.objects.create(
-        product=product, sku="prodVar1", cost_price=Money("1.00", "USD")
-    )
-    Stock.objects.create(
-        product_variant=variant, warehouse=warehouse, quantity=10, quantity_allocated=1
+        product=product,
+        sku="prodVar1",
+        cost_price=Money("1.00", "USD"),
+        quantity=10,
+        quantity_allocated=1,
     )
 
     associate_attribute_values_to_instance(
@@ -727,7 +732,7 @@ def product_with_multiple_values_attributes(product, product_type, category) -> 
 
 
 @pytest.fixture
-def product_with_default_variant(product_type_without_variant, category, warehouse):
+def product_with_default_variant(product_type_without_variant, category):
     product = Product.objects.create(
         name="Test product",
         price=Money(10, "USD"),
@@ -735,17 +740,20 @@ def product_with_default_variant(product_type_without_variant, category, warehou
         category=category,
         is_published=True,
     )
-    variant = ProductVariant.objects.create(
-        product=product, sku="1234", track_inventory=True
+    ProductVariant.objects.create(
+        product=product, sku="1234", track_inventory=True, quantity=100
     )
-    Stock.objects.create(warehouse=warehouse, product_variant=variant, quantity=100)
     return product
 
 
 @pytest.fixture
 def variant(product):
     product_variant = ProductVariant.objects.create(
-        product=product, sku="SKU_A", cost_price=Money(1, "USD")
+        product=product,
+        sku="SKU_A",
+        cost_price=Money(1, "USD"),
+        quantity=5,
+        quantity_allocated=3,
     )
     return product_variant
 
@@ -764,7 +772,7 @@ def product_variant_list(product):
 
 
 @pytest.fixture
-def product_without_shipping(category, warehouse):
+def product_without_shipping(category):
     product_type = ProductType.objects.create(
         name="Type with no shipping", has_variants=False, is_shipping_required=False
     )
@@ -775,8 +783,7 @@ def product_without_shipping(category, warehouse):
         category=category,
         is_published=True,
     )
-    variant = ProductVariant.objects.create(product=product, sku="SKU_B")
-    Stock.objects.create(product_variant=variant, warehouse=warehouse, quantity=1)
+    ProductVariant.objects.create(product=product, sku="SKU_B")
     return product
 
 
@@ -789,7 +796,7 @@ def product_without_category(product):
 
 
 @pytest.fixture
-def product_list(product_type, category, warehouse):
+def product_list(product_type, category):
     product_attr = product_type.product_attributes.first()
     attr_value = product_attr.values.first()
 
@@ -823,31 +830,28 @@ def product_list(product_type, category, warehouse):
             ]
         )
     )
-    variants = list(
-        ProductVariant.objects.bulk_create(
-            [
-                ProductVariant(
-                    product=products[0],
-                    sku=str(uuid.uuid4()).replace("-", ""),
-                    track_inventory=True,
-                ),
-                ProductVariant(
-                    product=products[1],
-                    sku=str(uuid.uuid4()).replace("-", ""),
-                    track_inventory=True,
-                ),
-                ProductVariant(
-                    product=products[2],
-                    sku=str(uuid.uuid4()).replace("-", ""),
-                    track_inventory=True,
-                ),
-            ]
-        )
+    ProductVariant.objects.bulk_create(
+        [
+            ProductVariant(
+                product=products[0],
+                sku=str(uuid.uuid4()).replace("-", ""),
+                track_inventory=True,
+                quantity=100,
+            ),
+            ProductVariant(
+                product=products[1],
+                sku=str(uuid.uuid4()).replace("-", ""),
+                track_inventory=True,
+                quantity=100,
+            ),
+            ProductVariant(
+                product=products[2],
+                sku=str(uuid.uuid4()).replace("-", ""),
+                track_inventory=True,
+                quantity=100,
+            ),
+        ]
     )
-    stocks = []
-    for variant in variants:
-        stocks.append(Stock(warehouse=warehouse, product_variant=variant, quantity=100))
-    Stock.objects.bulk_create(stocks)
 
     for product in products:
         associate_attribute_values_to_instance(product, product_attr, attr_value)
@@ -903,7 +907,7 @@ def unavailable_product(product_type, category):
 
 
 @pytest.fixture
-def unavailable_product_with_variant(product_type, category, warehouse):
+def unavailable_product_with_variant(product_type, category):
     product = Product.objects.create(
         name="Test product",
         price=Money("10.00", "USD"),
@@ -916,10 +920,11 @@ def unavailable_product_with_variant(product_type, category, warehouse):
     variant_attr_value = variant_attr.values.first()
 
     variant = ProductVariant.objects.create(
-        product=product, sku="123", cost_price=Money(1, "USD")
-    )
-    Stock.objects.create(
-        product_variant=variant, warehouse=warehouse, quantity=10, quantity_allocated=1
+        product=product,
+        sku="123",
+        cost_price=Money(1, "USD"),
+        quantity=10,
+        quantity_allocated=1,
     )
 
     associate_attribute_values_to_instance(variant, variant_attr, variant_attr_value)
@@ -1038,7 +1043,7 @@ def gift_card_created_by_staff(staff_user):
 
 
 @pytest.fixture
-def order_with_lines(order, product_type, category, shipping_zone, warehouse):
+def order_with_lines(order, product_type, category, shipping_zone):
     product = Product.objects.create(
         name="Test product",
         price=Money("10.00", "USD"),
@@ -1047,10 +1052,11 @@ def order_with_lines(order, product_type, category, shipping_zone, warehouse):
         is_published=True,
     )
     variant = ProductVariant.objects.create(
-        product=product, sku="SKU_A", cost_price=Money(1, "USD")
-    )
-    Stock.objects.create(
-        warehouse=warehouse, product_variant=variant, quantity=5, quantity_allocated=3
+        product=product,
+        sku="SKU_A",
+        cost_price=Money(1, "USD"),
+        quantity=5,
+        quantity_allocated=3,
     )
     net = variant.get_price()
     gross = Money(amount=net.amount * Decimal(1.23), currency=net.currency)
@@ -1073,10 +1079,11 @@ def order_with_lines(order, product_type, category, shipping_zone, warehouse):
         is_published=True,
     )
     variant = ProductVariant.objects.create(
-        product=product, sku="SKU_B", cost_price=Money(2, "USD")
-    )
-    Stock.objects.create(
-        product_variant=variant, warehouse=warehouse, quantity=2, quantity_allocated=2
+        product=product,
+        sku="SKU_B",
+        cost_price=Money(2, "USD"),
+        quantity=2,
+        quantity_allocated=2,
     )
 
     net = variant.get_price()
@@ -1289,21 +1296,6 @@ def permission_manage_translations():
 @pytest.fixture
 def permission_manage_webhooks():
     return Permission.objects.get(codename="manage_webhooks")
-
-
-@pytest.fixture
-def permission_group_manage_users(permission_manage_users, staff_user):
-    group = Group.objects.create(name="Manage user groups.")
-    group.permissions.add(permission_manage_users)
-
-    staff_user2 = User.objects.get(pk=staff_user.pk)
-    staff_user2.id = None
-    staff_user2.email = "test_staff@example.com"
-    staff_user2.save()
-    staff_user2.refresh_from_db()
-
-    group.user_set.add(staff_user2)
-    return group
 
 
 @pytest.fixture
@@ -1583,7 +1575,7 @@ def payment_dummy(db, order_with_lines):
 
 
 @pytest.fixture
-def digital_content(category, media_root, warehouse) -> DigitalContent:
+def digital_content(category, media_root) -> DigitalContent:
     product_type = ProductType.objects.create(
         name="Digital Type",
         has_variants=True,
@@ -1598,11 +1590,9 @@ def digital_content(category, media_root, warehouse) -> DigitalContent:
         is_published=True,
     )
     product_variant = ProductVariant.objects.create(
-        product=product, sku="SKU_554", cost_price=Money(1, "USD")
-    )
-    Stock.objects.create(
-        product_variant=product_variant,
-        warehouse=warehouse,
+        product=product,
+        sku="SKU_554",
+        cost_price=Money(1, "USD"),
         quantity=5,
         quantity_allocated=3,
     )
@@ -1822,22 +1812,3 @@ def customer_wishlist_item_with_two_variants(
     item = customer_wishlist.add_variant(variant_1)
     item.variants.add(variant_2)
     return item
-
-
-@pytest.fixture
-def warehouse(address, shipping_zone):
-    warehouse = Warehouse.objects.create(
-        address=address, name="Example Warehouse", email="test@example.com"
-    )
-    warehouse.shipping_zones.add(shipping_zone)
-    warehouse.save()
-    return warehouse
-
-
-@pytest.fixture
-def stock(variant, warehouse):
-    return Stock.objects.get_or_create(
-        product_variant=variant,
-        warehouse=warehouse,
-        defaults={"quantity": 5, "quantity_allocated": 3},
-    )[0]

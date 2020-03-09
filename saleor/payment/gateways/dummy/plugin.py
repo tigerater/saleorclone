@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from django.utils.translation import pgettext_lazy
+
 from saleor.extensions import ConfigurationTypeField
 from saleor.extensions.base_plugin import BasePlugin
 
@@ -36,13 +38,18 @@ class DummyGatewayPlugin(BasePlugin):
     CONFIG_STRUCTURE = {
         "Store customers card": {
             "type": ConfigurationTypeField.BOOLEAN,
-            "help_text": "Determines if Saleor should store cards.",
-            "label": "Store customers card",
+            "help_text": pgettext_lazy(
+                "Plugin help text", "Determines if Saleor should store cards."
+            ),
+            "label": pgettext_lazy("Plugin label", "Store customers card"),
         },
         "Automatic payment capture": {
             "type": ConfigurationTypeField.BOOLEAN,
-            "help_text": "Determines if Saleor should automaticaly capture payments.",
-            "label": "Automatic payment capture",
+            "help_text": pgettext_lazy(
+                "Plugin help text",
+                "Determines if Saleor should automaticaly capture payments.",
+            ),
+            "label": pgettext_lazy("Plugin label", "Automatic payment capture"),
         },
     }
 

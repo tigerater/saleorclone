@@ -1,15 +1,18 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING, Iterable, Optional, Union
 from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.fields import JSONField
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Case, Count, F, FilteredRelation, Q, When
 from django.urls import reverse
 from django.utils.encoding import smart_text
 from django.utils.html import strip_tags
 from django.utils.text import slugify
+from django.utils.translation import pgettext_lazy
 from django_measurement.models import MeasurementField
 from django_prices.models import MoneyField
 from draftjs_sanitizer import clean_draft_js
@@ -21,6 +24,7 @@ from text_unidecode import unidecode
 from versatileimagefield.fields import PPOIField, VersatileImageField
 
 from ..core.db.fields import SanitizedJSONField
+from ..core.exceptions import InsufficientStock
 from ..core.models import (
     ModelWithMetadata,
     PublishableModel,
@@ -289,7 +293,10 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
         app_label = "product"
         ordering = ("name",)
         permissions = (
-            (ProductPermissions.MANAGE_PRODUCTS.codename, "Manage products."),
+            (
+                ProductPermissions.MANAGE_PRODUCTS.codename,
+                pgettext_lazy("Permission description", "Manage products."),
+            ),
         )
 
     def __iter__(self):
@@ -324,6 +331,10 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
             return json_content_to_raw_text(self.description_json)
         return strip_tags(self.description)
 
+    @property
+    def is_available(self) -> bool:
+        return self.is_visible and self.is_in_stock()
+
     # Deprecated. To remove in #5022
     @staticmethod
     def get_absolute_url() -> str:
@@ -331,6 +342,9 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
 
     def get_slug(self) -> str:
         return slugify(smart_text(unidecode(self.name)))
+
+    def is_in_stock(self) -> bool:
+        return any(variant.is_in_stock() for variant in self)
 
     def get_first_image(self):
         images = list(self.images.all())
@@ -428,7 +442,12 @@ class ProductVariant(ModelWithMetadata):
     )
     images = models.ManyToManyField("ProductImage", through="VariantImage")
     track_inventory = models.BooleanField(default=True)
-
+    quantity = models.IntegerField(
+        validators=[MinValueValidator(0)], default=Decimal(1)
+    )
+    quantity_allocated = models.IntegerField(
+        validators=[MinValueValidator(0)], default=Decimal(0)
+    )
     cost_price_amount = models.DecimalField(
         max_digits=settings.DEFAULT_MAX_DIGITS,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
@@ -450,8 +469,24 @@ class ProductVariant(ModelWithMetadata):
         return self.name or self.sku
 
     @property
+    def quantity_available(self) -> int:
+        return max(self.quantity - self.quantity_allocated, 0)
+
+    @property
     def is_visible(self) -> bool:
         return self.product.is_visible
+
+    @property
+    def is_available(self) -> bool:
+        return self.is_visible and self.is_in_stock()
+
+    def check_quantity(self, quantity):
+        """Check if there is at least the given quantity in stock.
+
+        If stock handling is disabled, it simply run no check.
+        """
+        if self.track_inventory and quantity > self.quantity_available:
+            raise InsufficientStock(self)
 
     @property
     def base_price(self) -> "Money":
@@ -478,6 +513,9 @@ class ProductVariant(ModelWithMetadata):
     def is_digital(self) -> bool:
         is_digital = self.product.product_type.is_digital
         return not self.is_shipping_required() and is_digital
+
+    def is_in_stock(self) -> bool:
+        return self.quantity_available > 0
 
     def display_product(self, translated: bool = False) -> str:
         if translated:
@@ -523,7 +561,9 @@ class ProductVariantTranslation(models.Model):
 
 class DigitalContent(ModelWithMetadata):
     FILE = "file"
-    TYPE_CHOICES = ((FILE, "digital_product"),)
+    TYPE_CHOICES = (
+        (FILE, pgettext_lazy("File as a digital product", "digital_product")),
+    )
     use_default_settings = models.BooleanField(default=True)
     automatic_fulfillment = models.BooleanField(default=False)
     content_type = models.CharField(max_length=128, default=FILE, choices=TYPE_CHOICES)

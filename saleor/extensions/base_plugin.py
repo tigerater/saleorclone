@@ -11,8 +11,9 @@ if TYPE_CHECKING:
     from ..core.taxes import TaxType
     from ..checkout.models import Checkout, CheckoutLine
     from ..product.models import Product
-    from ..account.models import Address, User
+    from ..account.models import Address
     from ..order.models import OrderLine, Order
+    from ..payment.interface import GatewayResponse, PaymentData
 
 
 class BasePlugin:
@@ -136,19 +137,40 @@ class BasePlugin:
     ) -> Decimal:
         return NotImplemented
 
-    def customer_created(self, customer: "User", previous_value: Any) -> Any:
+    def authorize_payment(
+        self, payment_information: "PaymentData", previous_value
+    ) -> "GatewayResponse":
         return NotImplemented
 
-    def product_created(self, product: "Product", previous_value: Any) -> Any:
+    def capture_payment(
+        self, payment_information: "PaymentData", previous_value
+    ) -> "GatewayResponse":
         return NotImplemented
 
-    def order_fully_paid(self, order: "Order", previous_value: Any) -> Any:
+    def refund_payment(
+        self, payment_information: "PaymentData", previous_value
+    ) -> "GatewayResponse":
         return NotImplemented
 
-    def order_updated(self, order: "Order", previous_value: Any) -> Any:
+    def confirm_payment(
+        self, payment_information: "PaymentData", previous_value
+    ) -> "GatewayResponse":
         return NotImplemented
 
-    def order_cancelled(self, order: "Order", previous_value: Any) -> Any:
+    def process_payment(
+        self, payment_information: "PaymentData", previous_value
+    ) -> "GatewayResponse":
+        return NotImplemented
+
+    def list_payment_sources(
+        self, customer_id: str, previous_value
+    ) -> List["CustomerSource"]:
+        return NotImplemented
+
+    def create_form(self, data, payment_information, previous_value):
+        return NotImplemented
+
+    def get_client_token(self, token_config, previous_value):
         return NotImplemented
 
     @classmethod

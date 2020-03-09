@@ -15,6 +15,7 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import connection
 from django.forms import ModelForm
+from django.test.client import Client
 from django.test.utils import CaptureQueriesContext as BaseCaptureQueriesContext
 from django_countries import countries
 from PIL import Image
@@ -769,7 +770,7 @@ def product_with_default_variant(product_type_without_variant, category, warehou
 
 
 @pytest.fixture
-def variant(product) -> ProductVariant:
+def variant(product):
     product_variant = ProductVariant.objects.create(
         product=product, sku="SKU_A", cost_price=Money(1, "USD")
     )

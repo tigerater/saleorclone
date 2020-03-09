@@ -111,11 +111,13 @@ def order_fulfilled(
 ):
     order = fulfillment.order
     update_order_status(order)
+    print(user)
     events.fulfillment_fulfilled_items_event(
         order=order, user=user, fulfillment_lines=fulfillment_lines
     )
     manager = get_extensions_manager()
     manager.order_updated(order)
+    manager.fulfillment_created(fulfillment)
 
     if order.status == OrderStatus.FULFILLED:
         manager.order_fulfilled(order)

@@ -31,10 +31,17 @@ from ....warehouse.availability import (
 from ...core.connection import CountableDjangoObjectType
 from ...core.enums import ReportingPeriod, TaxRateType
 from ...core.fields import FilterInputConnectionField, PrefetchingConnectionField
-from ...core.types import Image, Money, MoneyRange, TaxedMoney, TaxedMoneyRange, TaxType
+from ...core.resolvers import resolve_meta, resolve_private_meta
+from ...core.types import (
+    Image,
+    MetadataObjectType,
+    Money,
+    MoneyRange,
+    TaxedMoney,
+    TaxedMoneyRange,
+    TaxType,
+)
 from ...decorators import permission_required
-from ...meta.deprecated.resolvers import resolve_meta, resolve_private_meta
-from ...meta.types import ObjectWithMetadata
 from ...translations.fields import TranslationField
 from ...translations.types import (
     CategoryTranslation,
@@ -187,7 +194,7 @@ class ProductPricingInfo(BasePricingInfo):
 
 
 @key(fields="id")
-class ProductVariant(CountableDjangoObjectType):
+class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
     quantity = graphene.Int(
         required=True,
         description="Quantity of a product in the store's possession, "
@@ -275,7 +282,7 @@ class ProductVariant(CountableDjangoObjectType):
             "Represents a version of a product such as different size or color."
         )
         only_fields = ["id", "name", "product", "sku", "track_inventory", "weight"]
-        interfaces = [relay.Node, ObjectWithMetadata]
+        interfaces = [relay.Node]
         model = models.ProductVariant
 
     @staticmethod
@@ -362,7 +369,6 @@ class ProductVariant(CountableDjangoObjectType):
         # `resolve_report_product_sales` resolver.
         return getattr(root, "quantity_ordered", None)
 
-    @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
     def resolve_quantity_allocated(root: models.ProductVariant, info):
         country = info.context.country
@@ -389,11 +395,11 @@ class ProductVariant(CountableDjangoObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_private_meta(root: models.ProductVariant, _info):
+    def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
-    def resolve_meta(root: models.ProductVariant, _info):
+    def resolve_meta(root, _info):
         return resolve_meta(root, _info)
 
     @staticmethod
@@ -402,7 +408,7 @@ class ProductVariant(CountableDjangoObjectType):
 
 
 @key(fields="id")
-class Product(CountableDjangoObjectType):
+class Product(CountableDjangoObjectType, MetadataObjectType):
     url = graphene.String(
         description="The storefront URL for the product.", required=True
     )
@@ -460,7 +466,7 @@ class Product(CountableDjangoObjectType):
 
     class Meta:
         description = "Represents an individual item for sale in the storefront."
-        interfaces = [relay.Node, ObjectWithMetadata]
+        interfaces = [relay.Node]
         model = models.Product
         only_fields = [
             "category",
@@ -501,13 +507,7 @@ class Product(CountableDjangoObjectType):
     @staticmethod
     @gql_optimizer.resolver_hints(
         prefetch_related=("variants", "collections"),
-        only=[
-            "publication_date",
-            "charge_taxes",
-            "price_amount",
-            "currency",
-            "metadata",
-        ],
+        only=["publication_date", "charge_taxes", "price_amount", "currency", "meta"],
     )
     def resolve_pricing(root: models.Product, info):
         context = info.context
@@ -535,13 +535,7 @@ class Product(CountableDjangoObjectType):
     @staticmethod
     @gql_optimizer.resolver_hints(
         prefetch_related=("variants", "collections"),
-        only=[
-            "publication_date",
-            "charge_taxes",
-            "price_amount",
-            "currency",
-            "metadata",
-        ],
+        only=["publication_date", "charge_taxes", "price_amount", "currency", "meta"],
     )
     def resolve_price(root: models.Product, info):
         price_range = root.get_price_range(info.context.discounts)
@@ -607,11 +601,11 @@ class Product(CountableDjangoObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_private_meta(root: models.Product, _info):
+    def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
-    def resolve_meta(root: models.Product, _info):
+    def resolve_meta(root, _info):
         return resolve_meta(root, _info)
 
     @staticmethod
@@ -620,7 +614,7 @@ class Product(CountableDjangoObjectType):
 
 
 @key(fields="id")
-class ProductType(CountableDjangoObjectType):
+class ProductType(CountableDjangoObjectType, MetadataObjectType):
     products = gql_optimizer.field(
         PrefetchingConnectionField(
             Product, description="List of products of this type."
@@ -646,7 +640,7 @@ class ProductType(CountableDjangoObjectType):
             "Represents a type of product. It defines what attributes are available to "
             "products of this type."
         )
-        interfaces = [relay.Node, ObjectWithMetadata]
+        interfaces = [relay.Node]
         model = models.ProductType
         only_fields = [
             "has_variants",
@@ -669,7 +663,8 @@ class ProductType(CountableDjangoObjectType):
         # FIXME this resolver should be dropped after we drop tax_rate from API
         if not hasattr(root, "meta"):
             return None
-        return root.get_value_from_metadata("vatlayer.code")
+        tax = root.meta.get("taxes", {}).get("vatlayer", {})
+        return tax.get("code")
 
     @staticmethod
     @gql_optimizer.resolver_hints(
@@ -700,11 +695,11 @@ class ProductType(CountableDjangoObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_private_meta(root: models.ProductType, _info):
+    def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
-    def resolve_meta(root: models.ProductType, _info):
+    def resolve_meta(root, _info):
         return resolve_meta(root, _info)
 
     @staticmethod
@@ -713,7 +708,7 @@ class ProductType(CountableDjangoObjectType):
 
 
 @key(fields="id")
-class Collection(CountableDjangoObjectType):
+class Collection(CountableDjangoObjectType, MetadataObjectType):
     products = gql_optimizer.field(
         PrefetchingConnectionField(
             Product, description="List of products in this collection."
@@ -738,7 +733,7 @@ class Collection(CountableDjangoObjectType):
             "seo_title",
             "slug",
         ]
-        interfaces = [relay.Node, ObjectWithMetadata]
+        interfaces = [relay.Node]
         model = models.Collection
 
     @staticmethod
@@ -769,11 +764,11 @@ class Collection(CountableDjangoObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_private_meta(root: models.Collection, _info):
+    def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
-    def resolve_meta(root: models.Collection, _info):
+    def resolve_meta(root, _info):
         return resolve_meta(root, _info)
 
     @staticmethod
@@ -782,7 +777,7 @@ class Collection(CountableDjangoObjectType):
 
 
 @key(fields="id")
-class Category(CountableDjangoObjectType):
+class Category(CountableDjangoObjectType, MetadataObjectType):
     ancestors = PrefetchingConnectionField(
         lambda: Category, description="List of ancestors of the category."
     )
@@ -819,7 +814,7 @@ class Category(CountableDjangoObjectType):
             "seo_title",
             "slug",
         ]
-        interfaces = [relay.Node, ObjectWithMetadata]
+        interfaces = [relay.Node]
         model = models.Category
 
     @staticmethod
@@ -864,11 +859,11 @@ class Category(CountableDjangoObjectType):
 
     @staticmethod
     @permission_required(ProductPermissions.MANAGE_PRODUCTS)
-    def resolve_private_meta(root: models.Category, _info):
+    def resolve_private_meta(root, _info):
         return resolve_private_meta(root, _info)
 
     @staticmethod
-    def resolve_meta(root: models.Category, _info):
+    def resolve_meta(root, _info):
         return resolve_meta(root, _info)
 
     @staticmethod

@@ -31,8 +31,8 @@ if TYPE_CHECKING:
 
 class VatlayerPlugin(BasePlugin):
     PLUGIN_NAME = "Vatlayer"
-    META_CODE_KEY = "vatlayer.code"
-    META_DESCRIPTION_KEY = "vatlayer.description"
+    META_FIELD = "vatlayer"
+    META_NAMESPACE = "taxes"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -253,8 +253,14 @@ class VatlayerPlugin(BasePlugin):
         if tax_code not in dict(TaxRateType.CHOICES):
             return previous_value
 
-        tax_item = {self.META_CODE_KEY: tax_code, self.META_DESCRIPTION_KEY: tax_code}
-        obj.store_value_in_metadata(items=tax_item)
+        tax_item = {"code": tax_code, "description": tax_code}
+        stored_tax_meta = obj.get_meta(
+            namespace=self.META_NAMESPACE, client=self.META_FIELD
+        )
+        stored_tax_meta.update(tax_item)
+        obj.store_meta(
+            namespace=self.META_NAMESPACE, client=self.META_FIELD, item=stored_tax_meta
+        )
         obj.save()
         return previous_value
 
@@ -270,9 +276,8 @@ class VatlayerPlugin(BasePlugin):
     def __get_tax_code_from_object_meta(
         self, obj: Union["Product", "ProductType"]
     ) -> "TaxType":
-        tax_code = obj.get_value_from_metadata(self.META_CODE_KEY, "")
-        tax_description = obj.get_value_from_metadata(self.META_DESCRIPTION_KEY, "")
-        return TaxType(code=tax_code, description=tax_description,)
+        tax = obj.get_meta(namespace=self.META_NAMESPACE, client=self.META_FIELD)
+        return TaxType(code=tax.get("code", ""), description=tax.get("description", ""))
 
     def get_tax_rate_percentage_value(
         self, obj: Union["Product", "ProductType"], country: Country, previous_value

@@ -1,10 +1,15 @@
 import json
 from typing import Optional
 
-from django.db.models import Model, QuerySet
+from django.db.models import QuerySet
 
 from ..account.models import User
 from ..checkout.models import Checkout
+from ..core.utils.anonymization import (
+    anonymize_checkout,
+    anonymize_order,
+    generate_fake_user,
+)
 from ..order import FulfillmentStatus, OrderStatus
 from ..order.models import Order
 from ..payment import ChargeStatus
@@ -203,7 +208,7 @@ def generate_product_payload(product: "Product"):
     return product_payload
 
 
-def _get_sample_object(qs: QuerySet) -> Optional[Model]:
+def _get_sample_object(qs: QuerySet):
     """Return random object from query."""
     random_object = qs.order_by("?").first()
     return random_object
@@ -234,13 +239,15 @@ def _generate_sample_order_payload(event_name):
         WebhookEventType.ORDER_UPDATED,
     ]:
         order = _get_sample_object(order_qs.filter(status=OrderStatus.CANCELED))
-    return generate_order_payload(order) if order else None
+    if order:
+        anonymized_order = anonymize_order(order)
+        return generate_order_payload(anonymized_order)
 
 
 def generate_sample_payload(event_name: str) -> Optional[dict]:
     if event_name == WebhookEventType.CUSTOMER_CREATED:
-        user = _get_sample_object(User.objects.filter(is_staff=False, is_active=True))
-        payload = generate_customer_payload(user) if user else None
+        user = generate_fake_user()
+        payload = generate_customer_payload(user)
     elif event_name == WebhookEventType.PRODUCT_CREATED:
         product = _get_sample_object(
             Product.objects.prefetch_related("category", "collections", "variants")
@@ -250,7 +257,9 @@ def generate_sample_payload(event_name: str) -> Optional[dict]:
         checkout = _get_sample_object(
             Checkout.objects.prefetch_related("lines__variant__product")
         )
-        payload = generate_checkout_payload(checkout) if checkout else None
+        if checkout:
+            anonymized_checkout = anonymize_checkout(checkout)
+            payload = generate_checkout_payload(anonymized_checkout)
     else:
         payload = _generate_sample_order_payload(event_name)
     return json.loads(payload) if payload else None

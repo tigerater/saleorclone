@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 import graphene_django_optimizer as gql_optimizer
 from django.db.models import Sum
 from graphql import GraphQLError
@@ -13,7 +11,6 @@ from ..utils import (
     filter_by_period,
     filter_by_query_param,
     get_database_id,
-    get_user_or_service_account_from_context,
     get_nodes,
     sort_queryset,
 )
@@ -34,9 +31,6 @@ from .sorters import (
     ProductOrderField,
     ProductTypeSortField,
 )
-
-if TYPE_CHECKING:
-    from django.db.models.query import QuerySet
 
 PRODUCT_SEARCH_FIELDS = ("name", "description")
 PRODUCT_TYPE_SEARCH_FIELDS = ("name",)
@@ -95,7 +89,9 @@ def resolve_digital_contents(info):
     return gql_optimizer.query(qs, info)
 
 
-def sort_products(qs: models.ProductsQueryset, sort_by: ProductOrder) -> "QuerySet":
+def sort_products(
+    qs: models.ProductsQueryset, sort_by: ProductOrder
+) -> models.ProductsQueryset:
     if sort_by is None:
         return qs
 
@@ -145,7 +141,9 @@ def resolve_products(
     **_kwargs,
 ):
 
-    user = get_user_or_service_account_from_context(info.context)
+    user = info.context.user
+    if user.is_anonymous and info.context.service_account:
+        user = info.context.service_account
     qs = models.Product.objects.visible_to_user(user)
     qs = sort_products(qs, sort_by)
 

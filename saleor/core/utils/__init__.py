@@ -1,6 +1,5 @@
 import logging
 import socket
-from typing import Optional
 from urllib.parse import urljoin
 
 from babel.numbers import get_territory_currencies
@@ -18,7 +17,8 @@ georeader = geolite2.reader()
 logger = logging.getLogger(__name__)
 
 
-def build_absolute_uri(location: str) -> Optional[str]:
+def build_absolute_uri(location):
+    # type: (str) -> str
     host = Site.objects.get_current().domain
     protocol = "https" if settings.ENABLE_SSL else "http"
     current_uri = "%s://%s" % (protocol, host)

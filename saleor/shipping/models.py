@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import Union
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -21,11 +21,6 @@ from ..core.weight import (
     zero_weight,
 )
 from . import ShippingMethodType
-
-if TYPE_CHECKING:
-    # flake8: noqa
-    from ..checkout.models import Checkout
-    from ..order.models import Order
 
 
 def _applicable_weight_based_methods(weight, qs):

@@ -8,8 +8,9 @@ from ...warehouse.validation import validate_warehouse_count  # type: ignore
 from ..account.i18n import I18nMixin
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
 from ..core.types.common import StockError, WarehouseError
-from ..core.utils import validate_slug_and_generate_if_needed
-from .types import StockInput, WarehouseCreateInput, WarehouseUpdateInput
+from ..shipping.types import ShippingZone
+from .types import StockInput, Warehouse, WarehouseCreateInput, WarehouseUpdateInput
+
 
 ADDRESS_FIELDS = [
     "street_address_1",
@@ -27,19 +28,6 @@ class WarehouseMixin:
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data)
-        try:
-            cleaned_input = validate_slug_and_generate_if_needed(
-                instance, "name", cleaned_input
-            )
-        except ValidationError:
-            raise ValidationError(
-                {
-                    "slug": ValidationError(
-                        "Slug value cannot be blank.",
-                        code=WarehouseErrorCode.REQUIRED.value,
-                    )
-                }
-            )
         shipping_zones = cleaned_input.get("shipping_zones", [])
         if not validate_warehouse_count(shipping_zones, instance):
             msg = "Shipping zone can be assigned only to one warehouse."
@@ -71,6 +59,66 @@ class WarehouseCreate(WarehouseMixin, ModelMutation, I18nMixin):
     def prepare_address(cls, cleaned_data, *args):
         address_form = cls.validate_address_form(cleaned_data["address"])
         return address_form.save()
+
+
+class WarehouseShippingZoneAssign(WarehouseMixin, ModelMutation, I18nMixin):
+    warehouse = graphene.Field(
+        Warehouse, description="A warehouse to add shipping zone."
+    )
+
+    class Meta:
+        model = models.Warehouse
+        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        description = "Add shipping zone to given warehouse."
+        error_type_class = WarehouseError
+        error_type_field = "warehouse_errors"
+
+    class Arguments:
+        id = graphene.ID(description="ID of a warehouse to update.", required=True)
+        shipping_zone_ids = graphene.List(
+            graphene.NonNull(graphene.ID),
+            required=True,
+            description="List of shipping zone IDs.",
+        )
+
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        warehouse = cls.get_node_or_error(info, data.get("id"), only_type=Warehouse)
+        shipping_zones = cls.get_nodes_or_error(
+            data.get("shipping_zone_ids"), "shipping_zone_id", only_type=ShippingZone
+        )
+        warehouse.shipping_zones.add(*shipping_zones)
+        return WarehouseShippingZoneAssign(warehouse=warehouse)
+
+
+class WarehouseShippingZoneUnassign(WarehouseMixin, ModelMutation, I18nMixin):
+    warehouse = graphene.Field(
+        Warehouse, description="A warehouse to add shipping zone."
+    )
+
+    class Meta:
+        model = models.Warehouse
+        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        description = "Remove shipping zone from given warehouse."
+        error_type_class = WarehouseError
+        error_type_field = "warehouse_errors"
+
+    class Arguments:
+        id = graphene.ID(description="ID of a warehouse to update.", required=True)
+        shipping_zone_ids = graphene.List(
+            graphene.NonNull(graphene.ID),
+            required=True,
+            description="List of shipping zone IDs.",
+        )
+
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        warehouse = cls.get_node_or_error(info, data.get("id"), only_type=Warehouse)
+        shipping_zones = cls.get_nodes_or_error(
+            data.get("shipping_zone_ids"), "shipping_zone_id", only_type=ShippingZone
+        )
+        warehouse.shipping_zones.remove(*shipping_zones)
+        return WarehouseShippingZoneAssign(warehouse=warehouse)
 
 
 class WarehouseUpdate(WarehouseMixin, ModelMutation, I18nMixin):

@@ -1,5 +1,4 @@
 import graphene
-import pytest
 
 from saleor.account.models import Address
 from saleor.core.permissions import ProductPermissions
@@ -95,7 +94,6 @@ mutation createWarehouse($input: WarehouseCreateInput!) {
         warehouse {
             id
             name
-            slug
             companyName
             address {
                 id
@@ -115,7 +113,6 @@ mutation updateWarehouse($input: WarehouseUpdateInput!, $id: ID!) {
         }
         warehouse {
             name
-            slug
             companyName
             address {
                 id
@@ -137,6 +134,34 @@ mutation deleteWarehouse($id: ID!) {
         }
     }
 }
+"""
+
+
+MUTATION_ASSIGN_SHIPPING_ZONE_WAREHOUSE = """
+mutation assignWarehouseShippingZone($id: ID!, $shippingZoneIds: [ID!]!) {
+  assignWarehouseShippingZone(id: $id, shippingZoneIds: $shippingZoneIds) {
+    warehouseErrors {
+      field
+      message
+      code
+    }
+  }
+}
+
+"""
+
+
+MUTATION_UNASSIGN_SHIPPING_ZONE_WAREHOUSE = """
+mutation unassignWarehouseShippingZone($id: ID!, $shippingZoneIds: [ID!]!) {
+  unassignWarehouseShippingZone(id: $id, shippingZoneIds: $shippingZoneIds) {
+    warehouseErrors {
+      field
+      message
+      code
+    }
+  }
+}
+
 """
 
 
@@ -255,7 +280,6 @@ def test_mutation_create_warehouse_requires_permission(staff_api_client):
     variables = {
         "input": {
             "name": "Test warehouse",
-            "slug": "test-warhouse",
             "companyName": "Amazing Company Inc",
             "email": "test-admin@example.com",
             "address": {
@@ -283,7 +307,6 @@ def test_mutation_create_warehouse(
     variables = {
         "input": {
             "name": "Test warehouse",
-            "slug": "test-warhouse",
             "companyName": "Amazing Company Inc",
             "email": "test-admin@example.com",
             "address": {
@@ -309,7 +332,6 @@ def test_mutation_create_warehouse(
         "Warehouse", warehouse.id
     )
     assert created_warehouse["name"] == warehouse.name
-    assert created_warehouse["slug"] == warehouse.slug
 
 
 def test_create_warehouse_creates_address(
@@ -348,37 +370,6 @@ def test_create_warehouse_creates_address(
     assert address.city == "WROCLAW"
 
 
-@pytest.mark.parametrize(
-    "input_slug, expected_slug",
-    (("test-slug", "test-slug"), (None, "test-warehouse"), ("", "test-warehouse"),),
-)
-def test_create_warehouse_with_given_slug(
-    staff_api_client, permission_manage_products, input_slug, expected_slug
-):
-    query = MUTATION_CREATE_WAREHOUSE
-    name = "Test warehouse"
-    variables = {"name": name, "slug": input_slug}
-    variables = {
-        "input": {
-            "name": name,
-            "slug": input_slug,
-            "address": {
-                "streetAddress1": "Teczowa 8",
-                "city": "Wroclaw",
-                "country": "PL",
-                "postalCode": "53-601",
-            },
-        }
-    }
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_products]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["createWarehouse"]
-    assert not data["errors"]
-    assert data["warehouse"]["slug"] == expected_slug
-
-
 def test_mutation_update_warehouse_requires_permission(staff_api_client, warehouse):
     assert not staff_api_client.user.has_perm(ProductPermissions.MANAGE_PRODUCTS)
     warehouse_id = graphene.Node.to_global_id("Warehouse", warehouse.pk)
@@ -398,24 +389,17 @@ def test_mutation_update_warehouse(
     staff_api_client.user.user_permissions.add(permission_manage_products)
     warehouse_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
     warehouse_old_name = warehouse.name
-    warehouse_slug = warehouse.slug
     warehouse_old_company_name = warehouse.company_name
     variables = {
         "id": warehouse_id,
-        "input": {
-            "name": "New name",
-            "companyName": "New name for company",
-            "shippingZones": [],
-        },
+        "input": {"name": "New name", "companyName": "New name for company"},
     }
     staff_api_client.post_graphql(MUTATION_UPDATE_WAREHOUSE, variables=variables)
     warehouse.refresh_from_db()
     assert not (warehouse.name == warehouse_old_name)
     assert not (warehouse.company_name == warehouse_old_company_name)
     assert warehouse.name == "New name"
-    assert warehouse.slug == warehouse_slug
     assert warehouse.company_name == "New name for company"
-    assert warehouse.shipping_zones.count() == 0
 
 
 def test_mutation_update_warehouse_can_update_address(
@@ -448,162 +432,6 @@ def test_mutation_update_warehouse_can_update_address(
     address.refresh_from_db()
     assert address.street_address_1 == "Teczowa 8"
     assert address.street_address_2 == "Ground floor"
-
-
-def test_mutation_update_warehouse_removing_shipping_zones(
-    staff_api_client, warehouse, permission_manage_products
-):
-    staff_api_client.user.user_permissions.add(permission_manage_products)
-    warehouse_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
-    assert warehouse.shipping_zones.count() == 1
-    variables = {
-        "id": warehouse_id,
-        "input": {
-            "name": warehouse.name,
-            "companyName": warehouse.company_name,
-            "shippingZones": [],
-        },
-    }
-    staff_api_client.post_graphql(MUTATION_UPDATE_WAREHOUSE, variables=variables)
-    warehouse.refresh_from_db()
-    assert not warehouse.shipping_zones.exists()
-
-
-def test_mutation_update_warehouse_adding_shipping_zones(
-    staff_api_client,
-    warehouse,
-    permission_manage_products,
-    shipping_zone_without_countries,
-):
-    staff_api_client.user.user_permissions.add(permission_manage_products)
-    warehouse_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
-    assert warehouse.shipping_zones.count() == 1
-    current_zone = warehouse.shipping_zones.first()
-    current_zone_id = graphene.Node.to_global_id("ShippingZone", current_zone.id)
-    new_zone = shipping_zone_without_countries
-    new_zone_id = graphene.Node.to_global_id("ShippingZone", new_zone.pk)
-    variables = {
-        "id": warehouse_id,
-        "input": {
-            "name": warehouse.name,
-            "companyName": warehouse.company_name,
-            "shippingZones": [current_zone_id, new_zone_id],
-        },
-    }
-    staff_api_client.post_graphql(MUTATION_UPDATE_WAREHOUSE, variables=variables)
-    warehouse.refresh_from_db()
-    assert warehouse.shipping_zones.count() == 2
-
-
-@pytest.mark.parametrize(
-    "input_slug, expected_slug, error_message",
-    [
-        ("test-slug", "test-slug", None),
-        ("", "", "Slug value cannot be blank."),
-        (None, "", "Slug value cannot be blank."),
-    ],
-)
-def test_update_warehouse_slug(
-    staff_api_client,
-    warehouse,
-    permission_manage_products,
-    input_slug,
-    expected_slug,
-    error_message,
-):
-    query = MUTATION_UPDATE_WAREHOUSE
-    old_slug = warehouse.slug
-
-    assert old_slug != input_slug
-
-    node_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
-    variables = {"id": node_id, "input": {"slug": input_slug}}
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_products]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["updateWarehouse"]
-    errors = data["errors"]
-    if not error_message:
-        assert not errors
-        assert data["warehouse"]["slug"] == expected_slug
-    else:
-        assert errors
-        assert errors[0]["field"] == "slug"
-        assert errors[0]["message"] == error_message
-
-
-def test_update_warehouse_slug_exists(
-    staff_api_client, warehouse, permission_manage_products
-):
-    query = MUTATION_UPDATE_WAREHOUSE
-    input_slug = "test-slug"
-
-    second_warehouse = Warehouse.objects.get(pk=warehouse.pk)
-    second_warehouse.pk = None
-    second_warehouse.slug = input_slug
-    second_warehouse.save()
-
-    assert input_slug != warehouse.slug
-
-    node_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
-    variables = {"id": node_id, "input": {"slug": input_slug}}
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_products]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["updateWarehouse"]
-    errors = data["errors"]
-    assert errors
-    assert errors[0]["field"] == "slug"
-    assert errors[0]["message"] == "Warehouse with this Slug already exists."
-
-
-@pytest.mark.parametrize(
-    "input_slug, expected_slug, input_name, error_message, error_field",
-    [
-        ("test-slug", "test-slug", "New name", None, None),
-        ("", "", "New name", "Slug value cannot be blank.", "slug"),
-        (None, "", "New name", "Slug value cannot be blank.", "slug"),
-        ("test-slug", "", None, "This field cannot be blank.", "name"),
-        ("test-slug", "", "", "This field cannot be blank.", "name"),
-        (None, None, None, "Slug value cannot be blank.", "slug"),
-    ],
-)
-def test_update_warehouse_slug_and_name(
-    staff_api_client,
-    warehouse,
-    permission_manage_products,
-    input_slug,
-    expected_slug,
-    input_name,
-    error_message,
-    error_field,
-):
-    query = MUTATION_UPDATE_WAREHOUSE
-
-    old_name = warehouse.name
-    old_slug = warehouse.slug
-
-    assert input_slug != old_slug
-    assert input_name != old_name
-
-    node_id = graphene.Node.to_global_id("Warehouse", warehouse.id)
-    variables = {"input": {"slug": input_slug, "name": input_name}, "id": node_id}
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_products]
-    )
-    content = get_graphql_content(response)
-    warehouse.refresh_from_db()
-    data = content["data"]["updateWarehouse"]
-    errors = data["errors"]
-    if not error_message:
-        assert data["warehouse"]["name"] == input_name == warehouse.name
-        assert data["warehouse"]["slug"] == input_slug == warehouse.slug
-    else:
-        assert errors
-        assert errors[0]["field"] == error_field
-        assert errors[0]["message"] == error_message
 
 
 def test_delete_warehouse_requires_permission(staff_api_client, warehouse):
@@ -682,4 +510,73 @@ def test_shipping_zone_can_be_assigned_only_to_one_warehouse(
         errors[0]["message"] == "Shipping zone can be assigned only to one warehouse."
     )
     used_shipping_zone.refresh_from_db()
-    assert used_shipping_zone.warehouse_set.count() == 1
+    assert used_shipping_zone.warehouses.count() == 1
+
+
+def test_shipping_zone_assign_to_warehouse(
+    staff_api_client,
+    warehouse_wo_shipping_zone,
+    shipping_zone,
+    permission_manage_products,
+):
+    assert not warehouse_wo_shipping_zone.shipping_zones.all()
+    staff_api_client.user.user_permissions.add(permission_manage_products)
+    variables = {
+        "id": graphene.Node.to_global_id("Warehouse", warehouse_wo_shipping_zone.pk),
+        "shippingZoneIds": [
+            graphene.Node.to_global_id("ShippingZone", shipping_zone.pk)
+        ],
+    }
+
+    staff_api_client.post_graphql(
+        MUTATION_ASSIGN_SHIPPING_ZONE_WAREHOUSE, variables=variables
+    )
+    warehouse_wo_shipping_zone.refresh_from_db()
+    shipping_zone.refresh_from_db()
+    assert warehouse_wo_shipping_zone.shipping_zones.first().pk == shipping_zone.pk
+
+
+def test_empty_shipping_zone_assign_to_warehouse(
+    staff_api_client,
+    warehouse_wo_shipping_zone,
+    shipping_zone,
+    permission_manage_products,
+):
+    assert not warehouse_wo_shipping_zone.shipping_zones.all()
+    staff_api_client.user.user_permissions.add(permission_manage_products)
+    variables = {
+        "id": graphene.Node.to_global_id("Warehouse", warehouse_wo_shipping_zone.pk),
+        "shippingZoneIds": [],
+    }
+
+    response = staff_api_client.post_graphql(
+        MUTATION_ASSIGN_SHIPPING_ZONE_WAREHOUSE, variables=variables
+    )
+    content = get_graphql_content(response)
+    errors = content["data"]["assignWarehouseShippingZone"]["warehouseErrors"]
+    warehouse_wo_shipping_zone.refresh_from_db()
+    shipping_zone.refresh_from_db()
+
+    assert not warehouse_wo_shipping_zone.shipping_zones.all()
+    assert errors[0]["field"] == "shippingZoneId"
+    assert errors[0]["code"] == "GRAPHQL_ERROR"
+
+
+def test_shipping_zone_unassign_from_warehouse(
+    staff_api_client, warehouse, shipping_zone, permission_manage_products
+):
+    assert warehouse.shipping_zones.first().pk == shipping_zone.pk
+    staff_api_client.user.user_permissions.add(permission_manage_products)
+    variables = {
+        "id": graphene.Node.to_global_id("Warehouse", warehouse.pk),
+        "shippingZoneIds": [
+            graphene.Node.to_global_id("ShippingZone", shipping_zone.pk)
+        ],
+    }
+
+    staff_api_client.post_graphql(
+        MUTATION_UNASSIGN_SHIPPING_ZONE_WAREHOUSE, variables=variables
+    )
+    warehouse.refresh_from_db()
+    shipping_zone.refresh_from_db()
+    assert not warehouse.shipping_zones.all()

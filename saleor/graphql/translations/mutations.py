@@ -47,9 +47,9 @@ class TranslationInput(NameTranslationInput, SeoTranslationInput):
 
 class CategoryTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Category ID.")
+        id = graphene.ID(required=True, description="Category ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = TranslationInput(required=True)
 
@@ -60,9 +60,9 @@ class CategoryTranslate(BaseTranslateMutation):
 
 class ProductTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Product ID.")
+        id = graphene.ID(required=True, description="Product ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = TranslationInput(required=True)
 
@@ -73,22 +73,22 @@ class ProductTranslate(BaseTranslateMutation):
 
 class CollectionTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Collection ID.")
+        id = graphene.ID(required=True, description="Collection ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = TranslationInput(required=True)
 
     class Meta:
-        description = "Creates/Updates translations for collection."
+        description = "Creates/Updates translations for Collection."
         model = product_models.Collection
 
 
 class ProductVariantTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Product Variant ID.")
+        id = graphene.ID(required=True, description="Product Variant ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
@@ -99,35 +99,35 @@ class ProductVariantTranslate(BaseTranslateMutation):
 
 class AttributeTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Attribute ID.")
+        id = graphene.ID(required=True, description="Attribute ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
     class Meta:
-        description = "Creates/Updates translations for attribute."
+        description = "Creates/Updates translations for Attribute."
         model = product_models.Attribute
 
 
 class AttributeValueTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Attribute Value ID.")
+        id = graphene.ID(required=True, description="Attribute Value ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
     class Meta:
-        description = "Creates/Updates translations for attribute value."
+        description = "Creates/Updates translations for Attribute Value."
         model = product_models.AttributeValue
 
 
 class SaleTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Voucher ID.")
+        id = graphene.ID(required=True, description="Voucher ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
@@ -138,9 +138,9 @@ class SaleTranslate(BaseTranslateMutation):
 
 class VoucherTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Voucher ID.")
+        id = graphene.ID(required=True, description="Voucher ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
@@ -151,22 +151,22 @@ class VoucherTranslate(BaseTranslateMutation):
 
 class ShippingPriceTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Shipping method ID.")
+        id = graphene.ID(required=True, description="Shipping Method ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
     class Meta:
-        description = "Creates/Updates translations for shipping method."
+        description = "Creates/Updates translations for Shipping Method."
         model = shipping_models.ShippingMethod
 
 
 class MenuItemTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Menu Item ID.")
+        id = graphene.ID(required=True, description="Menu Item ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = NameTranslationInput(required=True)
 
@@ -183,9 +183,9 @@ class PageTranslationInput(SeoTranslationInput):
 
 class PageTranslate(BaseTranslateMutation):
     class Arguments:
-        id = graphene.ID(required=True, description="Page ID.")
+        id = graphene.ID(required=True, description="Page ID")
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = PageTranslationInput(required=True)
 
@@ -200,11 +200,11 @@ class ShopSettingsTranslationInput(graphene.InputObjectType):
 
 
 class ShopSettingsTranslate(BaseMutation):
-    shop = graphene.Field(Shop, description="Updated shop.")
+    shop = graphene.Field(Shop, description="Updated Shop")
 
     class Arguments:
         language_code = graphene.Argument(
-            LanguageCodeEnum, required=True, description="Translation language code."
+            LanguageCodeEnum, required=True, description="Translation language code"
         )
         input = ShopSettingsTranslationInput(
             description=("Fields required to update shop settings translations."),

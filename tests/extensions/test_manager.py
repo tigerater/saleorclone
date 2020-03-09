@@ -7,8 +7,6 @@ from prices import Money, TaxedMoney
 
 from saleor.core.payments import Gateway
 from saleor.core.taxes import TaxType
-
-from saleor.extensions import ConfigurationTypeField
 from saleor.extensions.base_plugin import BasePlugin
 from saleor.extensions.manager import ExtensionsManager, get_extensions_manager
 from saleor.extensions.models import PluginConfiguration
@@ -16,9 +14,6 @@ from saleor.extensions.models import PluginConfiguration
 
 class SamplePlugin(BasePlugin):
     PLUGIN_NAME = "Sample Plugin"
-    CONFIG_STRUCTURE = {
-        "Test": {"type": ConfigurationTypeField.BOOLEAN, "help_text": "", "label": ""}
-    }
 
     def calculate_checkout_total(self, checkout, discounts, previous_value):
         total = Money("1.0", currency=checkout.get_total().currency)
@@ -75,7 +70,7 @@ class SamplePlugin(BasePlugin):
             "name": "Sample Plugin",
             "description": "",
             "active": True,
-            "configuration": [{"name": "Test", "value": True}],
+            "configuration": None,
         }
         return defaults
 
@@ -297,37 +292,6 @@ def test_manager_save_plugin_configuration():
     manager.save_plugin_configuration("Sample Plugin", {"active": False})
     configuration.refresh_from_db()
     assert not configuration.active
-
-
-def test_plugin_updates_configuration_shape():
-    new_config = {"name": "Foo", "value": "bar"}
-
-    @classmethod
-    def new_default_configuration(cls):
-        defaults = {
-            "name": "Sample Plugin",
-            "description": "",
-            "active": True,
-            "configuration": [{"name": "Test", "value": True}, new_config],
-        }
-        return defaults
-
-    new_config_structure = {
-        "type": ConfigurationTypeField.STRING,
-        "help_text": "foo",
-        "label": "foo",
-    }
-    plugins = ["tests.extensions.test_manager.SamplePlugin"]
-    manager = ExtensionsManager(plugins=plugins)
-    manager.get_plugin_configuration(plugin_name="Sample Plugin")
-
-    SamplePlugin._get_default_configuration = new_default_configuration
-    SamplePlugin.CONFIG_STRUCTURE["Foo"] = new_config_structure
-
-    configuration = manager.get_plugin_configuration(plugin_name="Sample Plugin")
-    configuration.refresh_from_db()
-    assert len(configuration.configuration) == 2
-    assert configuration.configuration[1] == new_config
 
 
 class ActivePaymentGateway(BasePlugin):

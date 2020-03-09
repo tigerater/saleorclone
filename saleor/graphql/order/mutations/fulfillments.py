@@ -10,7 +10,6 @@ from ....order.actions import (
     fulfillment_tracking_updated,
     order_fulfilled,
 )
-from ....order.emails import send_fulfillment_update
 from ....order.error_codes import OrderErrorCode
 from ...core.mutations import (
     BaseMutation,
@@ -42,8 +41,7 @@ class FulfillmentCreateInput(graphene.InputObjectType):
 class FulfillmentUpdateTrackingInput(graphene.InputObjectType):
     tracking_number = graphene.String(description="Fulfillment tracking number.")
     notify_customer = graphene.Boolean(
-        default_value=False,
-        description="If true, send an email notification to the customer.",
+        description="If true, send an email notification to the customer."
     )
 
 
@@ -212,10 +210,6 @@ class FulfillmentUpdateTracking(BaseMutation):
         fulfillment.save()
         order = fulfillment.order
         fulfillment_tracking_updated(fulfillment, info.context.user, tracking_number)
-        input_data = data.get("input", {})
-        notify_customer = input_data.get("notify_customer")
-        if notify_customer:
-            send_fulfillment_update.delay(order.pk, fulfillment.pk)
         return FulfillmentUpdateTracking(fulfillment=fulfillment, order=order)
 
 

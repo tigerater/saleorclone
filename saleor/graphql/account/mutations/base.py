@@ -153,44 +153,6 @@ class RequestPasswordReset(BaseMutation):
         return RequestPasswordReset()
 
 
-class ConfirmAccount(BaseMutation):
-    class Arguments:
-        token = graphene.String(
-            description="A one-time token required to set the password.", required=True
-        )
-        email = graphene.String(
-            description="E-mail of the user performing account confirmation.",
-            required=True
-        )
-
-    class Meta:
-        description = "Confirm user account by token sent by email during registration"
-
-    @classmethod
-    def perform_mutation(cls, _root, info, **data):
-        try:
-            user = models.User.objects.get(email=data["email"])
-        except ObjectDoesNotExist:
-            raise ValidationError(
-                {
-                    "email": ValidationError(
-                        "User with this email doesn't exist",
-                        code=AccountErrorCode.NOT_FOUND,
-                    )
-                }
-            )
-
-        if not default_token_generator.check_token(user, data["token"]):
-            raise ValidationError(
-                {"token": ValidationError(INVALID_TOKEN, code=AccountErrorCode.INVALID)}
-            )
-
-        user.is_active = True
-        user.save()
-
-        return ConfirmAccount()
-
-
 class PasswordChange(BaseMutation):
     user = graphene.Field(User, description="A user instance with a new password.")
 
@@ -346,6 +308,13 @@ class CustomerInput(UserInput, UserAddressInput):
 
 
 class UserCreateInput(CustomerInput):
+    send_password_email = graphene.Boolean(
+        description=(
+            "DEPRECATED: Will be removed in Saleor 2.10, if mutation has `redirect_url`"
+            " in input then customer get email with link to set a password. "
+            "Send an email with a link to set a password."
+        )
+    )
     redirect_url = graphene.String(
         description=(
             "URL of a view where users should be redirected to "
@@ -375,14 +344,30 @@ class BaseCustomerCreate(ModelMutation, I18nMixin):
             shipping_address = cls.validate_address(
                 shipping_address_data,
                 instance=getattr(instance, SHIPPING_ADDRESS_FIELD),
+                info=info,
             )
             cleaned_input[SHIPPING_ADDRESS_FIELD] = shipping_address
 
         if billing_address_data:
             billing_address = cls.validate_address(
-                billing_address_data, instance=getattr(instance, BILLING_ADDRESS_FIELD)
+                billing_address_data,
+                instance=getattr(instance, BILLING_ADDRESS_FIELD),
+                info=info,
             )
             cleaned_input[BILLING_ADDRESS_FIELD] = billing_address
+
+        # DEPRECATED: We should remove this condition when dropping
+        # `send_password_email` from mutation input.
+        if cleaned_input.get("send_password_email"):
+            if not cleaned_input.get("redirect_url"):
+                raise ValidationError(
+                    {
+                        "redirect_url": ValidationError(
+                            "Redirect url is required to send a password.",
+                            code=AccountErrorCode.REQUIRED,
+                        )
+                    }
+                )
 
         if cleaned_input.get("redirect_url"):
             try:

@@ -14,13 +14,10 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.encoding import smart_text
-from django.utils.text import slugify
 from faker import Factory
 from faker.providers import BaseProvider
 from measurement.measures import Weight
 from prices import Money, TaxedMoney
-from text_unidecode import unidecode
 
 from ...account.models import Address, User
 from ...account.utils import store_user_address
@@ -561,10 +558,10 @@ def create_users(how_many=10):
 
 
 def create_permission_groups():
-    super_user = [User.objects.filter(is_superuser=True).first()]
-    if not super_user:
-        super_user = create_staff_users(1, True)
-    group = create_group("Full Access", Permission.objects.all(), super_user)
+    super_users = User.objects.filter(is_superuser=True)
+    if not super_users:
+        super_users = create_staff_users(1, True)
+    group = create_group("Full Access", Permission.objects.all(), super_users)
     yield f"Group: {group}"
 
     staff_users = create_staff_users()
@@ -940,10 +937,8 @@ def create_shipping_zones():
 
 def create_warehouses():
     for shipping_zone in ShippingZone.objects.all():
-        shipping_zone_name = shipping_zone.name
         warehouse, _ = Warehouse.objects.update_or_create(
-            name=shipping_zone_name,
-            slug=slugify(smart_text(unidecode(shipping_zone_name))),
+            name=shipping_zone.name,
             defaults={"company_name": fake.company(), "address": create_address()},
         )
         warehouse.shipping_zones.add(shipping_zone)

@@ -20,13 +20,12 @@ class WarehouseAddressInput(graphene.InputObjectType):
 
 
 class WarehouseInput(graphene.InputObjectType):
-    slug = graphene.String(description="Warehouse slug.")
+    name = graphene.String(description="Warehouse name.", required=True)
     company_name = graphene.String(description="Company name.")
     email = graphene.String(description="The email address of the warehouse.")
 
 
 class WarehouseCreateInput(WarehouseInput):
-    name = graphene.String(description="Warehouse name.", required=True)
     address = WarehouseAddressInput(
         description="Address of the warehouse.", required=True
     )
@@ -36,7 +35,6 @@ class WarehouseCreateInput(WarehouseInput):
 
 
 class WarehouseUpdateInput(WarehouseInput):
-    name = graphene.String(description="Warehouse name.", required=False)
     address = WarehouseAddressInput(
         description="Address of the warehouse.", required=False
     )
@@ -50,7 +48,6 @@ class Warehouse(CountableDjangoObjectType):
         only_fields = [
             "id",
             "name",
-            "slug",
             "company_name",
             "shipping_zones",
             "address",

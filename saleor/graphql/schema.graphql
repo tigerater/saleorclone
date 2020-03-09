@@ -683,6 +683,7 @@ type CheckoutClearPrivateMeta {
 type CheckoutComplete {
   errors: [Error!]
   order: Order
+  confirmationNeeded: Boolean!
   checkoutErrors: [CheckoutError!]
 }
 
@@ -2731,28 +2732,12 @@ type PageCountableEdge {
 
 type PageCreate {
   errors: [Error!]
-  pageErrors: [PageError!]
   page: Page
 }
 
 type PageDelete {
   errors: [Error!]
-  pageErrors: [PageError!]
   page: Page
-}
-
-type PageError {
-  field: String
-  message: String
-  code: PageErrorCode
-}
-
-enum PageErrorCode {
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
 }
 
 input PageFilterInput {
@@ -2825,7 +2810,6 @@ input PageTranslationInput {
 
 type PageUpdate {
   errors: [Error!]
-  pageErrors: [PageError!]
   page: Page
 }
 
@@ -3071,7 +3055,6 @@ type Product implements Node {
   publicationDate: Date
   isPublished: Boolean!
   productType: ProductType!
-  slug: String!
   category: Category
   updatedAt: DateTime
   chargeTaxes: Boolean!
@@ -3093,6 +3076,7 @@ type Product implements Node {
   images: [ProductImage]
   collections: [Collection]
   translation(languageCode: LanguageCodeEnum!): ProductTranslation
+  slug: String!
 }
 
 type ProductBulkDelete {
@@ -3146,7 +3130,6 @@ input ProductCreateInput {
   descriptionJson: JSONString
   isPublished: Boolean
   name: String
-  slug: String
   basePrice: Decimal
   taxCode: String
   seo: SeoInput
@@ -3258,7 +3241,6 @@ input ProductInput {
   descriptionJson: JSONString
   isPublished: Boolean
   name: String
-  slug: String
   basePrice: Decimal
   taxCode: String
   seo: SeoInput
@@ -3321,7 +3303,6 @@ type ProductTranslation implements Node {
 type ProductType implements Node {
   id: ID!
   name: String!
-  slug: String!
   hasVariants: Boolean!
   isShippingRequired: Boolean!
   isDigital: Boolean!
@@ -3396,7 +3377,6 @@ input ProductTypeFilterInput {
 
 input ProductTypeInput {
   name: String
-  slug: String
   hasVariants: Boolean
   productAttributes: [ID]
   variantAttributes: [ID]
@@ -4727,7 +4707,6 @@ type VoucherUpdate {
 type Warehouse implements Node {
   id: ID!
   name: String!
-  slug: String!
   companyName: String!
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection!
   address: Address!
@@ -4763,10 +4742,9 @@ type WarehouseCreate {
 }
 
 input WarehouseCreateInput {
-  slug: String
+  name: String!
   companyName: String
   email: String
-  name: String!
   address: WarehouseAddressInput!
   shippingZones: [ID]
 }
@@ -4824,10 +4802,9 @@ type WarehouseUpdate {
 }
 
 input WarehouseUpdateInput {
-  slug: String
+  name: String!
   companyName: String
   email: String
-  name: String
   address: WarehouseAddressInput
 }
 

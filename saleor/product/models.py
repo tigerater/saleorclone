@@ -46,8 +46,8 @@ if TYPE_CHECKING:
 
 
 class Category(MPTTModel, ModelWithMetadata, SeoModel):
-    name = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=128)
+    slug = models.SlugField(max_length=128)
     description = models.TextField(blank=True)
     description_json = JSONField(blank=True, default=dict)
     parent = models.ForeignKey(
@@ -97,8 +97,7 @@ class CategoryTranslation(SeoModelTranslation):
 
 
 class ProductType(ModelWithMetadata):
-    name = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=128)
     has_variants = models.BooleanField(default=True)
     is_shipping_required = models.BooleanField(default=True)
     is_digital = models.BooleanField(default=False)
@@ -247,8 +246,7 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
     product_type = models.ForeignKey(
         ProductType, related_name="products", on_delete=models.CASCADE
     )
-    name = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=128)
     description = models.TextField(blank=True)
     description_json = SanitizedJSONField(
         blank=True, default=dict, sanitizer=clean_draft_js
@@ -330,6 +328,9 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
     @staticmethod
     def get_absolute_url() -> str:
         return ""
+
+    def get_slug(self) -> str:
+        return slugify(smart_text(unidecode(self.name)))
 
     def get_first_image(self):
         images = list(self.images.all())
@@ -713,8 +714,8 @@ class AttributeQuerySet(BaseAttributeQuerySet):
 
 
 class Attribute(ModelWithMetadata):
-    slug = models.SlugField(max_length=250, unique=True)
-    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
 
     input_type = models.CharField(
         max_length=50,
@@ -756,6 +757,9 @@ class Attribute(ModelWithMetadata):
     def __str__(self) -> str:
         return self.name
 
+    def get_formfield_name(self) -> str:
+        return slugify("attribute-%s-%s" % (self.slug, self.pk), allow_unicode=True)
+
     def has_values(self) -> bool:
         return self.values.exists()
 
@@ -784,9 +788,9 @@ class AttributeTranslation(models.Model):
 
 
 class AttributeValue(SortableModel):
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=100)
     value = models.CharField(max_length=100, blank=True, default="")
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=100)
     attribute = models.ForeignKey(
         Attribute, related_name="values", on_delete=models.CASCADE
     )
@@ -806,6 +810,11 @@ class AttributeValue(SortableModel):
 
     def get_ordering_queryset(self):
         return self.attribute.values.all()
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            self.slug = slugify(self.name)
+        return super().save(*args, **kwargs)
 
 
 class AttributeValueTranslation(models.Model):
@@ -872,8 +881,8 @@ class CollectionProduct(SortableModel):
 
 
 class Collection(SeoModel, ModelWithMetadata, PublishableModel):
-    name = models.CharField(max_length=250, unique=True)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=128, unique=True)
+    slug = models.SlugField(max_length=128)
     products = models.ManyToManyField(
         Product,
         blank=True,

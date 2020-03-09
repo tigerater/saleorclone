@@ -29,7 +29,6 @@ from ...checkout.utils import (
 )
 from ...core import analytics
 from ...core.exceptions import InsufficientStock
-from ...core.permissions import OrderPermissions
 from ...core.taxes import TaxError
 from ...core.utils.url import validate_storefront_url
 from ...discount import models as voucher_model
@@ -86,9 +85,14 @@ def update_checkout_shipping_method_if_invalid(checkout: models.Checkout, discou
         checkout.shipping_method = None
         checkout.save(update_fields=["shipping_method"])
 
-    is_valid = clean_shipping_method(
-        checkout=checkout, method=checkout.shipping_method, discounts=discounts
-    )
+    is_valid = True
+    try:
+        is_valid = clean_shipping_method(
+            checkout=checkout, method=checkout.shipping_method, discounts=discounts
+        )
+    except ValidationError:
+        checkout.shipping_method = None
+        checkout.save(update_fields=["shipping_method"])
 
     if not is_valid:
         cheapest_alternative = get_valid_shipping_methods_for_checkout(
@@ -224,10 +228,9 @@ class CheckoutCreate(ModelMutation, I18nMixin):
         # Resolve and process the lines, retrieving the variants and quantities
         lines = data.pop("lines", None)
         if lines:
-            (
-                cleaned_input["variants"],
-                cleaned_input["quantities"],
-            ) = cls.process_checkout_lines(lines)
+            cleaned_input["variants"], cleaned_input[
+                "quantities"
+            ] = cls.process_checkout_lines(lines)
 
         cleaned_input["shipping_address"] = cls.retrieve_shipping_address(user, data)
         cleaned_input["billing_address"] = cls.retrieve_billing_address(user, data)
@@ -856,7 +859,7 @@ class CheckoutRemovePromoCode(BaseMutation):
 class CheckoutUpdateMeta(UpdateMetaBaseMutation):
     class Meta:
         description = "Updates metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = True
         error_type_class = CheckoutError
@@ -866,7 +869,7 @@ class CheckoutUpdateMeta(UpdateMetaBaseMutation):
 class CheckoutUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         description = "Updates private metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = False
         error_type_class = CheckoutError
@@ -876,7 +879,7 @@ class CheckoutUpdatePrivateMeta(UpdateMetaBaseMutation):
 class CheckoutClearMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clear metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = True
         error_type_class = CheckoutError
@@ -886,7 +889,7 @@ class CheckoutClearMeta(ClearMetaBaseMutation):
 class CheckoutClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clear private metadata for checkout."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         model = models.Checkout
         public = False
         error_type_class = CheckoutError

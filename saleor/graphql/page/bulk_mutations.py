@@ -1,6 +1,5 @@
 import graphene
 
-from ...core.permissions import PagePermissions
 from ...page import models
 from ..core.mutations import BaseBulkMutation, ModelBulkDeleteMutation
 
@@ -14,7 +13,7 @@ class PageBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes pages."
         model = models.Page
-        permissions = (PagePermissions.MANAGE_PAGES,)
+        permissions = ("page.manage_pages",)
 
 
 class PageBulkPublish(BaseBulkMutation):
@@ -29,7 +28,7 @@ class PageBulkPublish(BaseBulkMutation):
     class Meta:
         description = "Publish pages."
         model = models.Page
-        permissions = (PagePermissions.MANAGE_PAGES,)
+        permissions = ("page.manage_pages",)
 
     @classmethod
     def bulk_action(cls, queryset, is_published):

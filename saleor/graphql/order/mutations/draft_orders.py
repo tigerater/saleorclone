@@ -4,7 +4,6 @@ from graphene.types import InputObjectType
 
 from ....account.models import User
 from ....core.exceptions import InsufficientStock
-from ....core.permissions import OrderPermissions
 from ....core.taxes import zero_taxed_money
 from ....order import OrderStatus, events, models
 from ....order.actions import order_created
@@ -76,7 +75,7 @@ class DraftOrderCreate(ModelMutation, I18nMixin):
     class Meta:
         description = "Creates a new draft order."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -211,7 +210,7 @@ class DraftOrderUpdate(DraftOrderCreate):
     class Meta:
         description = "Updates a draft order."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -223,7 +222,7 @@ class DraftOrderDelete(ModelDeleteMutation):
     class Meta:
         description = "Deletes a draft order."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -238,7 +237,7 @@ class DraftOrderComplete(BaseMutation):
 
     class Meta:
         description = "Completes creating an order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -303,7 +302,7 @@ class DraftOrderLinesCreate(BaseMutation):
 
     class Meta:
         description = "Create order lines for a draft order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -366,7 +365,7 @@ class DraftOrderLineDelete(BaseMutation):
 
     class Meta:
         description = "Deletes an order line from a draft order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -409,7 +408,7 @@ class DraftOrderLineUpdate(ModelMutation):
     class Meta:
         description = "Updates an order line of a draft order."
         model = models.OrderLine
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 

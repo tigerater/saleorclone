@@ -86,6 +86,7 @@ class StripeGatewayPlugin(BasePlugin):
                     "public_key": configuration["Public API key"],
                     "private_key": configuration["Secret API key"],
                 },
+                template_path="",
                 store_customer=configuration["Store customers card"],
             )
 

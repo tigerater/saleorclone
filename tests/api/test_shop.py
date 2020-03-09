@@ -6,7 +6,7 @@ from django_countries import countries
 
 from saleor.account.models import Address
 from saleor.core.error_codes import ShopErrorCode
-from saleor.core.permissions import get_permissions_codename
+from saleor.core.permissions import MODELS_PERMISSIONS
 from saleor.graphql.core.utils import str_to_enum
 from saleor.site import AuthenticationBackends
 from saleor.site.models import Site
@@ -179,15 +179,14 @@ def test_query_permissions(staff_api_client):
         }
     }
     """
-    permissions_codenames = get_permissions_codename()
     response = staff_api_client.post_graphql(query)
     content = get_graphql_content(response)
     data = content["data"]["shop"]
     permissions = data["permissions"]
     permissions_codes = {permission.get("code") for permission in permissions}
-    assert len(permissions_codes) == len(permissions_codenames)
+    assert len(permissions_codes) == len(MODELS_PERMISSIONS)
     for code in permissions_codes:
-        assert code in [str_to_enum(code) for code in permissions_codenames]
+        assert code in [str_to_enum(code.split(".")[1]) for code in MODELS_PERMISSIONS]
 
 
 def test_query_navigation(user_api_client, site_settings):

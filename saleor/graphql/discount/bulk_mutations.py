@@ -1,6 +1,5 @@
 import graphene
 
-from ...core.permissions import DiscountPermissions
 from ...discount import models
 from ..core.mutations import ModelBulkDeleteMutation
 
@@ -14,7 +13,7 @@ class SaleBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes sales."
         model = models.Sale
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)
 
 
 class VoucherBulkDelete(ModelBulkDeleteMutation):
@@ -26,4 +25,4 @@ class VoucherBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes vouchers."
         model = models.Voucher
-        permissions = (DiscountPermissions.MANAGE_DISCOUNTS,)
+        permissions = ("discount.manage_discounts",)

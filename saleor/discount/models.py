@@ -11,7 +11,6 @@ from django_prices.models import MoneyField
 from django_prices.templatetags.prices import amount
 from prices import Money, fixed_discount, percentage_discount
 
-from ..core.permissions import DiscountPermissions
 from ..core.utils.translations import TranslationProxy
 from . import DiscountValueType, VoucherType
 
@@ -229,7 +228,7 @@ class Sale(models.Model):
         app_label = "discount"
         permissions = (
             (
-                DiscountPermissions.MANAGE_DISCOUNTS.codename,
+                "manage_discounts",
                 pgettext_lazy("Permission description", "Manage sales and vouchers."),
             ),
         )

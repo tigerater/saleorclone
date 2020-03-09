@@ -1,6 +1,5 @@
 import graphene
 
-from ...core.permissions import MenuPermissions
 from ...menu import models
 from ...menu.utils import update_menus
 from ..core.mutations import ModelBulkDeleteMutation
@@ -16,7 +15,7 @@ class MenuBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes menus."
         model = models.Menu
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 
@@ -30,7 +29,7 @@ class MenuItemBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes menu items."
         model = models.MenuItem
-        permissions = (MenuPermissions.MANAGE_MENUS,)
+        permissions = ("menu.manage_menus",)
         error_type_class = MenuError
         error_type_field = "menu_errors"
 

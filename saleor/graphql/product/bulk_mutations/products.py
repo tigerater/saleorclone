@@ -4,7 +4,6 @@ import graphene
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-from ....core.permissions import ProductPermissions
 from ....product import models
 from ....product.error_codes import ProductErrorCode
 from ....product.tasks import update_product_minimal_variant_price_task
@@ -36,7 +35,7 @@ class CategoryBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes categories."
         model = models.Category
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -54,7 +53,7 @@ class CollectionBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes collections."
         model = models.Collection
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -74,7 +73,7 @@ class CollectionBulkPublish(BaseBulkMutation):
     class Meta:
         description = "Publish collections."
         model = models.Collection
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -92,7 +91,7 @@ class ProductBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes products."
         model = models.Product
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -133,7 +132,7 @@ class ProductVariantBulkCreate(BaseMutation):
 
     class Meta:
         description = "Creates product variants for a given product."
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = BulkProductError
         error_type_field = "bulk_product_errors"
 
@@ -290,7 +289,7 @@ class ProductVariantBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes product variants."
         model = models.ProductVariant
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -306,7 +305,7 @@ class ProductTypeBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes product types."
         model = models.ProductType
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -322,7 +321,7 @@ class ProductImageBulkDelete(ModelBulkDeleteMutation):
     class Meta:
         description = "Deletes product images."
         model = models.ProductImage
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 
@@ -339,7 +338,7 @@ class ProductBulkPublish(BaseBulkMutation):
     class Meta:
         description = "Publish products."
         model = models.Product
-        permissions = (ProductPermissions.MANAGE_PRODUCTS,)
+        permissions = ("product.manage_products",)
         error_type_class = ProductError
         error_type_field = "product_errors"
 

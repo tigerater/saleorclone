@@ -9,6 +9,7 @@ from . import (
     GatewayConfig,
     authorize,
     capture,
+    create_form,
     get_client_token,
     list_client_sources,
     process_payment,
@@ -20,6 +21,7 @@ GATEWAY_NAME = "Braintree"
 
 if TYPE_CHECKING:
     from . import GatewayResponse, PaymentData, TokenConfig
+    from django import forms
 
 
 def require_active_plugin(fn):
@@ -36,6 +38,13 @@ def require_active_plugin(fn):
 class BraintreeGatewayPlugin(BasePlugin):
     PLUGIN_NAME = GATEWAY_NAME
     CONFIG_STRUCTURE = {
+        "Template path": {
+            "type": ConfigurationTypeField.STRING,
+            "help_text": pgettext_lazy(
+                "Plugin help text", "Location of django payment template for gateway."
+            ),
+            "label": pgettext_lazy("Plugin label", "Template path"),
+        },
         "Public API key": {
             "type": ConfigurationTypeField.SECRET,
             "help_text": pgettext_lazy(
@@ -95,7 +104,10 @@ class BraintreeGatewayPlugin(BasePlugin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config = GatewayConfig(
-            gateway_name=GATEWAY_NAME, auto_capture=True, connection_params={}
+            gateway_name=GATEWAY_NAME,
+            auto_capture=True,
+            template_path="",
+            connection_params={},
         )
 
     def _initialize_plugin_configuration(self):
@@ -114,6 +126,7 @@ class BraintreeGatewayPlugin(BasePlugin):
                     "public_key": configuration["Public API key"],
                     "private_key": configuration["Secret API key"],
                 },
+                template_path=configuration["Template path"],
                 store_customer=configuration["Store customers card"],
                 require_3d_secure=configuration["Require 3D secure"],
             )
@@ -125,6 +138,7 @@ class BraintreeGatewayPlugin(BasePlugin):
             "description": "",
             "active": False,
             "configuration": [
+                {"name": "Template path", "value": "order/payment/braintree.html"},
                 {"name": "Public API key", "value": None},
                 {"name": "Secret API key", "value": None},
                 {"name": "Use sandbox", "value": True},
@@ -176,6 +190,12 @@ class BraintreeGatewayPlugin(BasePlugin):
         sources = list_client_sources(self._get_gateway_config(), customer_id)
         previous_value.extend(sources)
         return previous_value
+
+    @require_active_plugin
+    def create_form(
+        self, data, payment_information: "PaymentData", previous_value
+    ) -> "forms.Form":
+        return create_form(data, payment_information)
 
     @require_active_plugin
     def get_client_token(self, token_config: "TokenConfig", previous_value):

@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 
 from ...account import models
 from ...account.error_codes import AccountErrorCode
-from ...core.permissions import AccountPermissions
 from ..core.mutations import BaseBulkMutation, ModelBulkDeleteMutation
 from ..core.types.common import AccountError
 from .utils import CustomerDeleteMixin, StaffDeleteMixin
@@ -23,7 +22,7 @@ class CustomerBulkDelete(CustomerDeleteMixin, UserBulkDelete):
     class Meta:
         description = "Deletes customers."
         model = models.User
-        permissions = (AccountPermissions.MANAGE_USERS,)
+        permissions = ("account.manage_users",)
         error_type_class = AccountError
         error_type_field = "account_errors"
 
@@ -38,7 +37,7 @@ class StaffBulkDelete(StaffDeleteMixin, UserBulkDelete):
     class Meta:
         description = "Deletes staff users."
         model = models.User
-        permissions = (AccountPermissions.MANAGE_STAFF,)
+        permissions = ("account.manage_staff",)
         error_type_class = AccountError
         error_type_field = "account_errors"
 
@@ -55,7 +54,7 @@ class UserBulkSetActive(BaseBulkMutation):
     class Meta:
         description = "Activate or deactivate users."
         model = models.User
-        permissions = (AccountPermissions.MANAGE_USERS,)
+        permissions = ("account.manage_users",)
         error_type_class = AccountError
         error_type_field = "account_errors"
 

@@ -1,6 +1,5 @@
 import graphene
 
-from ...core.permissions import DiscountPermissions
 from ..core.fields import FilterInputConnectionField
 from ..core.types import FilterInputObjectType
 from ..decorators import permission_required
@@ -62,19 +61,19 @@ class DiscountQueries(graphene.ObjectType):
         description="List of the shop's vouchers.",
     )
 
-    @permission_required(DiscountPermissions.MANAGE_DISCOUNTS)
+    @permission_required("discount.manage_discounts")
     def resolve_sale(self, info, id):
         return graphene.Node.get_node_from_global_id(info, id, Sale)
 
-    @permission_required(DiscountPermissions.MANAGE_DISCOUNTS)
+    @permission_required("discount.manage_discounts")
     def resolve_sales(self, info, query=None, **kwargs):
         return resolve_sales(info, query, **kwargs)
 
-    @permission_required(DiscountPermissions.MANAGE_DISCOUNTS)
+    @permission_required("discount.manage_discounts")
     def resolve_voucher(self, info, id):
         return graphene.Node.get_node_from_global_id(info, id, Voucher)
 
-    @permission_required(DiscountPermissions.MANAGE_DISCOUNTS)
+    @permission_required("discount.manage_discounts")
     def resolve_vouchers(self, info, query=None, **kwargs):
         return resolve_vouchers(info, query, **kwargs)
 

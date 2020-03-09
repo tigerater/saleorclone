@@ -3,7 +3,6 @@ import graphene_django_optimizer as gql_optimizer
 
 from ...checkout import calculations, models
 from ...checkout.utils import get_valid_shipping_methods_for_checkout
-from ...core.permissions import OrderPermissions
 from ...core.taxes import display_gross_prices, zero_taxed_money
 from ...extensions.manager import get_extensions_manager
 from ..core.connection import CountableDjangoObjectType
@@ -201,7 +200,7 @@ class Checkout(MetadataObjectType, CountableDjangoObjectType):
         return root.is_shipping_required()
 
     @staticmethod
-    @permission_required(OrderPermissions.MANAGE_ORDERS)
+    @permission_required("order.manage_orders")
     def resolve_private_meta(root: models.Checkout, _info):
         return resolve_private_meta(root, _info)
 

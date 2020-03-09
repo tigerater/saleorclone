@@ -160,14 +160,7 @@ class ReadOnlyMiddleware:
                     _("Be aware admin pirate! API runs in read-only mode!")
                 )
             )
-            data = {"errors": [error], "data": None}
-            response = JsonResponse(data=data, safe=False)
-            response["Access-Control-Allow-Origin"] = settings.ALLOWED_GRAPHQL_ORIGINS
-            response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-            response[
-                "Access-Control-Allow-Headers"
-            ] = "Origin, Content-Type, Accept, Authorization"
-            return response
+            return JsonResponse(data=error, status=200, safe=False)
 
         if self._is_django_request_blocked(request):
             image = random.randrange(1, 6)

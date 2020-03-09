@@ -15,7 +15,7 @@ from .enums import LanguageCodeEnum
 
 class BaseTranslationType(CountableDjangoObjectType):
     language = graphene.Field(
-        LanguageDisplay, description="Translation language.", required=True
+        LanguageDisplay, description="Translation's language", required=True
     )
 
     class Meta:

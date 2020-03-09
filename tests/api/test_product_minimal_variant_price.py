@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import graphene
+import pytest
 from freezegun import freeze_time
 from graphql_relay import from_global_id, to_global_id
 from prices import Money
@@ -262,16 +263,12 @@ def test_product_variant_delete_updates_minimal_variant_price(
     )
 
 
-@patch("saleor.product.utils.update_products_minimal_variant_prices_task")
-def test_category_delete_updates_minimal_variant_price(
-    mock_update_products_minimal_variant_prices_task,
-    staff_api_client,
-    categories_tree_with_published_products,
-    permission_manage_products,
+def test_category_delete_also_deletes_products(
+    staff_api_client, product, category, permission_manage_products
 ):
-    parent = categories_tree_with_published_products
-    product_list = [parent.children.first().products.first(), parent.products.first()]
-
+    # Making sure the products associated with the category are deleted otherwise
+    # we need to update their "minimal_variant_price" if the category was on sale.
+    category.products.add(product)
     query = """
         mutation CategoryDelete($id: ID!) {
             categoryDelete(id: $id) {
@@ -285,7 +282,7 @@ def test_category_delete_updates_minimal_variant_price(
             }
         }
     """
-    variables = {"id": to_global_id("Category", parent.pk)}
+    variables = {"id": to_global_id("Category", category.pk)}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
     )
@@ -294,14 +291,8 @@ def test_category_delete_updates_minimal_variant_price(
     content = get_graphql_content(response)
     data = content["data"]["categoryDelete"]
     assert data["errors"] == []
-
-    mock_update_products_minimal_variant_prices_task.delay.assert_called_once_with(
-        product_ids=[p.pk for p in product_list]
-    )
-
-    for product in product_list:
+    with pytest.raises(product._meta.model.DoesNotExist):
         product.refresh_from_db()
-        assert not product.category
 
 
 @patch(

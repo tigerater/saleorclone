@@ -4,7 +4,6 @@ import graphene
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
-from django.db.models import Prefetch
 from django.utils import timezone
 
 from ...checkout import models
@@ -30,7 +29,7 @@ from ...core import analytics
 from ...core.exceptions import InsufficientStock
 from ...core.taxes import TaxError
 from ...discount import models as voucher_model
-from ...payment import PaymentError, gateway, models as payment_models
+from ...payment import PaymentError, gateway
 from ...payment.interface import AddressData
 from ...payment.utils import store_customer_id
 from ...product import models as product_models
@@ -645,25 +644,11 @@ class CheckoutComplete(BaseMutation):
     @classmethod
     def perform_mutation(cls, _root, info, checkout_id, store_source):
         checkout = cls.get_node_or_error(
-            info,
-            checkout_id,
-            only_type=Checkout,
-            field="checkout_id",
-            qs=models.Checkout.objects.prefetch_related(
-                "gift_cards",
-                "lines",
-                Prefetch(
-                    "payments",
-                    queryset=payment_models.Payment.objects.prefetch_related(
-                        "order", "order__lines"
-                    ),
-                ),
-            ).select_related("shipping_method", "shipping_method__shipping_zone"),
+            info, checkout_id, only_type=Checkout, field="checkout_id"
         )
 
-        discounts = info.context.discounts
         user = info.context.user
-        clean_checkout(checkout, discounts)
+        clean_checkout(checkout, info.context.discounts)
 
         payment = checkout.get_last_active_payment()
 
@@ -672,7 +657,7 @@ class CheckoutComplete(BaseMutation):
                 order_data = prepare_order_data(
                     checkout=checkout,
                     tracking_code=analytics.get_client_id(info.context),
-                    discounts=discounts,
+                    discounts=info.context.discounts,
                 )
             except InsufficientStock as e:
                 raise ValidationError(

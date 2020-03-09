@@ -1,7 +1,6 @@
 import bleach
 from django import forms
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Count
 from django.forms.models import ModelChoiceIterator
@@ -265,9 +264,7 @@ class ProductForm(MoneyModelForm, AttributesMixin):
         ),
     )
     category = TreeNodeChoiceField(
-        required=False,
-        queryset=Category.objects.all(),
-        label=pgettext_lazy("Category", "Category"),
+        queryset=Category.objects.all(), label=pgettext_lazy("Category", "Category")
     )
     collections = forms.ModelMultipleChoiceField(
         required=False,
@@ -365,13 +362,6 @@ class ProductForm(MoneyModelForm, AttributesMixin):
             max_length=self.fields["seo_description"].max_length,
         )
         return seo_description
-
-    def clean_is_published(self):
-        is_published = self.cleaned_data.get("is_published")
-        category = self.data.get("category")
-        if not category and is_published:
-            raise ValidationError("You must select a category to be able to publish")
-        return is_published
 
     def save(self, commit=True):
         assert commit is True, "Commit is required to build the M2M structure"

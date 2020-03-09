@@ -1,4 +1,3 @@
-import datetime
 import uuid
 from decimal import Decimal
 from io import BytesIO
@@ -23,16 +22,22 @@ from saleor.checkout.models import Checkout
 from saleor.checkout.utils import add_variant_to_checkout
 from saleor.core.payments import PaymentInterface
 from saleor.discount import DiscountInfo, DiscountValueType, VoucherType
-from saleor.discount.models import Sale, Voucher, VoucherCustomer, VoucherTranslation
+from saleor.discount.models import (
+    Sale,
+    SaleTranslation,
+    Voucher,
+    VoucherCustomer,
+    VoucherTranslation,
+)
 from saleor.giftcard.models import GiftCard
-from saleor.menu.models import Menu, MenuItem
+from saleor.menu.models import Menu, MenuItem, MenuItemTranslation
 from saleor.menu.utils import update_menu
 from saleor.order import OrderStatus
 from saleor.order.actions import fulfill_order_line
 from saleor.order.events import OrderEvents
 from saleor.order.models import FulfillmentStatus, Order, OrderEvent
 from saleor.order.utils import recalculate_order
-from saleor.page.models import Page
+from saleor.page.models import Page, PageTranslation
 from saleor.payment import ChargeStatus, TransactionKind
 from saleor.payment.models import Payment
 from saleor.product import AttributeInputType
@@ -40,8 +45,11 @@ from saleor.product.models import (
     Attribute,
     AttributeTranslation,
     AttributeValue,
+    AttributeValueTranslation,
     Category,
+    CategoryTranslation,
     Collection,
+    CollectionTranslation,
     DigitalContent,
     DigitalContentUrl,
     Product,
@@ -49,9 +57,15 @@ from saleor.product.models import (
     ProductTranslation,
     ProductType,
     ProductVariant,
+    ProductVariantTranslation,
 )
 from saleor.product.utils.attributes import associate_attribute_values_to_instance
-from saleor.shipping.models import ShippingMethod, ShippingMethodType, ShippingZone
+from saleor.shipping.models import (
+    ShippingMethod,
+    ShippingMethodTranslation,
+    ShippingMethodType,
+    ShippingZone,
+)
 from saleor.site import AuthenticationBackends
 from saleor.site.models import AuthorizationKey, SiteSettings
 from saleor.webhook import WebhookEventType
@@ -420,26 +434,9 @@ def categories_tree(db, product_type):  # pylint: disable=W0613
         price=Money(10, "USD"),
         product_type=product_type,
         category=child,
-        is_published=True,
     )
 
     associate_attribute_values_to_instance(product, product_attr, attr_value)
-    return parent
-
-
-@pytest.fixture
-def categories_tree_with_published_products(categories_tree, product):
-    parent = categories_tree
-    parent_product = product
-    parent_product.category = parent
-
-    child = parent.children.first()
-    child_product = child.products.first()
-
-    for product in [child_product, parent_product]:
-        product.publication_date = datetime.date.today()
-        product.is_published = True
-        product.save()
     return parent
 
 
@@ -501,7 +498,6 @@ def product(product_type, category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
 
     associate_attribute_values_to_instance(product, product_attr, product_attr_value)
@@ -534,7 +530,6 @@ def product_with_two_variants(color_attribute, size_attribute, category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
 
     variant = ProductVariant.objects.create(
@@ -583,7 +578,6 @@ def product_with_default_variant(product_type_without_variant, category):
         price=Money(10, "USD"),
         product_type=product_type_without_variant,
         category=category,
-        is_published=True,
     )
     ProductVariant.objects.create(
         product=product, sku="1234", track_inventory=True, quantity=100
@@ -626,16 +620,8 @@ def product_without_shipping(category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     ProductVariant.objects.create(product=product, sku="SKU_B")
-    return product
-
-
-@pytest.fixture
-def product_without_category(product):
-    product.category = None
-    product.save()
     return product
 
 
@@ -782,7 +768,6 @@ def product_with_images(product_type, category, media_root):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     file_mock_0 = MagicMock(spec=File, name="FileMock0")
     file_mock_0.name = "image0.jpg"
@@ -893,7 +878,6 @@ def order_with_lines(order, product_type, category, shipping_zone):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     variant = ProductVariant.objects.create(
         product=product,
@@ -920,7 +904,6 @@ def order_with_lines(order, product_type, category, shipping_zone):
         price=Money("20.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     variant = ProductVariant.objects.create(
         product=product,
@@ -1178,7 +1161,6 @@ def collection_with_image(db, image, media_root):
         slug="collection",
         description="Test description",
         background_image=image,
-        is_published=True,
     )
     return collection
 
@@ -1187,9 +1169,9 @@ def collection_with_image(db, image, media_root):
 def collection_list(db):
     collections = Collection.objects.bulk_create(
         [
-            Collection(name="Collection 1", is_published="True"),
-            Collection(name="Collection 2", is_published="True"),
-            Collection(name="Collection 3", is_published="True"),
+            Collection(name="Collection 1"),
+            Collection(name="Collection 2"),
+            Collection(name="Collection 3"),
         ]
     )
     return collections
@@ -1222,30 +1204,15 @@ def unpublished_collection():
 
 @pytest.fixture
 def page(db):
-    data = {
-        "slug": "test-url",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
+    data = {"slug": "test-url", "title": "Test page", "content": "test content"}
     page = Page.objects.create(**data)
     return page
 
 
 @pytest.fixture
 def page_list(db):
-    data_1 = {
-        "slug": "test-url",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
-    data_2 = {
-        "slug": "test-url-2",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
+    data_1 = {"slug": "test-url", "title": "Test page", "content": "test content"}
+    data_2 = {"slug": "test-url-2", "title": "Test page", "content": "test content"}
     pages = Page.objects.bulk_create([Page(**data_1), Page(**data_2)])
     return pages
 
@@ -1314,7 +1281,16 @@ def translated_variant_fr(product):
 def translated_attribute(product):
     attribute = product.product_type.product_attributes.first()
     return AttributeTranslation.objects.create(
-        language_code="fr", attribute=attribute, name="Name tranlsated to french"
+        language_code="fr", attribute=attribute, name="French attribute name"
+    )
+
+
+@pytest.fixture
+def translated_attribute_value(pink_attribute_value):
+    return AttributeValueTranslation.objects.create(
+        language_code="fr",
+        attribute_value=pink_attribute_value,
+        name="French attribute value name",
     )
 
 
@@ -1332,6 +1308,66 @@ def product_translation_fr(product):
         product=product,
         name="French name",
         description="French description",
+    )
+
+
+@pytest.fixture
+def variant_translation_fr(variant):
+    return ProductVariantTranslation.objects.create(
+        language_code="fr", product_variant=variant, name="French product variant name"
+    )
+
+
+@pytest.fixture
+def collection_translation_fr(collection):
+    return CollectionTranslation.objects.create(
+        language_code="fr",
+        collection=collection,
+        name="French collection name",
+        description="French description",
+    )
+
+
+@pytest.fixture
+def category_translation_fr(category):
+    return CategoryTranslation.objects.create(
+        language_code="fr",
+        category=category,
+        name="French category name",
+        description="French category description",
+    )
+
+
+@pytest.fixture
+def page_translation_fr(page):
+    return PageTranslation.objects.create(
+        language_code="fr",
+        page=page,
+        title="French page title",
+        content="French page content",
+    )
+
+
+@pytest.fixture
+def shipping_method_translation_fr(shipping_method):
+    return ShippingMethodTranslation.objects.create(
+        language_code="fr",
+        shipping_method=shipping_method,
+        name="French shipping method name",
+    )
+
+
+@pytest.fixture
+def sale_translation_fr(sale):
+    return SaleTranslation.objects.create(
+        language_code="fr", sale=sale, name="French sale name"
+    )
+
+
+@pytest.fixture
+def menu_item_translation_fr(menu_item):
+    return MenuItemTranslation.objects.create(
+        language_code="fr", menu_item=menu_item, name="French manu item name"
     )
 
 
@@ -1374,7 +1410,6 @@ def digital_content(category, media_root) -> DigitalContent:
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     product_variant = ProductVariant.objects.create(
         product=product,

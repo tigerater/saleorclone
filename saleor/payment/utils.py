@@ -116,7 +116,6 @@ def create_transaction(
     payment: Payment,
     kind: str,
     payment_information: PaymentData,
-    action_required: bool = False,
     gateway_response: GatewayResponse = None,
     error_msg=None,
 ) -> Transaction:
@@ -137,7 +136,6 @@ def create_transaction(
 
     txn = Transaction.objects.create(
         payment=payment,
-        action_required=action_required,
         kind=gateway_response.kind,
         token=gateway_response.transaction_id,
         is_success=gateway_response.is_success,
@@ -192,11 +190,6 @@ def gateway_postprocess(transaction, payment):
     if not transaction.is_success:
         return
 
-    if transaction.action_required:
-        payment.to_confirm = True
-        payment.save(update_fields=["to_confirm"])
-        return
-
     transaction_kind = transaction.kind
 
     if transaction_kind in {TransactionKind.CAPTURE, TransactionKind.CONFIRM}:
@@ -208,17 +201,17 @@ def gateway_postprocess(transaction, payment):
         if payment.get_charge_amount() <= 0:
             payment.charge_status = ChargeStatus.FULLY_CHARGED
 
-        payment.save(update_fields=["charge_status", "captured_amount", "modified"])
+        payment.save(update_fields=["charge_status", "captured_amount"])
         order = payment.order
         if order and order.is_fully_paid():
             handle_fully_paid_order(order)
 
     elif transaction_kind == TransactionKind.VOID:
         payment.is_active = False
-        payment.save(update_fields=["is_active", "modified"])
+        payment.save(update_fields=["is_active"])
 
     elif transaction_kind == TransactionKind.REFUND:
-        changed_fields = ["captured_amount", "modified"]
+        changed_fields = ["captured_amount"]
         payment.captured_amount -= transaction.amount
         payment.charge_status = ChargeStatus.PARTIALLY_REFUNDED
         if payment.captured_amount <= 0:
@@ -259,13 +252,7 @@ def update_card_details(payment, gateway_response):
     payment.cc_exp_year = gateway_response.card_info.exp_year
     payment.cc_exp_month = gateway_response.card_info.exp_month
     payment.save(
-        update_fields=[
-            "cc_brand",
-            "cc_last_digits",
-            "cc_exp_year",
-            "cc_exp_month",
-            "modified",
-        ]
+        update_fields=["cc_brand", "cc_last_digits", "cc_exp_year", "cc_exp_month"]
     )
 
 

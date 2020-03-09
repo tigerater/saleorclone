@@ -11,11 +11,7 @@ from ...account import models
 from ...core.permissions import AccountPermissions
 from ...payment import gateway
 from ...payment.utils import fetch_customer_id
-from ..utils import (
-    filter_by_query_param,
-    get_user_or_service_account_from_context,
-    sort_queryset,
-)
+from ..utils import filter_by_query_param, sort_queryset
 from .sorters import ServiceAccountSortField, UserSortField, UserSortingInput
 from .types import AddressValidationData, ChoiceValue
 from .utils import get_allowed_fields_camel_case, get_required_fields_camel_case
@@ -58,7 +54,7 @@ def resolve_staff_users(info, query, sort_by=None, **_kwargs):
 
 
 def resolve_user(info, id):
-    requester = get_user_or_service_account_from_context(info.context)
+    requester = info.context.user or info.context.service_account
     if requester:
         _model, user_pk = graphene.Node.from_global_id(id)
         if requester.has_perms(
@@ -160,7 +156,7 @@ def resolve_address(info, id):
     user = info.context.user
     service_account = info.context.service_account
     _model, address_pk = graphene.Node.from_global_id(id)
-    if service_account:
+    if service_account and service_account.has_perm(AccountPermissions.MANAGE_USERS):
         return models.Address.objects.filter(pk=address_pk).first()
     if user and not user.is_anonymous:
         return user.addresses.filter(id=address_pk).first()

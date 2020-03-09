@@ -2,11 +2,10 @@ import datetime
 import os
 import re
 from decimal import Decimal
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 from bs4 import BeautifulSoup, Tag
-from django.forms import HiddenInput
 from django.http import JsonResponse
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -21,7 +20,6 @@ from saleor.menu.models import MenuItemTranslation
 from saleor.menu.utils import update_menu
 from saleor.product import AttributeInputType, ProductAvailabilityStatus, models
 from saleor.product.filters import filter_products_by_attributes_values
-from saleor.product.forms import VariantChoiceField
 from saleor.product.models import (
     Attribute,
     AttributeTranslation,
@@ -1011,15 +1009,3 @@ def test_costs_get_margin_for_variant(variant, price, cost):
     variant.cost_price = cost
     variant.price_override = price
     assert not get_margin_for_variant(variant)
-
-
-def test_hide_field_in_variant_choice_field_form():
-    form = VariantChoiceField(Mock())
-    variants = MagicMock()
-    variants.count.return_value = variants.all().count.return_value = 1
-    variants.all()[0].pk = "test"
-
-    form.update_field_data(variants, discounts=None, country=None)
-
-    assert isinstance(form.widget, HiddenInput)
-    assert form.widget.attrs.get("value") == "test"

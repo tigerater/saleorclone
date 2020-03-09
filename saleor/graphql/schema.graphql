@@ -595,7 +595,7 @@ type Checkout implements Node {
   privateMeta: [MetaStore]!
   meta: [MetaStore]!
   availableShippingMethods: [ShippingMethod]!
-  availablePaymentGateways: [String]!
+  availablePaymentGateways: [GatewaysEnum]!
   email: String!
   isShippingRequired: Boolean!
   lines: [CheckoutLine]
@@ -1601,6 +1601,13 @@ input FulfillmentUpdateTrackingInput {
   notifyCustomer: Boolean
 }
 
+enum GatewaysEnum {
+  DUMMY
+  BRAINTREE
+  RAZORPAY
+  STRIPE
+}
+
 scalar GenericScalar
 
 type Geolocalization {
@@ -1833,7 +1840,7 @@ input MenuInput {
 
 type MenuItem implements Node {
   id: ID!
-  sortOrder: Int @deprecated(reason: "Will be dropped in 2.10 and is deprecated since 2.9: use the position in list instead and relative calculus to determine shift position.")
+  sortOrder: Int
   menu: Menu!
   name: String!
   parent: MenuItem
@@ -1977,6 +1984,9 @@ input MoveProductInput {
 }
 
 type Mutations {
+  webhookCreate(input: WebhookCreateInput!): WebhookCreate
+  webhookDelete(id: ID!): WebhookDelete
+  webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
   authorizationKeyAdd(input: AuthorizationKeyInput!, keyType: AuthorizationKeyType!): AuthorizationKeyAdd
   authorizationKeyDelete(keyType: AuthorizationKeyType!): AuthorizationKeyDelete
   homepageCollectionUpdate(collection: ID): HomepageCollectionUpdate
@@ -2675,7 +2685,7 @@ enum PaymentErrorCode {
 }
 
 input PaymentInput {
-  gateway: String!
+  gateway: GatewaysEnum!
   token: String!
   amount: Decimal
   billingAddress: AddressInput
@@ -2724,6 +2734,7 @@ enum PermissionEnum {
   MANAGE_SHIPPING
   MANAGE_SETTINGS
   MANAGE_TRANSLATIONS
+  MANAGE_WEBHOOKS
 }
 
 type Plugin implements Node {
@@ -2972,8 +2983,7 @@ input ProductInput {
 }
 
 input ProductOrder {
-  field: ProductOrderField
-  attributeId: ID
+  field: ProductOrderField!
   direction: OrderDirection!
 }
 
@@ -3257,12 +3267,14 @@ type ProductVariantUpdatePrivateMeta {
 }
 
 type Query {
+  webhook(id: ID!): Webhook
+  webhooks(before: String, after: String, first: Int, last: Int): WebhookCountableConnection
   translations(kind: TranslatableKinds!, before: String, after: String, first: Int, last: Int): TranslatableItemConnection
   shop: Shop
   shippingZone(id: ID!): ShippingZone
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection
   digitalContent(id: ID!): DigitalContent
-  digitalContents(before: String, after: String, first: Int, last: Int): DigitalContentCountableConnection
+  digitalContents(query: String, level: Int, before: String, after: String, first: Int, last: Int): DigitalContentCountableConnection
   attributes(query: String, inCategory: ID, inCollection: ID, filter: AttributeFilterInput, sortBy: AttributeSortingInput, before: String, after: String, first: Int, last: Int): AttributeCountableConnection
   attribute(id: ID!): Attribute
   categories(query: String, filter: CategoryFilterInput, level: Int, before: String, after: String, first: Int, last: Int): CategoryCountableConnection
@@ -3276,9 +3288,9 @@ type Query {
   productVariant(id: ID!): ProductVariant
   productVariants(ids: [ID], before: String, after: String, first: Int, last: Int): ProductVariantCountableConnection
   reportProductSales(period: ReportingPeriod!, before: String, after: String, first: Int, last: Int): ProductVariantCountableConnection
-  payment(id: ID!): Payment
+  payment(id: ID): Payment
   payments(before: String, after: String, first: Int, last: Int): PaymentCountableConnection
-  paymentClientToken(gateway: String!): String
+  paymentClientToken(gateway: GatewaysEnum): String
   page(id: ID, slug: String): Page
   pages(query: String, filter: PageFilterInput, before: String, after: String, first: Int, last: Int): PageCountableConnection
   homepageEvents(before: String, after: String, first: Int, last: Int): OrderEventCountableConnection
@@ -3286,7 +3298,7 @@ type Query {
   orders(filter: OrderFilterInput, query: String, created: ReportingPeriod, status: OrderStatusFilter, before: String, after: String, first: Int, last: Int): OrderCountableConnection
   draftOrders(filter: OrderDraftFilterInput, query: String, created: ReportingPeriod, before: String, after: String, first: Int, last: Int): OrderCountableConnection
   ordersTotal(period: ReportingPeriod): TaxedMoney
-  orderByToken(token: UUID!): Order
+  orderByToken(token: String!): Order
   menu(id: ID, name: String): Menu
   menus(query: String, filter: MenuFilterInput, before: String, after: String, first: Int, last: Int): MenuCountableConnection
   menuItem(id: ID!): MenuItem
@@ -4161,6 +4173,88 @@ enum VoucherTypeEnum {
 type VoucherUpdate {
   errors: [Error!]
   voucher: Voucher
+}
+
+type Webhook implements Node {
+  serviceAccount: ServiceAccount!
+  targetUrl: String!
+  isActive: Boolean!
+  secretKey: String
+  id: ID!
+  events: [WebhookEvent]
+}
+
+type WebhookCountableConnection {
+  pageInfo: PageInfo!
+  edges: [WebhookCountableEdge!]!
+  totalCount: Int
+}
+
+type WebhookCountableEdge {
+  node: Webhook!
+  cursor: String!
+}
+
+type WebhookCreate {
+  errors: [Error!]
+  webhookErrors: [WebhookError!]
+  webhook: Webhook
+}
+
+input WebhookCreateInput {
+  targetUrl: String
+  events: [WebhookEventTypeEnum]
+  serviceAccount: ID
+  isActive: Boolean
+  secretKey: String
+}
+
+type WebhookDelete {
+  errors: [Error!]
+  webhook: Webhook
+  webhookErrors: [WebhookError!]
+}
+
+type WebhookError {
+  field: String
+  message: String
+  code: WebhookErrorCode
+}
+
+enum WebhookErrorCode {
+  GRAPHQL_ERROR
+  INVALID
+  NOT_FOUND
+  REQUIRED
+  UNIQUE
+}
+
+type WebhookEvent {
+  eventType: String
+}
+
+enum WebhookEventTypeEnum {
+  ALL_EVENTS
+  ORDER_CREATED
+  ORDER_FULLY_PAID
+  ORDER_UPDATED
+  ORDER_CANCELLED
+  CUSTOMER_CREATED
+  PRODUCT_CREATED
+}
+
+type WebhookUpdate {
+  errors: [Error!]
+  webhook: Webhook
+  webhookErrors: [WebhookError!]
+}
+
+input WebhookUpdateInput {
+  targetUrl: String
+  events: [WebhookEventTypeEnum]
+  serviceAccount: ID
+  isActive: Boolean
+  secretKey: String
 }
 
 type Weight {

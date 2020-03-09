@@ -14,12 +14,13 @@ from ..core.mutations import BaseMutation
 from ..core.scalars import Decimal
 from ..core.types import common as common_types
 from ..core.utils import from_global_id_strict_type
+from .enums import PaymentGatewayEnum
 from .types import Payment
 
 
 class PaymentInput(graphene.InputObjectType):
     gateway = graphene.Field(
-        graphene.String,
+        PaymentGatewayEnum,
         description="A gateway to use with that payment.",
         required=True,
     )

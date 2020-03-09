@@ -1414,7 +1414,7 @@ def test_order_capture(
     assert event_captured.user == staff_user
     assert event_captured.parameters == {
         "amount": str(amount),
-        "payment_gateway": "Dummy",
+        "payment_gateway": "dummy",
         "payment_id": "",
     }
 
@@ -1861,7 +1861,7 @@ def test_orders_total(staff_api_client, permission_manage_orders, order_with_lin
 
 def test_order_by_token_query(api_client, order):
     query = """
-    query OrderByToken($token: UUID!) {
+    query OrderByToken($token: String!) {
         orderByToken(token: $token) {
             id
         }

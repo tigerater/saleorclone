@@ -1,26 +1,21 @@
 from django import forms
-from django.utils.functional import lazy
+from django.conf import settings
 from django.utils.translation import pgettext_lazy
 
 from ..account.forms import SignupForm
-from ..payment import gateway
 from ..payment.models import Payment
+from ..payment.utils import gateway_void
 from . import events
 from .models import Order
 
-
-def get_gateways():
-    gateways = [
-        (gtw.value, gtw.value.capitalize() + " gateway")
-        for gtw in gateway.list_gateways()
-    ]
-    return gateways
+PAYMENT_CHOICES = [(k, v) for k, v in settings.CHECKOUT_PAYMENT_GATEWAYS.items()]
 
 
 class PaymentsForm(forms.Form):
     gateway = forms.ChoiceField(
         label=pgettext_lazy("Payments form label", "Payment Method"),
-        choices=lazy(get_gateways, tuple),
+        choices=PAYMENT_CHOICES,
+        initial=PAYMENT_CHOICES[0][0],
         widget=forms.RadioSelect,
     )
 
@@ -54,7 +49,7 @@ class PaymentDeleteForm(forms.Form):
 
     def save(self):
         payment = self.cleaned_data["payment"]
-        gateway.void(payment)
+        gateway_void(payment)
 
 
 class PasswordForm(SignupForm):

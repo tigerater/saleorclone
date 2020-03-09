@@ -8,9 +8,9 @@ from graphql_jwt.exceptions import PermissionDenied
 from ....account import events as account_events, models, utils
 from ....account.error_codes import AccountErrorCode
 from ....account.thumbnails import create_user_avatar_thumbnails
+from ....account.utils import get_random_avatar
 from ....checkout import AddressType
 from ....core.permissions import get_permissions
-from ....core.utils import get_random_avatar
 from ....core.utils.url import validate_storefront_url
 from ....dashboard.emails import send_set_password_email_with_url
 from ....dashboard.staff.utils import remove_staff_member
@@ -46,7 +46,11 @@ class StaffInput(UserInput):
 
 class StaffCreateInput(StaffInput):
     send_password_email = graphene.Boolean(
-        description="Send an email with a link to set the password."
+        description=(
+            "DEPRECATED: Will be removed in Saleor 2.10, if mutation has `redirect_url`"
+            " in input then staff get email with link to set a password. "
+            "Send an email with a link to set the password."
+        )
     )
     redirect_url = graphene.String(
         description=(
@@ -172,6 +176,8 @@ class StaffCreate(ModelMutation):
     def clean_input(cls, info, instance, data):
         cleaned_input = super().clean_input(info, instance, data)
 
+        # DEPRECATED: We should remove this condition when dropping
+        # `send_password_email` from mutation input.
         if cleaned_input.get("send_password_email"):
             if not cleaned_input.get("redirect_url"):
                 raise ValidationError(
@@ -182,7 +188,14 @@ class StaffCreate(ModelMutation):
                         )
                     }
                 )
-            validate_storefront_url(cleaned_input.get("redirect_url"))
+
+        if cleaned_input.get("redirect_url"):
+            try:
+                validate_storefront_url(cleaned_input.get("redirect_url"))
+            except ValidationError as error:
+                raise ValidationError(
+                    {"redirect_url": error}, code=AccountErrorCode.INVALID
+                )
 
         # set is_staff to True to create a staff user
         cleaned_input["is_staff"] = True
@@ -201,7 +214,7 @@ class StaffCreate(ModelMutation):
         user.save()
         if create_avatar:
             create_user_avatar_thumbnails.delay(user_id=user.pk)
-        if cleaned_input.get("send_password_email"):
+        if cleaned_input.get("redirect_url"):
             send_set_password_email_with_url(
                 redirect_url=cleaned_input.get("redirect_url"), user=user, staff=True
             )

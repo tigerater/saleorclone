@@ -132,11 +132,7 @@ def address_edit(request, pk):
         request.POST or None, instance=address, country_code=address.country.code
     )
     if address_form.is_valid() and not preview:
-        address = address_form.save()
-        address = request.extensions.change_user_address(
-            request.user, address, address_type=None
-        )
-        address.save()
+        address_form.save()
         message = pgettext("Storefront message", "Address successfully updated.")
         messages.success(request, message)
         return HttpResponseRedirect(reverse("account:details") + "#addresses")

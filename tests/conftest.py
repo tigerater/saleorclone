@@ -21,11 +21,12 @@ from django_countries import countries
 from PIL import Image
 from prices import Money, TaxedMoney
 
+from saleor.account.backends import BaseBackend
 from saleor.account.models import (
     Address,
     ServiceAccount,
-    StaffNotificationRecipient,
     User,
+    StaffNotificationRecipient,
 )
 from saleor.checkout import utils
 from saleor.checkout.models import Checkout
@@ -1208,6 +1209,13 @@ def authorization_key(site_settings, authorization_backend_name):
 
 
 @pytest.fixture
+def base_backend(authorization_backend_name):
+    base_backend = BaseBackend()
+    base_backend.DB_NAME = authorization_backend_name
+    return base_backend
+
+
+@pytest.fixture
 def permission_manage_staff():
     return Permission.objects.get(codename="manage_staff")
 
@@ -1230,6 +1238,11 @@ def permission_manage_users():
 @pytest.fixture
 def permission_manage_settings():
     return Permission.objects.get(codename="manage_settings")
+
+
+@pytest.fixture
+def permission_impersonate_users():
+    return Permission.objects.get(codename="impersonate_users")
 
 
 @pytest.fixture

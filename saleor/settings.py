@@ -148,7 +148,9 @@ MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
-    ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images"))
+    ("assets", os.path.join(PROJECT_ROOT, "saleor", "static", "assets")),
+    ("favicons", os.path.join(PROJECT_ROOT, "saleor", "static", "favicons")),
+    ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images")),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -224,6 +226,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sitemaps",
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.auth",
@@ -258,6 +261,7 @@ INSTALLED_APPS = [
     "django_prices_vatlayer",
     "graphene_django",
     "mptt",
+    "webpack_loader",
     "social_django",
     "django_countries",
     "django_filters",
@@ -269,9 +273,9 @@ INSTALLED_APPS = [
 
 ENABLE_DEBUG_TOOLBAR = get_bool_from_env("ENABLE_DEBUG_TOOLBAR", False)
 if ENABLE_DEBUG_TOOLBAR:
-    # Ensure the debug toolbar is actually installed before adding it
+    # Ensure the graphiql debug toolbar is actually installed before adding it
     try:
-        __import__("debug_toolbar")
+        __import__("graphiql_debug_toolbar")
     except ImportError as exc:
         msg = (
             f"{exc} -- Install the missing dependencies by "
@@ -279,19 +283,18 @@ if ENABLE_DEBUG_TOOLBAR:
         )
         warnings.warn(msg)
     else:
-        MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
-        INSTALLED_APPS.append("debug_toolbar")
+        INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
+        MIDDLEWARE.append("saleor.graphql.middleware.DebugToolbarMiddleware")
 
-    DEBUG_TOOLBAR_PANELS = [
-        # adds a request history to the debug toolbar
-        "ddt_request_history.panels.request_history.RequestHistoryPanel",
-        "debug_toolbar.panels.timer.TimerPanel",
-        "debug_toolbar.panels.headers.HeadersPanel",
-        "debug_toolbar.panels.request.RequestPanel",
-        "debug_toolbar.panels.sql.SQLPanel",
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-    ]
-    DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 100}
+        DEBUG_TOOLBAR_PANELS = [
+            "ddt_request_history.panels.request_history.RequestHistoryPanel",
+            "debug_toolbar.panels.timer.TimerPanel",
+            "debug_toolbar.panels.headers.HeadersPanel",
+            "debug_toolbar.panels.request.RequestPanel",
+            "debug_toolbar.panels.sql.SQLPanel",
+            "debug_toolbar.panels.profiling.ProfilingPanel",
+        ]
+        DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 100}
 
 ENABLE_SILK = get_bool_from_env("ENABLE_SILK", False)
 if ENABLE_SILK:
@@ -508,6 +511,17 @@ PLACEHOLDER_IMAGES = {
 }
 
 DEFAULT_PLACEHOLDER = "images/placeholder255x255.png"
+
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "CACHE": not DEBUG,
+        "BUNDLE_DIR_NAME": "assets/",
+        "STATS_FILE": os.path.join(PROJECT_ROOT, "webpack-bundle.json"),
+        "POLL_INTERVAL": 0.1,
+        "IGNORE": [r".+\.hot-update\.js", r".+\.map"],
+    }
+}
+
 
 LOGOUT_ON_PASSWORD_CHANGE = False
 

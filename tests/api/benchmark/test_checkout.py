@@ -492,8 +492,8 @@ def test_checkout_payment_charge(
 @pytest.mark.count_queries(autouse=False)
 def test_complete_checkout(api_client, checkout_with_charged_payment, count_queries):
     query = """
-        mutation completeCheckout($checkoutId: ID!, $redirectUrl: String) {
-          checkoutComplete(checkoutId: $checkoutId, redirectUrl: $redirectUrl) {
+        mutation completeCheckout($checkoutId: ID!) {
+          checkoutComplete(checkoutId: $checkoutId) {
             errors {
               field
               message
@@ -507,8 +507,7 @@ def test_complete_checkout(api_client, checkout_with_charged_payment, count_quer
     """
 
     variables = {
-        "checkoutId": Node.to_global_id("Checkout", checkout_with_charged_payment.pk),
-        "redirectUrl": "https://www.example.com",
+        "checkoutId": Node.to_global_id("Checkout", checkout_with_charged_payment.pk)
     }
 
     get_graphql_content(api_client.post_graphql(query, variables))

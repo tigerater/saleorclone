@@ -8,8 +8,6 @@ from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Case, Count, F, FilteredRelation, Q, When
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.encoding import smart_text
 from django.utils.html import strip_tags
@@ -68,11 +66,6 @@ class Category(MPTTModel, ModelWithMetadata, SeoModel):
         return reverse(
             "product:category", kwargs={"slug": self.slug, "category_id": self.id}
         )
-
-
-@receiver(pre_delete, sender=Category)
-def set_category_products_as_unpublished(sender, instance, **kwargs):
-    instance.products.all().update(is_published=False, publication_date=None)
 
 
 class CategoryTranslation(SeoModelTranslation):
@@ -260,11 +253,7 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
         blank=True, default=dict, sanitizer=clean_draft_js
     )
     category = models.ForeignKey(
-        Category,
-        related_name="products",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        Category, related_name="products", on_delete=models.CASCADE
     )
 
     currency = models.CharField(
@@ -326,10 +315,6 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
         # Make sure the "minimal_variant_price_amount" is set
         if self.minimal_variant_price_amount is None:
             self.minimal_variant_price_amount = self.price_amount
-
-        # Product can't be published if doesn't have category
-        if not self.category and self.is_published:
-            self.is_published = False
         return super().save(force_insert, force_update, using, update_fields)
 
     @property

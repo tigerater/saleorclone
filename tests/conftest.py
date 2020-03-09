@@ -1,4 +1,3 @@
-import datetime
 import uuid
 from decimal import Decimal
 from io import BytesIO
@@ -420,26 +419,9 @@ def categories_tree(db, product_type):  # pylint: disable=W0613
         price=Money(10, "USD"),
         product_type=product_type,
         category=child,
-        is_published=True,
     )
 
     associate_attribute_values_to_instance(product, product_attr, attr_value)
-    return parent
-
-
-@pytest.fixture
-def categories_tree_with_published_products(categories_tree, product):
-    parent = categories_tree
-    parent_product = product
-    parent_product.category = parent
-
-    child = parent.children.first()
-    child_product = child.products.first()
-
-    for product in [child_product, parent_product]:
-        product.publication_date = datetime.date.today()
-        product.is_published = True
-        product.save()
     return parent
 
 
@@ -501,7 +483,6 @@ def product(product_type, category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
 
     associate_attribute_values_to_instance(product, product_attr, product_attr_value)
@@ -534,7 +515,6 @@ def product_with_two_variants(color_attribute, size_attribute, category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
 
     variant = ProductVariant.objects.create(
@@ -583,7 +563,6 @@ def product_with_default_variant(product_type_without_variant, category):
         price=Money(10, "USD"),
         product_type=product_type_without_variant,
         category=category,
-        is_published=True,
     )
     ProductVariant.objects.create(
         product=product, sku="1234", track_inventory=True, quantity=100
@@ -626,16 +605,8 @@ def product_without_shipping(category):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     ProductVariant.objects.create(product=product, sku="SKU_B")
-    return product
-
-
-@pytest.fixture
-def product_without_category(product):
-    product.category = None
-    product.save()
     return product
 
 
@@ -782,7 +753,6 @@ def product_with_images(product_type, category, media_root):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     file_mock_0 = MagicMock(spec=File, name="FileMock0")
     file_mock_0.name = "image0.jpg"
@@ -893,7 +863,6 @@ def order_with_lines(order, product_type, category, shipping_zone):
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     variant = ProductVariant.objects.create(
         product=product,
@@ -920,7 +889,6 @@ def order_with_lines(order, product_type, category, shipping_zone):
         price=Money("20.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     variant = ProductVariant.objects.create(
         product=product,
@@ -1178,7 +1146,6 @@ def collection_with_image(db, image, media_root):
         slug="collection",
         description="Test description",
         background_image=image,
-        is_published=True,
     )
     return collection
 
@@ -1187,9 +1154,9 @@ def collection_with_image(db, image, media_root):
 def collection_list(db):
     collections = Collection.objects.bulk_create(
         [
-            Collection(name="Collection 1", is_published="True"),
-            Collection(name="Collection 2", is_published="True"),
-            Collection(name="Collection 3", is_published="True"),
+            Collection(name="Collection 1"),
+            Collection(name="Collection 2"),
+            Collection(name="Collection 3"),
         ]
     )
     return collections
@@ -1222,30 +1189,15 @@ def unpublished_collection():
 
 @pytest.fixture
 def page(db):
-    data = {
-        "slug": "test-url",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
+    data = {"slug": "test-url", "title": "Test page", "content": "test content"}
     page = Page.objects.create(**data)
     return page
 
 
 @pytest.fixture
 def page_list(db):
-    data_1 = {
-        "slug": "test-url",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
-    data_2 = {
-        "slug": "test-url-2",
-        "title": "Test page",
-        "content": "test content",
-        "is_published": True,
-    }
+    data_1 = {"slug": "test-url", "title": "Test page", "content": "test content"}
+    data_2 = {"slug": "test-url-2", "title": "Test page", "content": "test content"}
     pages = Page.objects.bulk_create([Page(**data_1), Page(**data_2)])
     return pages
 
@@ -1374,7 +1326,6 @@ def digital_content(category, media_root) -> DigitalContent:
         price=Money("10.00", "USD"),
         product_type=product_type,
         category=category,
-        is_published=True,
     )
     product_variant = ProductVariant.objects.create(
         product=product,

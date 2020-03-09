@@ -1,7 +1,11 @@
+from unittest.mock import ANY
+
 import graphene
 import pytest
 from django_countries import countries
 
+from saleor.account.models import Address
+from saleor.core.error_codes import ShopErrorCode
 from saleor.core.permissions import MODELS_PERMISSIONS
 from saleor.graphql.core.utils import str_to_enum
 from saleor.site import AuthenticationBackends
@@ -513,6 +517,72 @@ def test_shop_domain_update(staff_api_client, permission_manage_settings):
     assert site.name == new_name
 
 
+MUTATION_CUSTOMER_SET_PASSWORD_URL_UPDATE = """
+    mutation updateSettings($customerSetPasswordUrl: String!) {
+        shopSettingsUpdate(input: {customerSetPasswordUrl: $customerSetPasswordUrl}){
+            shop {
+                customerSetPasswordUrl
+            }
+            shopErrors {
+                message
+                field
+                code
+            }
+        }
+    }
+"""
+
+
+def test_shop_customer_set_password_url_update(
+    staff_api_client, site_settings, permission_manage_settings
+):
+    customer_set_password_url = "http://www.example.com/set_pass/"
+    variables = {"customerSetPasswordUrl": customer_set_password_url}
+    assert site_settings.customer_set_password_url != customer_set_password_url
+    response = staff_api_client.post_graphql(
+        MUTATION_CUSTOMER_SET_PASSWORD_URL_UPDATE,
+        variables,
+        permissions=[permission_manage_settings],
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["shopSettingsUpdate"]
+    assert not data["shopErrors"]
+    site_settings = Site.objects.get_current().settings
+    assert site_settings.customer_set_password_url == customer_set_password_url
+
+
+@pytest.mark.parametrize(
+    "customer_set_password_url",
+    [
+        ("http://not-allowed-storefron.com/pass"),
+        ("http://[value-error-in-urlparse@test/pass"),
+        ("without-protocole.com/pass"),
+    ],
+)
+def test_shop_customer_set_password_url_update_invalid_url(
+    staff_api_client,
+    site_settings,
+    permission_manage_settings,
+    customer_set_password_url,
+):
+    variables = {"customerSetPasswordUrl": customer_set_password_url}
+    assert not site_settings.customer_set_password_url
+    response = staff_api_client.post_graphql(
+        MUTATION_CUSTOMER_SET_PASSWORD_URL_UPDATE,
+        variables,
+        permissions=[permission_manage_settings],
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["shopSettingsUpdate"]
+    assert data["shopErrors"][0] == {
+        "field": "customerSetPasswordUrl",
+        "code": ShopErrorCode.INVALID.name,
+        "message": ANY,
+    }
+    site_settings.refresh_from_db()
+    assert not site_settings.customer_set_password_url
+
+
 def test_homepage_collection_update(
     staff_api_client, collection, permission_manage_settings
 ):
@@ -682,15 +752,8 @@ def test_mutation_authorization_key_delete(
     assert content["data"]["authorizationKeyDelete"]["authorizationKey"]
 
 
-def test_mutation_update_company_address(
-    staff_api_client,
-    authorization_key,
-    permission_manage_settings,
-    address,
-    site_settings,
-):
-    query = """
-    mutation updateShopAddress($input: AddressInput!){
+MUTATION_SHOP_ADDRESS_UPDATE = """
+    mutation updateShopAddress($input: AddressInput){
         shopAddressUpdate(input: $input){
             errors{
                 field
@@ -698,7 +761,16 @@ def test_mutation_update_company_address(
             }
         }
     }
-    """
+"""
+
+
+def test_mutation_update_company_address(
+    staff_api_client,
+    authorization_key,
+    permission_manage_settings,
+    address,
+    site_settings,
+):
     variables = {
         "input": {
             "streetAddress1": address.street_address_1,
@@ -709,7 +781,9 @@ def test_mutation_update_company_address(
     }
 
     response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_settings]
+        MUTATION_SHOP_ADDRESS_UPDATE,
+        variables,
+        permissions=[permission_manage_settings],
     )
     content = get_graphql_content(response)
     assert "errors" not in content["data"]
@@ -719,3 +793,40 @@ def test_mutation_update_company_address(
     assert site_settings.company_address.street_address_1 == address.street_address_1
     assert site_settings.company_address.city == address.city
     assert site_settings.company_address.country.code == address.country.code
+
+
+def test_mutation_update_company_address_remove_address(
+    staff_api_client, permission_manage_settings, site_settings, address
+):
+    site_settings.company_address = address
+    site_settings.save(update_fields=["company_address"])
+    variables = {"input": None}
+
+    response = staff_api_client.post_graphql(
+        MUTATION_SHOP_ADDRESS_UPDATE,
+        variables,
+        permissions=[permission_manage_settings],
+    )
+    content = get_graphql_content(response)
+    assert "errors" not in content["data"]
+
+    site_settings.refresh_from_db()
+    assert not site_settings.company_address
+    assert not Address.objects.filter(pk=address.pk).exists()
+
+
+def test_mutation_update_company_address_remove_address_without_address(
+    staff_api_client, permission_manage_settings, site_settings
+):
+    variables = {"input": None}
+
+    response = staff_api_client.post_graphql(
+        MUTATION_SHOP_ADDRESS_UPDATE,
+        variables,
+        permissions=[permission_manage_settings],
+    )
+    content = get_graphql_content(response)
+    assert "errors" not in content["data"]
+
+    site_settings.refresh_from_db()
+    assert not site_settings.company_address

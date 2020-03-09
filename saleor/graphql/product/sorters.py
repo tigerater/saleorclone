@@ -64,7 +64,7 @@ class AttributeSortField(graphene.Enum):
         queryset: QuerySet, sort_by: SortInputObjectType
     ) -> QuerySet:
         # pylint: disable=no-member
-        is_asc = sort_by["direction"] == OrderDirection.ASC.value  # type: ignore
+        is_asc = sort_by["direction"] == OrderDirection.ASC.value
         return queryset.variant_attributes_sorted(is_asc)
 
     @staticmethod
@@ -72,7 +72,7 @@ class AttributeSortField(graphene.Enum):
         queryset: QuerySet, sort_by: SortInputObjectType
     ) -> QuerySet:
         # pylint: disable=no-member
-        is_asc = sort_by["direction"] == OrderDirection.ASC.value  # type: ignore
+        is_asc = sort_by["direction"] == OrderDirection.ASC.value
         return queryset.product_attributes_sorted(is_asc)
 
 

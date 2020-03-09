@@ -605,7 +605,7 @@ CUSTOMER_CREATE_MUTATION = """
     mutation CreateCustomer(
         $email: String, $firstName: String, $lastName: String,
         $note: String, $billing: AddressInput, $shipping: AddressInput,
-        $send_mail: Boolean, $redirect_url: String) {
+        $redirect_url: String) {
         customerCreate(input: {
             email: $email,
             firstName: $firstName,
@@ -613,7 +613,6 @@ CUSTOMER_CREATE_MUTATION = """
             note: $note,
             defaultShippingAddress: $shipping,
             defaultBillingAddress: $billing
-            sendPasswordEmail: $send_mail
             redirectUrl: $redirect_url
         }) {
             errors {
@@ -734,24 +733,6 @@ def test_customer_create_without_send_password(
     data = content["data"]["customerCreate"]
     assert not data["errors"]
     User.objects.get(email=email)
-
-
-def test_customer_create_without_redirect_url_deprecated_send_mail_flag(
-    staff_api_client, permission_manage_users
-):
-    email = "api_user@example.com"
-    variables = {"email": email, "send_mail": True}
-    response = staff_api_client.post_graphql(
-        CUSTOMER_CREATE_MUTATION, variables, permissions=[permission_manage_users]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["customerCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.REQUIRED.name,
-    }
-    staff_user = User.objects.filter(email=email)
-    assert not staff_user
 
 
 def test_customer_create_with_invalid_url(staff_api_client, permission_manage_users):
@@ -1299,10 +1280,9 @@ def test_customer_delete_errors(customer_user, admin_user, staff_user):
 
 STAFF_CREATE_MUTATION = """
     mutation CreateStaff(
-            $email: String, $permissions: [PermissionEnum],
-            $send_mail: Boolean, $redirect_url: String) {
+            $email: String, $permissions: [PermissionEnum], $redirect_url: String) {
         staffCreate(input: {email: $email, permissions: $permissions,
-                sendPasswordEmail: $send_mail, redirectUrl: $redirect_url}) {
+                redirectUrl: $redirect_url}) {
             errors {
                 field
                 message
@@ -1402,24 +1382,6 @@ def test_staff_create_without_send_password(
     data = content["data"]["staffCreate"]
     assert not data["errors"]
     User.objects.get(email=email)
-
-
-def test_staff_create_without_redirect_url_deprecated_send_mail_flag(
-    staff_api_client, media_root, permission_manage_staff
-):
-    email = "api_user@example.com"
-    variables = {"email": email, "send_mail": True}
-    response = staff_api_client.post_graphql(
-        STAFF_CREATE_MUTATION, variables, permissions=[permission_manage_staff]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["staffCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.REQUIRED.name,
-    }
-    staff_user = User.objects.filter(email=email)
-    assert not staff_user
 
 
 def test_staff_create_with_invalid_url(
@@ -3040,3 +3002,53 @@ def test_change_active_status_for_himself(staff_api_client, permission_manage_us
         data["errors"][0]["message"] == "Cannot activate or deactivate "
         "your own account."
     )
+
+
+ADDRESS_QUERY = """
+query address($id: ID!) {
+    address(id: $id) {
+        postalCode
+        lastName
+        firstName
+        city
+        country {
+          code
+        }
+    }
+}
+"""
+
+
+def test_address_query_as_owner(user_api_client, customer_user):
+    address = customer_user.addresses.first()
+    variables = {"id": graphene.Node.to_global_id("Address", address.pk)}
+    response = user_api_client.post_graphql(ADDRESS_QUERY, variables)
+    content = get_graphql_content(response)
+    data = content["data"]["address"]
+    assert data["country"]["code"] == address.country.code
+
+
+def test_address_query_as_not_owner(
+    user_api_client, customer_user, address_other_country
+):
+    variables = {"id": graphene.Node.to_global_id("Address", address_other_country.pk)}
+    response = user_api_client.post_graphql(ADDRESS_QUERY, variables)
+    content = get_graphql_content(response)
+    data = content["data"]["address"]
+    assert not data
+
+
+def test_address_query_as_service_account(
+    service_account_api_client, service_account, address_other_country
+):
+    variables = {"id": graphene.Node.to_global_id("Address", address_other_country.pk)}
+    response = service_account_api_client.post_graphql(ADDRESS_QUERY, variables)
+    content = get_graphql_content(response)
+    data = content["data"]["address"]
+    assert data["country"]["code"] == address_other_country.country.code
+
+
+def test_address_query_as_anonymous_user(api_client, address_other_country):
+    variables = {"id": graphene.Node.to_global_id("Address", address_other_country.pk)}
+    response = api_client.post_graphql(ADDRESS_QUERY, variables)
+    assert_no_permission(response)

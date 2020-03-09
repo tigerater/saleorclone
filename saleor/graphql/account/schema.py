@@ -22,7 +22,6 @@ from .mutations.account import (
     RequestEmailChange,
 )
 from .mutations.base import (
-    ConfirmAccount,
     PasswordChange,
     RequestPasswordReset,
     SetPassword,
@@ -184,7 +183,6 @@ class AccountQueries(graphene.ObjectType):
 class AccountMutations(graphene.ObjectType):
     # Base mutations
     request_password_reset = RequestPasswordReset.Field()
-    confirm_account = ConfirmAccount.Field()
     set_password = SetPassword.Field()
     password_change = PasswordChange.Field()
     request_email_change = RequestEmailChange.Field()

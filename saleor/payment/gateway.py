@@ -213,12 +213,8 @@ def get_client_token(gateway: Gateway, customer_id: str = None) -> str:
     return plugin_manager.get_client_token(gateway, token_config)
 
 
-def list_gateways() -> List[str]:
+def list_gateways() -> List[Gateway]:
     return get_extensions_manager().list_payment_gateways()
-
-
-def get_template_path(gateway: Gateway) -> str:
-    return get_extensions_manager().get_payment_template(gateway)
 
 
 def _get_gateway(payment: Payment) -> Gateway:

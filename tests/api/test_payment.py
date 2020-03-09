@@ -6,7 +6,11 @@ from prices import TaxedMoney
 
 from saleor.core.payments import Gateway
 from saleor.core.utils import get_country_name_by_code
-from saleor.graphql.payment.enums import OrderAction, PaymentChargeStatusEnum
+from saleor.graphql.payment.enums import (
+    OrderAction,
+    PaymentChargeStatusEnum,
+    PaymentGatewayEnum,
+)
 from saleor.payment.interface import CreditCardInfo, CustomerSource, TokenConfig
 from saleor.payment.models import ChargeStatus, Payment, TransactionKind
 from saleor.payment.utils import fetch_customer_id, store_customer_id
@@ -497,7 +501,7 @@ def braintree_customer_id():
 
 
 def test_store_payment_gateway_meta(customer_user, braintree_customer_id):
-    gateway_name = "braintree"
+    gateway_name = PaymentGatewayEnum.BRAINTREE.name
     META = {
         "payment-gateways": {
             gateway_name.upper(): {"customer_id": braintree_customer_id}

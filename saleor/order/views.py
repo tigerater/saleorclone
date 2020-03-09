@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -131,7 +132,7 @@ def start_payment(request, order, gateway):
         "client_token": client_token,
         "order": order,
     }
-    template_path = payment_gateway.get_template_path(Gateway(payment.gateway))
+    template_path = settings.PAYMENT_GATEWAYS[gateway]["template_path"]
     return TemplateResponse(request, template_path, ctx)
 
 

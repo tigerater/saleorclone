@@ -73,7 +73,6 @@ type AccountRegister {
 input AccountRegisterInput {
   email: String!
   password: String!
-  redirectOrigin: String!
 }
 
 type AccountRequestDeletion {
@@ -557,6 +556,7 @@ type CategoryDelete {
 
 input CategoryFilterInput {
   search: String
+  ids: [ID]
 }
 
 input CategoryInput {
@@ -922,6 +922,7 @@ type CollectionDelete {
 input CollectionFilterInput {
   published: CollectionPublished
   search: String
+  ids: [ID]
 }
 
 input CollectionInput {
@@ -1026,10 +1027,6 @@ enum ConfigurationTypeFieldEnum {
   BOOLEAN
   SECRET
   PASSWORD
-}
-
-type ConfirmAccount {
-  errors: [Error!]
 }
 
 type ConfirmEmailChange {
@@ -2273,7 +2270,6 @@ type Mutation {
   checkoutUpdatePrivateMetadata(id: ID!, input: MetaInput!): CheckoutUpdatePrivateMeta
   checkoutClearPrivateMetadata(id: ID!, input: MetaPath!): CheckoutClearPrivateMeta
   requestPasswordReset(email: String!, redirectUrl: String!): RequestPasswordReset
-  confirmAccount(email: String!, token: String!): ConfirmAccount
   setPassword(token: String!, email: String!, password: String!): SetPassword
   passwordChange(newPassword: String!, oldPassword: String!): PasswordChange
   requestEmailChange(newEmail: String!, password: String!, redirectUrl: String!): RequestEmailChange

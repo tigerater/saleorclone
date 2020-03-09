@@ -92,12 +92,6 @@ type AccountUpdate {
   user: User
 }
 
-type AccountUpdateMeta {
-  errors: [Error!]
-  accountErrors: [AccountError!]
-  user: User
-}
-
 type Address implements Node {
   id: ID!
   firstName: String!
@@ -138,7 +132,7 @@ input AddressInput {
   city: String
   cityArea: String
   postalCode: String
-  country: String
+  country: CountryCode
   countryArea: String
   phone: String
 }
@@ -1559,6 +1553,8 @@ type Fulfillment implements Node {
   status: FulfillmentStatus!
   trackingNumber: String!
   shippingDate: DateTime!
+  privateMeta: [MetaStore]!
+  meta: [MetaStore]!
   lines: [FulfillmentLine]
   statusDisplay: String
 }
@@ -1572,6 +1568,16 @@ type FulfillmentCancel {
 
 input FulfillmentCancelInput {
   restock: Boolean
+}
+
+type FulfillmentClearMeta {
+  errors: [Error!]
+  fulfillment: Fulfillment
+}
+
+type FulfillmentClearPrivateMeta {
+  errors: [Error!]
+  fulfillment: Fulfillment
 }
 
 type FulfillmentCreate {
@@ -1601,6 +1607,16 @@ input FulfillmentLineInput {
 enum FulfillmentStatus {
   FULFILLED
   CANCELED
+}
+
+type FulfillmentUpdateMeta {
+  errors: [Error!]
+  fulfillment: Fulfillment
+}
+
+type FulfillmentUpdatePrivateMeta {
+  errors: [Error!]
+  fulfillment: Fulfillment
 }
 
 type FulfillmentUpdateTracking {
@@ -2122,6 +2138,10 @@ type Mutation {
   orderFulfillmentCancel(id: ID!, input: FulfillmentCancelInput!): FulfillmentCancel
   orderFulfillmentCreate(input: FulfillmentCreateInput!, order: ID): FulfillmentCreate
   orderFulfillmentUpdateTracking(id: ID!, input: FulfillmentUpdateTrackingInput!): FulfillmentUpdateTracking
+  orderFulfillmentClearMeta(id: ID!, input: MetaPath!): FulfillmentClearMeta
+  orderFulfillmentClearPrivateMeta(id: ID!, input: MetaPath!): FulfillmentClearPrivateMeta
+  orderFulfillmentUpdateMeta(id: ID!, input: MetaInput!): FulfillmentUpdateMeta
+  orderFulfillmentUpdatePrivateMeta(id: ID!, input: MetaInput!): FulfillmentUpdatePrivateMeta
   orderMarkAsPaid(id: ID!): OrderMarkAsPaid
   orderRefund(amount: Decimal!, id: ID!): OrderRefund
   orderUpdate(id: ID!, input: OrderUpdateInput!): OrderUpdate
@@ -2185,6 +2205,8 @@ type Mutation {
   requestPasswordReset(email: String!, redirectUrl: String!): RequestPasswordReset
   setPassword(token: String!, email: String!, password: String!): SetPassword
   passwordChange(newPassword: String!, oldPassword: String!): PasswordChange
+  userUpdateMetadata(id: ID!, input: MetaInput!): UserUpdateMeta
+  userClearMetadata(id: ID!, input: MetaPath!): UserClearMeta
   accountAddressCreate(input: AddressInput!, type: AddressTypeEnum): AccountAddressCreate
   accountAddressUpdate(id: ID!, input: AddressInput!): AccountAddressUpdate
   accountAddressDelete(id: ID!): AccountAddressDelete
@@ -2193,7 +2215,6 @@ type Mutation {
   accountUpdate(input: AccountInput!): AccountUpdate
   accountRequestDeletion(redirectUrl: String!): AccountRequestDeletion
   accountDelete(token: String!): AccountDelete
-  accountUpdateMeta(input: MetaInput!): AccountUpdateMeta
   customerPasswordReset(input: CustomerPasswordResetInput!): CustomerPasswordReset
   customerAddressCreate(input: AddressInput!, type: AddressTypeEnum): CustomerAddressCreate
   customerSetDefaultAddress(id: ID!, type: AddressTypeEnum!): CustomerSetDefaultAddress
@@ -2214,8 +2235,6 @@ type Mutation {
   userAvatarUpdate(image: Upload!): UserAvatarUpdate
   userAvatarDelete: UserAvatarDelete
   userBulkSetActive(ids: [ID]!, isActive: Boolean!): UserBulkSetActive
-  userUpdateMetadata(id: ID!, input: MetaInput!): UserUpdateMeta
-  userClearMetadata(id: ID!, input: MetaPath!): UserClearMeta
   userUpdatePrivateMetadata(id: ID!, input: MetaInput!): UserUpdatePrivateMeta
   userClearPrivateMetadata(id: ID!, input: MetaPath!): UserClearPrivateMeta
   serviceAccountCreate(input: ServiceAccountInput!): ServiceAccountCreate
@@ -3774,6 +3793,7 @@ type Shop {
   defaultDigitalMaxDownloads: Int
   defaultDigitalUrlValidDays: Int
   companyAddress: Address
+  customerSetPasswordUrl: String
 }
 
 type ShopAddressUpdate {
@@ -3823,6 +3843,7 @@ input ShopSettingsInput {
   defaultDigitalUrlValidDays: Int
   defaultMailSenderName: String
   defaultMailSenderAddress: String
+  customerSetPasswordUrl: String
 }
 
 type ShopSettingsTranslate {

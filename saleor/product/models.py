@@ -66,10 +66,9 @@ class Category(MPTTModel, ModelWithMetadata, SeoModel):
     def __str__(self) -> str:
         return self.name
 
+    # TODO: in #5022
     def get_absolute_url(self) -> str:
-        return reverse(
-            "product:category", kwargs={"slug": self.slug, "category_id": self.id}
-        )
+        return ""
 
 
 class CategoryTranslation(SeoModelTranslation):
@@ -336,10 +335,9 @@ class Product(SeoModel, ModelWithMetadata, PublishableModel):
     def is_available(self) -> bool:
         return self.is_visible and self.is_in_stock()
 
+    # TODO: in #5022
     def get_absolute_url(self) -> str:
-        return reverse(
-            "product:details", kwargs={"slug": self.get_slug(), "product_id": self.id}
-        )
+        return ""
 
     def get_slug(self) -> str:
         return slugify(smart_text(unidecode(self.name)))
@@ -503,12 +501,9 @@ class ProductVariant(ModelWithMetadata):
     def get_weight(self):
         return self.weight or self.product.weight or self.product.product_type.weight
 
+    # TODO: in #5022
     def get_absolute_url(self) -> str:
-        slug = self.product.get_slug()
-        product_id = self.product.id
-        return reverse(
-            "product:details", kwargs={"slug": slug, "product_id": product_id}
-        )
+        return ""
 
     def is_shipping_required(self) -> bool:
         return self.product.product_type.is_shipping_required
@@ -604,7 +599,7 @@ class DigitalContentUrl(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def get_absolute_url(self) -> str:
-        url = reverse("product:digital-product", kwargs={"token": str(self.token)})
+        url = reverse("digital-product", kwargs={"token": str(self.token)})
         return build_absolute_uri(url)
 
 
@@ -943,8 +938,9 @@ class Collection(SeoModel, ModelWithMetadata, PublishableModel):
     def __str__(self) -> str:
         return self.name
 
+    # TODO: in #5022
     def get_absolute_url(self) -> str:
-        return reverse("product:collection", kwargs={"pk": self.id, "slug": self.slug})
+        return ""
 
 
 class CollectionTranslation(SeoModelTranslation):

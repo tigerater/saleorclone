@@ -201,7 +201,7 @@ class CountryAwareAddressForm(AddressForm):
 
 
 def get_address_form_class(country_code):
-    return COUNTRY_FORMS.get(country_code, AddressForm)
+    return COUNTRY_FORMS[country_code]
 
 
 def get_form_i18n_lines(form_instance):

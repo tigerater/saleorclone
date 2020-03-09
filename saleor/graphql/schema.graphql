@@ -1287,12 +1287,6 @@ type CreditCard {
   expYear: Int!
 }
 
-type CustomerAddressCreate {
-  errors: [Error!]
-  user: User
-  address: Address
-}
-
 type CustomerBulkDelete {
   errors: [Error!]
   count: Int!
@@ -1351,29 +1345,6 @@ input CustomerInput {
   email: String
   isActive: Boolean
   note: String
-}
-
-type CustomerPasswordReset {
-  errors: [Error!]
-}
-
-input CustomerPasswordResetInput {
-  email: String!
-}
-
-type CustomerRegister {
-  errors: [Error!]
-  user: User
-}
-
-input CustomerRegisterInput {
-  email: String!
-  password: String!
-}
-
-type CustomerSetDefaultAddress {
-  errors: [Error!]
-  user: User
 }
 
 type CustomerUpdate {
@@ -1836,11 +1807,6 @@ type LanguageDisplay {
   language: String!
 }
 
-type LoggedUserUpdate {
-  errors: [Error!]
-  user: User
-}
-
 type Margin {
   start: Int
   stop: Int
@@ -2070,9 +2036,6 @@ type Mutation {
   webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
   authorizationKeyAdd(input: AuthorizationKeyInput!, keyType: AuthorizationKeyType!): AuthorizationKeyAdd
   authorizationKeyDelete(keyType: AuthorizationKeyType!): AuthorizationKeyDelete
-  staffNotificationRecipientCreate(input: StaffNotificationRecipientInput!): StaffNotificationRecipientCreate
-  staffNotificationRecipientUpdate(id: ID!, input: StaffNotificationRecipientInput!): StaffNotificationRecipientUpdate
-  staffNotificationRecipientDelete(id: ID!): StaffNotificationRecipientDelete
   homepageCollectionUpdate(collection: ID): HomepageCollectionUpdate
   shopDomainUpdate(input: SiteDomainInput): ShopDomainUpdate
   shopSettingsUpdate(input: ShopSettingsInput!): ShopSettingsUpdate
@@ -2241,7 +2204,7 @@ type Mutation {
   tokenVerify(token: String!): VerifyToken
   checkoutAddPromoCode(checkoutId: ID!, promoCode: String!): CheckoutAddPromoCode
   checkoutBillingAddressUpdate(billingAddress: AddressInput!, checkoutId: ID!): CheckoutBillingAddressUpdate
-  checkoutComplete(checkoutId: ID!, storeSource: Boolean = false): CheckoutComplete
+  checkoutComplete(checkoutId: ID!, redirectUrl: String, storeSource: Boolean = false): CheckoutComplete
   checkoutCreate(input: CheckoutCreateInput!): CheckoutCreate
   checkoutCustomerAttach(checkoutId: ID!, customerId: ID!): CheckoutCustomerAttach
   checkoutCustomerDetach(checkoutId: ID!): CheckoutCustomerDetach
@@ -2270,11 +2233,6 @@ type Mutation {
   accountRequestDeletion(redirectUrl: String!): AccountRequestDeletion
   accountDelete(token: String!): AccountDelete
   accountUpdateMeta(input: MetaInput!): AccountUpdateMeta
-  customerPasswordReset(input: CustomerPasswordResetInput!): CustomerPasswordReset
-  customerAddressCreate(input: AddressInput!, type: AddressTypeEnum): CustomerAddressCreate
-  customerSetDefaultAddress(id: ID!, type: AddressTypeEnum!): CustomerSetDefaultAddress
-  customerRegister(input: CustomerRegisterInput!): CustomerRegister
-  loggedUserUpdate(input: UserAddressInput!): LoggedUserUpdate
   addressCreate(input: AddressInput!, userId: ID!): AddressCreate
   addressUpdate(id: ID!, input: AddressInput!): AddressUpdate
   addressDelete(id: ID!): AddressDelete
@@ -2301,7 +2259,6 @@ type Mutation {
   serviceAccountClearPrivateMetadata(id: ID!, input: MetaPath!): ServiceAccountClearPrivateMeta
   serviceAccountTokenCreate(input: ServiceAccountTokenInput!): ServiceAccountTokenCreate
   serviceAccountTokenDelete(id: ID!): ServiceAccountTokenDelete
-  passwordReset(email: String!): PasswordReset
 }
 
 input NameTranslationInput {
@@ -2742,10 +2699,6 @@ type PasswordChange {
   errors: [Error!]
   user: User
   accountErrors: [AccountError!]
-}
-
-type PasswordReset {
-  errors: [Error!]
 }
 
 type Payment implements Node {
@@ -3895,7 +3848,6 @@ type Shop {
   defaultDigitalUrlValidDays: Int
   companyAddress: Address
   customerSetPasswordUrl: String
-  staffNotificationRecipients: [StaffNotificationRecipient]
 }
 
 type ShopAddressUpdate {
@@ -4017,37 +3969,6 @@ input StaffInput {
 enum StaffMemberStatus {
   ACTIVE
   DEACTIVATED
-}
-
-type StaffNotificationRecipient implements Node {
-  user: User
-  active: Boolean
-  id: ID!
-  email: String
-}
-
-type StaffNotificationRecipientCreate {
-  errors: [Error!]
-  shopErrors: [ShopError!]
-  staffNotificationRecipient: StaffNotificationRecipient
-}
-
-type StaffNotificationRecipientDelete {
-  errors: [Error!]
-  shopErrors: [ShopError!]
-  staffNotificationRecipient: StaffNotificationRecipient
-}
-
-input StaffNotificationRecipientInput {
-  user: ID
-  email: String
-  active: Boolean
-}
-
-type StaffNotificationRecipientUpdate {
-  errors: [Error!]
-  shopErrors: [ShopError!]
-  staffNotificationRecipient: StaffNotificationRecipient
 }
 
 type StaffUpdate {
@@ -4205,11 +4126,6 @@ type User implements Node {
   avatar(size: Int): Image
   events: [CustomerEvent]
   storedPaymentSources: [PaymentSource]
-}
-
-input UserAddressInput {
-  defaultBillingAddress: AddressInput
-  defaultShippingAddress: AddressInput
 }
 
 type UserAvatarDelete {

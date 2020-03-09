@@ -1,10 +1,7 @@
-from unittest.mock import ANY
-
 import graphene
 import pytest
 from django_countries import countries
 
-from saleor.core.error_codes import ShopErrorCode
 from saleor.core.permissions import MODELS_PERMISSIONS
 from saleor.graphql.core.utils import str_to_enum
 from saleor.site import AuthenticationBackends
@@ -254,60 +251,6 @@ def test_query_digital_content_settings(
     assert data["defaultDigitalUrlValidDays"] == url_valid_days
 
 
-QUERY_RETRIEVE_DEFAULT_MAIL_SENDER_SETTINGS = """
-    {
-      shop {
-        defaultMailSenderName
-        defaultMailSenderAddress
-      }
-    }
-"""
-
-
-def test_query_default_mail_sender_settings(
-    staff_api_client, site_settings, permission_manage_settings
-):
-    site_settings.default_mail_sender_name = "Mirumee Labs Info"
-    site_settings.default_mail_sender_address = "hello@example.com"
-    site_settings.save(
-        update_fields=["default_mail_sender_name", "default_mail_sender_address"]
-    )
-
-    query = QUERY_RETRIEVE_DEFAULT_MAIL_SENDER_SETTINGS
-
-    response = staff_api_client.post_graphql(
-        query, permissions=[permission_manage_settings]
-    )
-    content = get_graphql_content(response)
-
-    data = content["data"]["shop"]
-    assert data["defaultMailSenderName"] == "Mirumee Labs Info"
-    assert data["defaultMailSenderAddress"] == "hello@example.com"
-
-
-def test_query_default_mail_sender_settings_not_set(
-    staff_api_client, site_settings, permission_manage_settings, settings
-):
-    site_settings.default_mail_sender_name = ""
-    site_settings.default_mail_sender_address = None
-    site_settings.save(
-        update_fields=["default_mail_sender_name", "default_mail_sender_address"]
-    )
-
-    settings.DEFAULT_FROM_EMAIL = "default@example.com"
-
-    query = QUERY_RETRIEVE_DEFAULT_MAIL_SENDER_SETTINGS
-
-    response = staff_api_client.post_graphql(
-        query, permissions=[permission_manage_settings]
-    )
-    content = get_graphql_content(response)
-
-    data = content["data"]["shop"]
-    assert data["defaultMailSenderName"] == ""
-    assert data["defaultMailSenderAddress"] is None
-
-
 def test_shop_digital_content_settings_mutation(
     staff_api_client, site_settings, permission_manage_settings
 ):
@@ -393,100 +336,6 @@ def test_shop_settings_mutation(
     assert site_settings.charge_taxes_on_shipping == new_charge_taxes_on_shipping
 
 
-MUTATION_UPDATE_DEFAULT_MAIL_SENDER_SETTINGS = """
-    mutation updateDefaultSenderSettings($input: ShopSettingsInput!) {
-      shopSettingsUpdate(input: $input) {
-        shop {
-          defaultMailSenderName
-          defaultMailSenderAddress
-        }
-        errors {
-          field
-          message
-        }
-      }
-    }
-"""
-
-
-def test_update_default_sender_settings(staff_api_client, permission_manage_settings):
-    query = MUTATION_UPDATE_DEFAULT_MAIL_SENDER_SETTINGS
-
-    variables = {
-        "input": {
-            "defaultMailSenderName": "Dummy Name",
-            "defaultMailSenderAddress": "dummy@example.com",
-        }
-    }
-
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_settings]
-    )
-    content = get_graphql_content(response)
-
-    data = content["data"]["shopSettingsUpdate"]["shop"]
-    assert data["defaultMailSenderName"] == "Dummy Name"
-    assert data["defaultMailSenderAddress"] == "dummy@example.com"
-
-
-@pytest.mark.parametrize(
-    "sender_name",
-    (
-        "\nDummy Name",
-        "\rDummy Name",
-        "Dummy Name\r",
-        "Dummy Name\n",
-        "Dummy\rName",
-        "Dummy\nName",
-    ),
-)
-def test_update_default_sender_settings_invalid_name(
-    staff_api_client, permission_manage_settings, sender_name
-):
-    query = MUTATION_UPDATE_DEFAULT_MAIL_SENDER_SETTINGS
-
-    variables = {"input": {"defaultMailSenderName": sender_name}}
-
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_settings]
-    )
-    content = get_graphql_content(response)
-
-    errors = content["data"]["shopSettingsUpdate"]["errors"]
-    assert errors == [
-        {"field": "defaultMailSenderName", "message": "New lines are not allowed."}
-    ]
-
-
-@pytest.mark.parametrize(
-    "sender_email",
-    (
-        "\ndummy@example.com",
-        "\rdummy@example.com",
-        "dummy@example.com\r",
-        "dummy@example.com\n",
-        "dummy@example\r.com",
-        "dummy@example\n.com",
-    ),
-)
-def test_update_default_sender_settings_invalid_email(
-    staff_api_client, permission_manage_settings, sender_email
-):
-    query = MUTATION_UPDATE_DEFAULT_MAIL_SENDER_SETTINGS
-
-    variables = {"input": {"defaultMailSenderAddress": sender_email}}
-
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_settings]
-    )
-    content = get_graphql_content(response)
-
-    errors = content["data"]["shopSettingsUpdate"]["errors"]
-    assert errors == [
-        {"field": "defaultMailSenderAddress", "message": "Enter a valid email address."}
-    ]
-
-
 def test_shop_domain_update(staff_api_client, permission_manage_settings):
     query = """
         mutation updateSettings($input: SiteDomainInput!) {
@@ -514,72 +363,6 @@ def test_shop_domain_update(staff_api_client, permission_manage_settings):
     site.refresh_from_db()
     assert site.domain == "lorem-ipsum.com"
     assert site.name == new_name
-
-
-MUTATION_CUSTOMER_SET_PASSWORD_URL_UPDATE = """
-    mutation updateSettings($customerSetPasswordUrl: String!) {
-        shopSettingsUpdate(input: {customerSetPasswordUrl: $customerSetPasswordUrl}){
-            shop {
-                customerSetPasswordUrl
-            }
-            shopErrors {
-                message
-                field
-                code
-            }
-        }
-    }
-"""
-
-
-def test_shop_customer_set_password_url_update(
-    staff_api_client, site_settings, permission_manage_settings
-):
-    customer_set_password_url = "http://www.example.com/set_pass/"
-    variables = {"customerSetPasswordUrl": customer_set_password_url}
-    assert site_settings.customer_set_password_url != customer_set_password_url
-    response = staff_api_client.post_graphql(
-        MUTATION_CUSTOMER_SET_PASSWORD_URL_UPDATE,
-        variables,
-        permissions=[permission_manage_settings],
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["shopSettingsUpdate"]
-    assert not data["shopErrors"]
-    site_settings = Site.objects.get_current().settings
-    assert site_settings.customer_set_password_url == customer_set_password_url
-
-
-@pytest.mark.parametrize(
-    "customer_set_password_url",
-    [
-        ("http://not-allowed-storefron.com/pass"),
-        ("http://[value-error-in-urlparse@test/pass"),
-        ("without-protocole.com/pass"),
-    ],
-)
-def test_shop_customer_set_password_url_update_invalid_url(
-    staff_api_client,
-    site_settings,
-    permission_manage_settings,
-    customer_set_password_url,
-):
-    variables = {"customerSetPasswordUrl": customer_set_password_url}
-    assert not site_settings.customer_set_password_url
-    response = staff_api_client.post_graphql(
-        MUTATION_CUSTOMER_SET_PASSWORD_URL_UPDATE,
-        variables,
-        permissions=[permission_manage_settings],
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["shopSettingsUpdate"]
-    assert data["shopErrors"][0] == {
-        "field": "customerSetPasswordUrl",
-        "code": ShopErrorCode.INVALID.name,
-        "message": ANY,
-    }
-    site_settings.refresh_from_db()
-    assert not site_settings.customer_set_password_url
 
 
 def test_homepage_collection_update(

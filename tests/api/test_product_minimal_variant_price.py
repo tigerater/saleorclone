@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-import graphene
 import pytest
 from freezegun import freeze_time
 from graphql_relay import from_global_id, to_global_id
@@ -142,7 +141,7 @@ def test_product_variant_create_updates_minimal_variant_price(
                 productVariant {
                     name
                 }
-                productErrors {
+                errors {
                     message
                     field
                 }
@@ -152,15 +151,13 @@ def test_product_variant_create_updates_minimal_variant_price(
     product_id = to_global_id("Product", product.pk)
     sku = "1"
     price_override = "1.99"
-    variant_id = graphene.Node.to_global_id(
-        "Attribute", product.product_type.variant_attributes.first().pk
-    )
+    variant_slug = product.product_type.variant_attributes.first().slug
     variant_value = "test-value"
     variables = {
         "productId": product_id,
         "sku": sku,
         "priceOverride": price_override,
-        "attributes": [{"id": variant_id, "values": [variant_value]}],
+        "attributes": [{"slug": variant_slug, "values": [variant_value]}],
     }
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_products]
@@ -169,7 +166,7 @@ def test_product_variant_create_updates_minimal_variant_price(
 
     content = get_graphql_content(response)
     data = content["data"]["productVariantCreate"]
-    assert data["productErrors"] == []
+    assert data["errors"] == []
 
     mock_update_product_minimal_variant_price_task.delay.assert_called_once_with(
         product.pk

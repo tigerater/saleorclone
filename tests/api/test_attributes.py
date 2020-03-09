@@ -348,6 +348,7 @@ def test_attributes_filter_by_non_existing_category_id():
     assert qs == mocked_qs.none.return_value
 
 
+@pytest.mark.parametrize("test_deprecated_filter", [True, False])
 @pytest.mark.parametrize("tested_field", ["inCategory", "inCollection"])
 def test_attributes_in_collection_query(
     user_api_client,
@@ -355,6 +356,7 @@ def test_attributes_in_collection_query(
     category,
     collection,
     collection_with_products,
+    test_deprecated_filter,
     tested_field,
 ):
     if "Collection" in tested_field:
@@ -407,7 +409,10 @@ def test_attributes_in_collection_query(
     }
     """
 
-    query = query % {"filter_input": "filter: { %s: $nodeID }" % tested_field}
+    if test_deprecated_filter:
+        query = query % {"filter_input": f"{tested_field}: $nodeID"}
+    else:
+        query = query % {"filter_input": "filter: { %s: $nodeID }" % tested_field}
 
     variables = {"nodeID": filtered_by_node_id}
     content = get_graphql_content(user_api_client.post_graphql(query, variables))

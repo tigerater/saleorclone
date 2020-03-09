@@ -635,6 +635,7 @@ type Checkout implements Node {
   shippingAddress: Address
   shippingMethod: ShippingMethod
   note: String!
+  discountAmount: Money @deprecated(reason: "DEPRECATED: Will be removed in Saleor 2.10, use discount instead.")
   discount: Money
   discountName: String
   translatedDiscountName: String
@@ -830,6 +831,12 @@ type CheckoutUpdatePrivateMeta {
   errors: [Error!]
   checkoutErrors: [CheckoutError!]
   checkout: Checkout
+}
+
+type CheckoutUpdateVoucher {
+  errors: [Error!]
+  checkout: Checkout
+  checkoutErrors: [CheckoutError!]
 }
 
 type ChoiceValue {
@@ -1896,7 +1903,7 @@ input MenuInput {
 type MenuItem implements Node {
   id: ID!
   name: String!
-  sortOrder: Int
+  sortOrder: Int @deprecated(reason: "Will be dropped in 2.10 and is deprecated since 2.9: use the position in list instead and relative calculus to determine shift position.")
   menu: Menu!
   parent: MenuItem
   category: Category
@@ -2065,10 +2072,6 @@ input MoveProductInput {
 }
 
 type Mutation {
-  wishlistAddProduct(productId: ID!): WishlistAddProductMutation
-  wishlistRemoveProduct(productId: ID!): WishlistRemoveProductMutation
-  wishlistAddVariant(variantId: ID!): WishlistAddProductVariantMutation
-  wishlistRemoveVariant(variantId: ID!): WishlistRemoveProductVariantMutation
   webhookCreate(input: WebhookCreateInput!): WebhookCreate
   webhookDelete(id: ID!): WebhookDelete
   webhookUpdate(id: ID!, input: WebhookUpdateInput!): WebhookUpdate
@@ -2257,6 +2260,7 @@ type Mutation {
   checkoutPaymentCreate(checkoutId: ID!, input: PaymentInput!): CheckoutPaymentCreate
   checkoutShippingAddressUpdate(checkoutId: ID!, shippingAddress: AddressInput!): CheckoutShippingAddressUpdate
   checkoutShippingMethodUpdate(checkoutId: ID, shippingMethodId: ID!): CheckoutShippingMethodUpdate
+  checkoutUpdateVoucher(checkoutId: ID!, voucherCode: String): CheckoutUpdateVoucher
   checkoutUpdateMetadata(id: ID!, input: MetaInput!): CheckoutUpdateMeta
   checkoutClearMetadata(id: ID!, input: MetaPath!): CheckoutClearMeta
   checkoutUpdatePrivateMetadata(id: ID!, input: MetaInput!): CheckoutUpdatePrivateMeta
@@ -2361,6 +2365,7 @@ type Order implements Node {
   totalBalance: Money!
   userEmail: String
   isShippingRequired: Boolean!
+  discountAmount: Money! @deprecated(reason: "DEPRECATED: Will be removed in Saleor 2.10, use discount instead.")
 }
 
 enum OrderAction {
@@ -2877,8 +2882,8 @@ enum PermissionEnum {
   MANAGE_STAFF
   MANAGE_SERVICE_ACCOUNTS
   MANAGE_DISCOUNTS
-  MANAGE_PLUGINS
   MANAGE_GIFT_CARD
+  MANAGE_PLUGINS
   MANAGE_MENUS
   MANAGE_ORDERS
   MANAGE_PAGES
@@ -3488,7 +3493,7 @@ type Query {
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection
   digitalContent(id: ID!): DigitalContent
   digitalContents(before: String, after: String, first: Int, last: Int): DigitalContentCountableConnection
-  attributes(query: String, filter: AttributeFilterInput, sortBy: AttributeSortingInput, before: String, after: String, first: Int, last: Int): AttributeCountableConnection
+  attributes(query: String, inCategory: ID, inCollection: ID, filter: AttributeFilterInput, sortBy: AttributeSortingInput, before: String, after: String, first: Int, last: Int): AttributeCountableConnection
   attribute(id: ID!): Attribute
   categories(query: String, filter: CategoryFilterInput, sortBy: CategorySortingInput, level: Int, before: String, after: String, first: Int, last: Int): CategoryCountableConnection
   category(id: ID!): Category
@@ -4057,6 +4062,7 @@ input StaffCreateInput {
   isActive: Boolean
   note: String
   permissions: [PermissionEnum]
+  sendPasswordEmail: Boolean
   redirectUrl: String
 }
 
@@ -4266,7 +4272,6 @@ type User implements Node {
   avatar(size: Int): Image
   events: [CustomerEvent]
   storedPaymentSources: [PaymentSource]
-  wishlist(before: String, after: String, first: Int, last: Int): WishlistItemCountableConnection
 }
 
 type UserAvatarDelete {
@@ -4318,6 +4323,7 @@ input UserCreateInput {
   email: String
   isActive: Boolean
   note: String
+  sendPasswordEmail: Boolean
   redirectUrl: String
 }
 
@@ -4400,6 +4406,7 @@ type Voucher implements Node {
   products(before: String, after: String, first: Int, last: Int): ProductCountableConnection
   countries: [CountryDisplay]
   translation(languageCode: LanguageCodeEnum!): VoucherTranslation
+  minAmountSpent: Money @deprecated(reason: "DEPRECATED: Will be removed in Saleor 2.10, use the minSpent field instead.")
 }
 
 type VoucherAddCatalogues {
@@ -4630,68 +4637,6 @@ enum WeightUnitsEnum {
   LB
   OZ
   G
-}
-
-type Wishlist implements Node {
-  id: ID!
-  createdAt: DateTime!
-  items(before: String, after: String, first: Int, last: Int, id: ID): WishlistItemCountableConnection!
-}
-
-type WishlistAddProductMutation {
-  errors: [Error!]
-  wishlist: [WishlistItem]
-  wishlistErrors: [WishlistError!]
-}
-
-type WishlistAddProductVariantMutation {
-  errors: [Error!]
-  wishlist: [WishlistItem]
-  wishlistErrors: [WishlistError!]
-}
-
-type WishlistError {
-  field: String
-  message: String
-  code: WishlistErrorCode
-}
-
-enum WishlistErrorCode {
-  GRAPHQL_ERROR
-  INVALID
-  NOT_FOUND
-  REQUIRED
-  UNIQUE
-}
-
-type WishlistItem implements Node {
-  id: ID!
-  wishlist: Wishlist!
-  product: Product!
-  variants(before: String, after: String, first: Int, last: Int): ProductVariantCountableConnection!
-}
-
-type WishlistItemCountableConnection {
-  pageInfo: PageInfo!
-  edges: [WishlistItemCountableEdge!]!
-  totalCount: Int
-}
-
-type WishlistItemCountableEdge {
-  node: WishlistItem!
-  cursor: String!
-}
-
-type WishlistRemoveProductMutation {
-  errors: [Error!]
-  wishlist: [WishlistItem]
-  wishlistErrors: [WishlistError!]
-}
-
-type WishlistRemoveProductVariantMutation {
-  errors: [Error!]
-  wishlist: [WishlistItem]
-  wishlistErrors: [WishlistError!]
 }
 
 scalar _Any

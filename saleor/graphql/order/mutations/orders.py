@@ -2,7 +2,6 @@ import graphene
 from django.core.exceptions import ValidationError
 
 from ....account.models import User
-from ....core.permissions import OrderPermissions
 from ....core.taxes import zero_taxed_money
 from ....order import events, models
 from ....order.actions import (
@@ -151,7 +150,7 @@ class OrderUpdate(DraftOrderUpdate):
     class Meta:
         description = "Updates an order."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -197,7 +196,7 @@ class OrderUpdateShipping(BaseMutation):
 
     class Meta:
         description = "Updates a shipping method of the order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -277,7 +276,7 @@ class OrderAddNote(BaseMutation):
 
     class Meta:
         description = "Adds note to the order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -301,7 +300,7 @@ class OrderCancel(BaseMutation):
 
     class Meta:
         description = "Cancel an order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -321,7 +320,7 @@ class OrderMarkAsPaid(BaseMutation):
 
     class Meta:
         description = "Mark order as manually paid."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -346,7 +345,7 @@ class OrderCapture(BaseMutation):
 
     class Meta:
         description = "Capture an order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -382,7 +381,7 @@ class OrderVoid(BaseMutation):
 
     class Meta:
         description = "Void an order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -406,7 +405,7 @@ class OrderRefund(BaseMutation):
 
     class Meta:
         description = "Refund an order."
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         error_type_class = OrderError
         error_type_field = "order_errors"
 
@@ -459,7 +458,7 @@ class OrderUpdatePrivateMeta(UpdateMetaBaseMutation):
     class Meta:
         description = "Updates private meta for order."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         public = False
 
 
@@ -467,7 +466,7 @@ class OrderClearMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clears stored metadata value."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         public = True
 
     class Arguments:
@@ -487,5 +486,5 @@ class OrderClearPrivateMeta(ClearMetaBaseMutation):
     class Meta:
         description = "Clears stored private metadata value."
         model = models.Order
-        permissions = (OrderPermissions.MANAGE_ORDERS,)
+        permissions = ("order.manage_orders",)
         public = False

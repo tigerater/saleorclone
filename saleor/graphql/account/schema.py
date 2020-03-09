@@ -1,7 +1,6 @@
 import graphene
 from graphql_jwt.decorators import login_required
 
-from ...core.permissions import AccountPermissions
 from ..core.fields import FilterInputConnectionField
 from ..core.types import FilterInputObjectType
 from ..decorators import one_of_permissions_required, permission_required
@@ -143,15 +142,15 @@ class AccountQueries(graphene.ObjectType):
             city_area=city_area,
         )
 
-    @permission_required(AccountPermissions.MANAGE_SERVICE_ACCOUNTS)
+    @permission_required("account.manage_service_accounts")
     def resolve_service_accounts(self, info, **kwargs):
         return resolve_service_accounts(info, **kwargs)
 
-    @permission_required(AccountPermissions.MANAGE_SERVICE_ACCOUNTS)
+    @permission_required("account.manage_service_accounts")
     def resolve_service_account(self, info, id):
         return graphene.Node.get_node_from_global_id(info, id, ServiceAccount)
 
-    @permission_required(AccountPermissions.MANAGE_USERS)
+    @permission_required("account.manage_users")
     def resolve_customers(self, info, query=None, **kwargs):
         return resolve_customers(info, query=query, **kwargs)
 
@@ -159,13 +158,11 @@ class AccountQueries(graphene.ObjectType):
     def resolve_me(self, info):
         return info.context.user
 
-    @permission_required(AccountPermissions.MANAGE_STAFF)
+    @permission_required("account.manage_staff")
     def resolve_staff_users(self, info, query=None, **kwargs):
         return resolve_staff_users(info, query=query, **kwargs)
 
-    @one_of_permissions_required(
-        [AccountPermissions.MANAGE_STAFF, AccountPermissions.MANAGE_USERS]
-    )
+    @one_of_permissions_required(["account.manage_staff", "account.manage_users"])
     def resolve_user(self, info, id):
         return resolve_user(info, id)
 

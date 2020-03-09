@@ -15,7 +15,6 @@ from .shipping.schema import ShippingMutations, ShippingQueries
 from .shop.schema import ShopMutations, ShopQueries
 from .translations.schema import TranslationQueries
 from .webhook.schema import WebhookMutations, WebhookQueries
-from .wishlist.schema import WishlistMutations
 
 
 class Query(
@@ -53,7 +52,6 @@ class Mutation(
     ShippingMutations,
     ShopMutations,
     WebhookMutations,
-    WishlistMutations,
 ):
     pass
 

@@ -1,6 +1,5 @@
 import graphene
 
-from ...core.permissions import WebhookPermissions
 from ..core.fields import FilterInputConnectionField
 from ..decorators import permission_required
 from .enums import WebhookEventTypeEnum
@@ -60,7 +59,7 @@ class WebhookQueries(graphene.ObjectType):
         return resolve_webhook(info, data["id"])
 
     @staticmethod
-    @permission_required(WebhookPermissions.MANAGE_WEBHOOKS)
+    @permission_required("webhook.manage_webhooks")
     def resolve_webhook_events(_, *_args, **_data):
         return resolve_webhook_events()
 

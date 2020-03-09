@@ -8,7 +8,6 @@ from graphql_jwt.exceptions import PermissionDenied
 from i18naddress import get_validation_rules
 
 from ...account import models
-from ...core.permissions import AccountPermissions
 from ...payment import gateway
 from ...payment.utils import fetch_customer_id
 from ..utils import filter_by_query_param, sort_queryset
@@ -57,13 +56,11 @@ def resolve_user(info, id):
     requester = info.context.user or info.context.service_account
     if requester:
         _model, user_pk = graphene.Node.from_global_id(id)
-        if requester.has_perms(
-            [AccountPermissions.MANAGE_STAFF, AccountPermissions.MANAGE_USERS]
-        ):
+        if requester.has_perms(["account.manage_staff", "account.manage_users"]):
             return models.User.objects.filter(pk=user_pk).first()
-        if requester.has_perm(AccountPermissions.MANAGE_STAFF):
+        if requester.has_perm("account.manage_staff"):
             return models.User.objects.staff().filter(pk=user_pk).first()
-        if requester.has_perm(AccountPermissions.MANAGE_USERS):
+        if requester.has_perm("account.manage_users"):
             return models.User.objects.customers().filter(pk=user_pk).first()
     return PermissionDenied()
 

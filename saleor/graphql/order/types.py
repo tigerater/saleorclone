@@ -3,7 +3,6 @@ import graphene_django_optimizer as gql_optimizer
 from django.core.exceptions import ValidationError
 from graphene import relay
 
-from ...core.permissions import OrderPermissions
 from ...core.taxes import display_gross_prices
 from ...extensions.manager import get_extensions_manager
 from ...order import models
@@ -190,7 +189,7 @@ class Fulfillment(MetadataObjectType, CountableDjangoObjectType):
         return root.get_status_display()
 
     @staticmethod
-    @permission_required(OrderPermissions.MANAGE_ORDERS)
+    @permission_required("orders.manage_orders")
     def resolve_private_meta(root: models.Fulfillment, _info):
         return resolve_private_meta(root, _info)
 
@@ -338,6 +337,13 @@ class Order(MetadataObjectType, CountableDjangoObjectType):
     )
     is_shipping_required = graphene.Boolean(
         description="Returns True, if order requires shipping.", required=True
+    )
+    discount_amount = graphene.Field(
+        Money,
+        deprecation_reason=(
+            "DEPRECATED: Will be removed in Saleor 2.10, use discount instead."
+        ),
+        required=True,
     )
 
     class Meta:
@@ -494,7 +500,11 @@ class Order(MetadataObjectType, CountableDjangoObjectType):
         return root.gift_cards.all()
 
     @staticmethod
-    @permission_required(OrderPermissions.MANAGE_ORDERS)
+    def resolve_discount_amount(root: models.Order, _info):
+        return root.discount
+
+    @staticmethod
+    @permission_required("order.manage_orders")
     def resolve_private_meta(root: models.Order, _info):
         return resolve_private_meta(root, _info)
 

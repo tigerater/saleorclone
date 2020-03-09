@@ -2,7 +2,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import pgettext_lazy
 
-from ...error_codes import PaymentErrorCode
 from ...interface import PaymentData
 
 
@@ -33,7 +32,7 @@ class BraintreePaymentForm(forms.Form):
                 "payment error",
                 "Unable to process transaction. Please try again in a moment",
             )
-            raise ValidationError(msg, code=PaymentErrorCode.PAYMENT_ERROR)
+            raise ValidationError(msg)
         return cleaned_data
 
     def get_payment_token(self):

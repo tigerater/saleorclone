@@ -11,16 +11,16 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ModelForm
 from django.test.client import Client
+from django.utils.encoding import smart_text
 from django_countries import countries
 from PIL import Image
 from prices import Money, TaxedMoney
 
 from saleor.account.backends import BaseBackend
-from saleor.account.models import Address, User
+from saleor.account.models import Address, ServiceAccount, User
 from saleor.checkout import utils
 from saleor.checkout.models import Checkout
 from saleor.checkout.utils import add_variant_to_checkout
-from saleor.core.payments import PaymentInterface
 from saleor.discount import DiscountInfo, DiscountValueType, VoucherType
 from saleor.discount.models import Sale, Voucher, VoucherCustomer, VoucherTranslation
 from saleor.giftcard.models import GiftCard
@@ -48,17 +48,12 @@ from saleor.product.models import (
     ProductType,
     ProductVariant,
 )
-from saleor.product.utils.attributes import associate_attribute_values_to_instance
 from saleor.shipping.models import ShippingMethod, ShippingMethodType, ShippingZone
 from saleor.site import AuthenticationBackends
 from saleor.site.models import AuthorizationKey, SiteSettings
+from saleor.webhook import WebhookEventType
+from saleor.webhook.models import Webhook
 from tests.utils import create_image
-
-
-@pytest.fixture(autouse=True)
-def setup_dummy_gateway(settings):
-    settings.PLUGINS = ["saleor.payment.gateways.dummy.plugin.DummyGatewayPlugin"]
-    return settings
 
 
 @pytest.fixture(autouse=True)
@@ -210,8 +205,6 @@ def customer_user(address):  # pylint: disable=W0613
         "password",
         default_billing_address=default_address,
         default_shipping_address=default_address,
-        first_name="Leslie",
-        last_name="Wade",
     )
     user.addresses.add(default_address)
     return user
@@ -395,15 +388,16 @@ def categories_tree(db, product_type):  # pylint: disable=W0613
 
     product_attr = product_type.product_attributes.first()
     attr_value = product_attr.values.first()
+    attributes = {smart_text(product_attr.pk): [smart_text(attr_value.pk)]}
 
-    product = Product.objects.create(
+    Product.objects.create(
         name="Test product",
-        price=Money(10, "USD"),
+        price=Money("10.00", "USD"),
         product_type=product_type,
+        attributes=attributes,
         category=child,
     )
 
-    associate_attribute_values_to_instance(product, product_attr, attr_value)
     return parent
 
 
@@ -458,29 +452,31 @@ def product_type_without_variant():
 @pytest.fixture
 def product(product_type, category):
     product_attr = product_type.product_attributes.first()
-    product_attr_value = product_attr.values.first()
+    attr_value = product_attr.values.first()
+    attributes = {smart_text(product_attr.pk): [smart_text(attr_value.pk)]}
 
     product = Product.objects.create(
         name="Test product",
         price=Money("10.00", "USD"),
         product_type=product_type,
+        attributes=attributes,
         category=category,
     )
 
-    associate_attribute_values_to_instance(product, product_attr, product_attr_value)
-
     variant_attr = product_type.variant_attributes.first()
     variant_attr_value = variant_attr.values.first()
+    variant_attributes = {
+        smart_text(variant_attr.pk): [smart_text(variant_attr_value.pk)]
+    }
 
-    variant = ProductVariant.objects.create(
+    ProductVariant.objects.create(
         product=product,
         sku="123",
+        attributes=variant_attributes,
         cost_price=Money("1.00", "USD"),
         quantity=10,
         quantity_allocated=1,
     )
-
-    associate_attribute_values_to_instance(variant, variant_attr, variant_attr_value)
     return product
 
 
@@ -501,7 +497,10 @@ def product_with_multiple_values_attributes(product, product_type, category) -> 
     product_type.product_attributes.clear()
     product_type.product_attributes.add(attribute)
 
-    associate_attribute_values_to_instance(product, attribute, attr_val_1, attr_val_2)
+    product.attributes = {
+        smart_text(attribute.pk): [smart_text(attr_val_1.pk), smart_text(attr_val_2.pk)]
+    }
+    product.save(update_fields=["attributes"])
     return product
 
 
@@ -509,7 +508,7 @@ def product_with_multiple_values_attributes(product, product_type, category) -> 
 def product_with_default_variant(product_type_without_variant, category):
     product = Product.objects.create(
         name="Test product",
-        price=Money(10, "USD"),
+        price=Money("10.00", "USD"),
         product_type=product_type_without_variant,
         category=category,
     )
@@ -563,36 +562,38 @@ def product_without_shipping(category):
 def product_list(product_type, category):
     product_attr = product_type.product_attributes.first()
     attr_value = product_attr.values.first()
+    attributes = {smart_text(product_attr.pk): [smart_text(attr_value.pk)]}
 
-    products = list(
-        Product.objects.bulk_create(
-            [
-                Product(
-                    pk=1486,
-                    name="Test product 1",
-                    price=Money(10, "USD"),
-                    category=category,
-                    product_type=product_type,
-                    is_published=True,
-                ),
-                Product(
-                    pk=1487,
-                    name="Test product 2",
-                    price=Money(20, "USD"),
-                    category=category,
-                    product_type=product_type,
-                    is_published=False,
-                ),
-                Product(
-                    pk=1489,
-                    name="Test product 3",
-                    price=Money(20, "USD"),
-                    category=category,
-                    product_type=product_type,
-                    is_published=True,
-                ),
-            ]
-        )
+    products = Product.objects.bulk_create(
+        [
+            Product(
+                pk=1486,
+                name="Test product 1",
+                price=Money("10.00", "USD"),
+                category=category,
+                product_type=product_type,
+                attributes=attributes,
+                is_published=True,
+            ),
+            Product(
+                pk=1487,
+                name="Test product 2",
+                price=Money("20.00", "USD"),
+                category=category,
+                product_type=product_type,
+                attributes=attributes,
+                is_published=False,
+            ),
+            Product(
+                pk=1489,
+                name="Test product 3",
+                price=Money("20.00", "USD"),
+                category=category,
+                product_type=product_type,
+                attributes=attributes,
+                is_published=True,
+            ),
+        ]
     )
     ProductVariant.objects.bulk_create(
         [
@@ -616,10 +617,6 @@ def product_list(product_type, category):
             ),
         ]
     )
-
-    for product in products:
-        associate_attribute_values_to_instance(product, product_attr, attr_value)
-
     return products
 
 
@@ -682,16 +679,19 @@ def unavailable_product_with_variant(product_type, category):
 
     variant_attr = product_type.variant_attributes.first()
     variant_attr_value = variant_attr.values.first()
+    variant_attributes = {
+        smart_text(variant_attr.pk): [smart_text(variant_attr_value.pk)]
+    }
 
-    variant = ProductVariant.objects.create(
+    ProductVariant.objects.create(
         product=product,
         sku="123",
-        cost_price=Money(1, "USD"),
+        attributes=variant_attributes,
+        cost_price=Money("1.00", "USD"),
         quantity=10,
         quantity_allocated=1,
     )
 
-    associate_attribute_values_to_instance(variant, variant_attr, variant_attr_value)
     return product
 
 
@@ -1056,6 +1056,11 @@ def permission_manage_pages():
 @pytest.fixture
 def permission_manage_translations():
     return Permission.objects.get(codename="manage_translations")
+
+
+@pytest.fixture
+def permission_manage_webhooks():
+    return Permission.objects.get(codename="manage_webhooks")
 
 
 @pytest.fixture
@@ -1428,16 +1433,14 @@ def other_description_raw():
 
 
 @pytest.fixture
-def fake_payment_interface(mocker):
-    return mocker.Mock(spec=PaymentInterface)
+def service_account(db):
+    return ServiceAccount.objects.create(name="Sample service account", is_active=True)
 
 
 @pytest.fixture
-def mock_get_manager(mocker, fake_payment_interface):
-    mgr = mocker.patch(
-        "saleor.payment.gateway.get_extensions_manager",
-        autospec=True,
-        return_value=fake_payment_interface,
+def webhook(service_account):
+    webhook = Webhook.objects.create(
+        service_account=service_account, target_url="http://www.example.com/test"
     )
-    yield fake_payment_interface
-    mgr.assert_called_once()
+    webhook.events.create(event_type=WebhookEventType.ORDER_CREATED)
+    return webhook

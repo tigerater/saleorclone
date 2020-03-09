@@ -2,7 +2,6 @@ import graphene
 
 from ....product import models
 from ...core.mutations import BaseBulkMutation, ModelBulkDeleteMutation
-from ...core.types.common import ProductError
 
 
 class CategoryBulkDelete(ModelBulkDeleteMutation):
@@ -15,8 +14,6 @@ class CategoryBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes categories."
         model = models.Category
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
 
 class CollectionBulkDelete(ModelBulkDeleteMutation):
@@ -29,8 +26,6 @@ class CollectionBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes collections."
         model = models.Collection
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
 
 class CollectionBulkPublish(BaseBulkMutation):
@@ -49,8 +44,6 @@ class CollectionBulkPublish(BaseBulkMutation):
         description = "Publish collections."
         model = models.Collection
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
     @classmethod
     def bulk_action(cls, queryset, is_published):
@@ -67,8 +60,6 @@ class ProductBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes products."
         model = models.Product
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
 
 class ProductVariantBulkDelete(ModelBulkDeleteMutation):
@@ -83,8 +74,6 @@ class ProductVariantBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes product variants."
         model = models.ProductVariant
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
 
 class ProductTypeBulkDelete(ModelBulkDeleteMutation):
@@ -99,8 +88,6 @@ class ProductTypeBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes product types."
         model = models.ProductType
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
 
 class ProductImageBulkDelete(ModelBulkDeleteMutation):
@@ -115,8 +102,6 @@ class ProductImageBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes product images."
         model = models.ProductImage
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
 
 class ProductBulkPublish(BaseBulkMutation):
@@ -132,8 +117,6 @@ class ProductBulkPublish(BaseBulkMutation):
         description = "Publish products."
         model = models.Product
         permissions = ("product.manage_products",)
-        error_type_class = ProductError
-        error_type_field = "product_errors"
 
     @classmethod
     def bulk_action(cls, queryset, is_published):

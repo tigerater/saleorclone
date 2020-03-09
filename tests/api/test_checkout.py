@@ -682,29 +682,6 @@ def test_checkout_lines_update_check_lines_quantity(
     assert data["errors"][0]["field"] == "quantity"
 
 
-def test_checkout_lines_update_with_chosen_shipping(
-    user_api_client, checkout, variant, address, shipping_method
-):
-    checkout.shipping_address = address
-    checkout.shipping_method = shipping_method
-    checkout.save()
-
-    variant_id = graphene.Node.to_global_id("ProductVariant", variant.pk)
-    checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
-
-    variables = {
-        "checkoutId": checkout_id,
-        "lines": [{"variantId": variant_id, "quantity": 1}],
-    }
-    response = user_api_client.post_graphql(MUTATION_CHECKOUT_LINES_UPDATE, variables)
-    content = get_graphql_content(response)
-
-    data = content["data"]["checkoutLinesUpdate"]
-    assert not data["errors"]
-    checkout.refresh_from_db()
-    assert checkout.quantity == 1
-
-
 MUTATION_CHECKOUT_LINES_DELETE = """
     mutation checkoutLineDelete($checkoutId: ID!, $lineId: ID!) {
         checkoutLineDelete(checkoutId: $checkoutId, lineId: $lineId) {
@@ -976,6 +953,28 @@ def test_checkout_shipping_address_update_without_phone_country_prefix(
     content = get_graphql_content(response)
     data = content["data"]["checkoutShippingAddressUpdate"]
     assert not data["errors"]
+
+
+def test_checkout_shipping_address_update_invalid_country_code(
+    user_api_client, checkout_with_item, graphql_address_data
+):
+    checkout = checkout_with_item
+    assert checkout.shipping_address is None
+    checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
+
+    shipping_address = graphql_address_data
+    shipping_address["country"] = "CODE"
+    variables = {"checkoutId": checkout_id, "shippingAddress": shipping_address}
+
+    response = user_api_client.post_graphql(
+        MUTATION_CHECKOUT_SHIPPING_ADDRESS_UPDATE, variables
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["checkoutShippingAddressUpdate"]
+    assert data["errors"][0]["message"] == "Invalid country code."
+    assert data["errors"][0]["field"] == "country"
+
+    assert data["checkoutErrors"][0]["code"] == CheckoutErrorCode.INVALID.name
 
 
 def test_checkout_billing_address_update(

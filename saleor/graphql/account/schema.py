@@ -83,30 +83,21 @@ class ServiceAccountFilterInput(FilterInputObjectType):
 class AccountQueries(graphene.ObjectType):
     address_validation_rules = graphene.Field(
         AddressValidationData,
-        description="Returns address validation rules.",
-        country_code=graphene.Argument(
-            CountryCodeEnum,
-            description="Two-letter ISO 3166-1 country code.",
-            required=True,
-        ),
-        country_area=graphene.Argument(
-            graphene.String, description="Designation of a region, province or state."
-        ),
-        city=graphene.Argument(graphene.String, description="City or a town name."),
-        city_area=graphene.Argument(
-            graphene.String, description="Sublocality like a district."
-        ),
+        country_code=graphene.Argument(CountryCodeEnum, required=True),
+        country_area=graphene.Argument(graphene.String),
+        city=graphene.Argument(graphene.String),
+        city_area=graphene.Argument(graphene.String),
     )
     customers = FilterInputConnectionField(
         User,
-        filter=CustomerFilterInput(description="Filtering options for customers."),
+        filter=CustomerFilterInput(),
         description="List of the shop's customers.",
         query=graphene.String(description=DESCRIPTIONS["user"]),
     )
-    me = graphene.Field(User, description="Return the currently authenticated user.")
+    me = graphene.Field(User, description="Logged in user data.")
     staff_users = FilterInputConnectionField(
         User,
-        filter=StaffUserInput(description="Filtering options for staff users."),
+        filter=StaffUserInput(),
         description="List of the shop's staff users.",
         query=graphene.String(description=DESCRIPTIONS["user"]),
     )
@@ -123,8 +114,8 @@ class AccountQueries(graphene.ObjectType):
 
     user = graphene.Field(
         User,
-        id=graphene.Argument(graphene.ID, description="ID of the user.", required=True),
-        description="Lookup an user by ID.",
+        id=graphene.Argument(graphene.ID, required=True),
+        description="Lookup a user by ID.",
     )
 
     def resolve_address_validation_rules(

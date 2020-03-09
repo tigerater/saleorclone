@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 from saleor.graphql.core.utils.reordering import perform_reordering
@@ -211,7 +213,8 @@ def test_reordering_null_sort_orders(dummy_attribute):
     assert actual == expected
 
 
-def test_reordering_nothing(sorted_entries_seq, django_assert_num_queries):
+@patch("saleor.graphql.core.utils.reordering.warnings.warn")
+def test_reordering_nothing(mocked_warn, sorted_entries_seq, django_assert_num_queries):
     """
     Ensures giving operations that does nothing, are skipped. Thus only one query should
     have been made: fetching the nodes.
@@ -223,6 +226,9 @@ def test_reordering_nothing(sorted_entries_seq, django_assert_num_queries):
     with django_assert_num_queries(1) as ctx:
         perform_reordering(qs, operations)
 
+    mocked_warn.assert_called_with(
+        f"Ignored node's reordering, did not find: {pk} (from AttributeValue)"
+    )
     assert ctx[0]["sql"].startswith("SELECT "), "Should only have done a SELECT"
 
 

@@ -12,15 +12,7 @@ class I18nMixin:
     """
 
     @classmethod
-    def construct_instance(cls, instance, cleaned_data):
-        pass
-
-    @classmethod
-    def clean_instance(cls, info, instance):
-        pass
-
-    @classmethod
-    def validate_address(cls, address_data: dict, instance=None, info=None):
+    def validate_address(cls, address_data: dict, instance=None):
         phone = address_data.get("phone", None)
         if phone:
             try:
@@ -43,5 +35,5 @@ class I18nMixin:
             instance = Address()
 
         cls.construct_instance(instance, address_form.cleaned_data)
-        cls.clean_instance(info, instance)
+        cls.clean_instance(instance)
         return instance

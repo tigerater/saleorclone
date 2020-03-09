@@ -1,9 +1,8 @@
 from itertools import chain
 from typing import Optional
 
-import graphene
 import graphene_django_optimizer as gql_optimizer
-from graphql_jwt.exceptions import PermissionDenied
+from django.db.models import Q
 from i18naddress import get_validation_rules
 
 from ...account import models
@@ -25,7 +24,9 @@ USER_SEARCH_FIELDS = (
 
 
 def resolve_customers(info, query):
-    qs = models.User.objects.customers()
+    qs = models.User.objects.filter(
+        Q(is_staff=False) | (Q(is_staff=True) & Q(orders__isnull=False))
+    )
     qs = filter_by_query_param(
         queryset=qs, query=query, search_fields=USER_SEARCH_FIELDS
     )
@@ -35,26 +36,13 @@ def resolve_customers(info, query):
 
 
 def resolve_staff_users(info, query):
-    qs = models.User.objects.staff()
+    qs = models.User.objects.filter(is_staff=True)
     qs = filter_by_query_param(
         queryset=qs, query=query, search_fields=USER_SEARCH_FIELDS
     )
     qs = qs.order_by("email")
     qs = qs.distinct()
     return gql_optimizer.query(qs, info)
-
-
-def resolve_user(info, id):
-    requester = info.context.user or info.context.service_account
-    if requester:
-        _model, user_pk = graphene.Node.from_global_id(id)
-        if requester.has_perms(["account.manage_staff", "account.manage_users"]):
-            return models.User.objects.filter(pk=user_pk).first()
-        if requester.has_perm("account.manage_staff"):
-            return models.User.objects.staff().filter(pk=user_pk).first()
-        if requester.has_perm("account.manage_users"):
-            return models.User.objects.customers().filter(pk=user_pk).first()
-    return PermissionDenied()
 
 
 def resolve_service_accounts(info):

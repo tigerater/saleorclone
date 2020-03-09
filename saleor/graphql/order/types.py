@@ -175,7 +175,7 @@ class Fulfillment(MetadataObjectType, CountableDjangoObjectType):
         only_fields = [
             "fulfillment_order",
             "id",
-            "created",
+            "shipping_date",
             "status",
             "tracking_number",
         ]

@@ -28,7 +28,7 @@ ADDRESS_FIELDS = (
 
 def generate_order_payload(order: "Order"):
     serializer = PayloadSerializer()
-    fulfillment_fields = ("status", "tracking_number", "created")
+    fulfillment_fields = ("status", "tracking_number", "shipping_date")
     payment_fields = (
         "gateway"
         "is_active"

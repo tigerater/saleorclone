@@ -9,12 +9,8 @@ All notable, unreleased changes to this project will be documented in this file.
 - Deprecate `localized` field in Money type - #4952 by @IKarbowiak
 - Fix for shipping api doesn't apply taxes - #4913 by @kswiatek92
 - Query object translation with only manage_translation permission - #4914 by @fowczarek
-- Add customer note to draft orders api - #4973 by @IKarbowiak
-- Allow to delete category and leave products - #4970 by @IKarbowiak
-- Remove thumbnail generation from migration - #3494 by @kswiatek92
-- Rename 'shipping_date' field in fulfillment model to 'created' - #2433 by @kswiatek92
-- Reduce number of queries for 'completeCheckout' mutation - #4989 by @IKarbowiak
-- Now force pytest to ignore the environment variable containing the django settings module - #4992 by @NyanKiyoshi
+- Add cutomer note to draft orders api - #4973 by @IKarbowiak
+
 
 ## 2.9.0
 

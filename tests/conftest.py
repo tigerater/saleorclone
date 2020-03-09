@@ -65,7 +65,7 @@ def setup_dummy_gateway(settings):
 
 
 @pytest.fixture(autouse=True)
-def site_settings(db, settings):
+def site_settings(db, settings) -> SiteSettings:
     """Create a site and matching site settings.
 
     This fixture is autouse because django.contrib.sites.models.Site and
@@ -73,7 +73,11 @@ def site_settings(db, settings):
     should never exist without a matching settings object.
     """
     site = Site.objects.get_or_create(name="mirumee.com", domain="mirumee.com")[0]
-    obj = SiteSettings.objects.get_or_create(site=site)[0]
+    obj = SiteSettings.objects.get_or_create(
+        site=site,
+        default_mail_sender_name="Mirumee Labs",
+        default_mail_sender_address="mirumee@example.com",
+    )[0]
     settings.SITE_ID = site.pk
 
     main_menu = Menu.objects.get_or_create(
@@ -484,6 +488,39 @@ def product(product_type, category):
     )
 
     associate_attribute_values_to_instance(variant, variant_attr, variant_attr_value)
+    return product
+
+
+@pytest.fixture
+def product_with_two_variants(color_attribute, size_attribute, category):
+    product_type = ProductType.objects.create(
+        name="Type with two variants", has_variants=True, is_shipping_required=True
+    )
+    product_type.variant_attributes.add(color_attribute)
+    product_type.variant_attributes.add(size_attribute)
+
+    product = Product.objects.create(
+        name="Test product with two variants",
+        price=Money("10.00", "USD"),
+        product_type=product_type,
+        category=category,
+    )
+
+    variant = ProductVariant.objects.create(
+        product=product,
+        sku="prodVar1",
+        cost_price=Money("1.00", "USD"),
+        quantity=10,
+        quantity_allocated=1,
+    )
+
+    associate_attribute_values_to_instance(
+        variant, color_attribute, color_attribute.values.first()
+    )
+    associate_attribute_values_to_instance(
+        variant, size_attribute, size_attribute.values.first()
+    )
+
     return product
 
 

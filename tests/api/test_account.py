@@ -16,8 +16,8 @@ from prices import Money
 from saleor.account import events as account_events
 from saleor.account.error_codes import AccountErrorCode
 from saleor.account.models import Address, User
-from saleor.account.utils import get_random_avatar
 from saleor.checkout import AddressType
+from saleor.core.utils import get_random_avatar
 from saleor.graphql.account.mutations.base import INVALID_TOKEN
 from saleor.graphql.account.mutations.staff import (
     CustomerDelete,
@@ -646,10 +646,6 @@ CUSTOMER_CREATE_MUTATION = """
                 field
                 message
             }
-            accountErrors {
-                field
-                code
-            }
             user {
                 id
                 defaultBillingAddress {
@@ -687,6 +683,7 @@ def test_customer_create(
         "note": note,
         "shipping": address_data,
         "billing": address_data,
+        "send_mail": True,
         "redirect_url": "https://www.example.com",
     }
 
@@ -730,7 +727,11 @@ def test_customer_create_send_password_with_url(
     permission_manage_users,
 ):
     email = "api_user@example.com"
-    variables = {"email": email, "redirect_url": "https://www.example.com"}
+    variables = {
+        "email": email,
+        "send_mail": True,
+        "redirect_url": "https://www.example.com",
+    }
 
     response = staff_api_client.post_graphql(
         CUSTOMER_CREATE_MUTATION, variables, permissions=[permission_manage_users]
@@ -762,7 +763,7 @@ def test_customer_create_without_send_password(
     User.objects.get(email=email)
 
 
-def test_customer_create_without_redirect_url_deprecated_send_mail_flag(
+def test_customer_create_without_redirect_url(
     staff_api_client, permission_manage_users
 ):
     email = "api_user@example.com"
@@ -772,26 +773,20 @@ def test_customer_create_without_redirect_url_deprecated_send_mail_flag(
     )
     content = get_graphql_content(response)
     data = content["data"]["customerCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.REQUIRED.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     staff_user = User.objects.filter(email=email)
     assert not staff_user
 
 
 def test_customer_create_with_invalid_url(staff_api_client, permission_manage_users):
     email = "api_user@example.com"
-    variables = {"email": email, "redirect_url": "invalid"}
+    variables = {"email": email, "send_mail": True, "redirect_url": "invalid"}
     response = staff_api_client.post_graphql(
         CUSTOMER_CREATE_MUTATION, variables, permissions=[permission_manage_users]
     )
     content = get_graphql_content(response)
     data = content["data"]["customerCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.INVALID.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     staff_user = User.objects.filter(email=email)
     assert not staff_user
 
@@ -800,16 +795,17 @@ def test_customer_create_with_not_allowed_url(
     staff_api_client, permission_manage_users
 ):
     email = "api_user@example.com"
-    variables = {"email": email, "redirect_url": "https://www.fake.com"}
+    variables = {
+        "email": email,
+        "send_mail": True,
+        "redirectUrl": "https://www.fake.com",
+    }
     response = staff_api_client.post_graphql(
         CUSTOMER_CREATE_MUTATION, variables, permissions=[permission_manage_users]
     )
     content = get_graphql_content(response)
     data = content["data"]["customerCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.INVALID.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     staff_user = User.objects.filter(email=email)
     assert not staff_user
 
@@ -1114,10 +1110,6 @@ ACCOUNT_REQUEST_DELETION_MUTATION = """
                 field
                 message
             }
-            accountErrors {
-                code
-                field
-            }
         }
     }
 """
@@ -1181,10 +1173,7 @@ def test_account_request_deletion_storefront_hosts_not_allowed(
     content = get_graphql_content(response)
     data = content["data"]["accountRequestDeletion"]
     assert len(data["errors"]) == 1
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.INVALID.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     send_account_delete_confirmation_email_with_url_mock.assert_not_called()
 
 
@@ -1369,6 +1358,7 @@ STAFF_CREATE_MUTATION = """
             }
             accountErrors {
                 field
+                message
                 code
             }
             user {
@@ -1396,6 +1386,7 @@ def test_staff_create(
     variables = {
         "email": email,
         "permissions": [PermissionEnum.MANAGE_PRODUCTS.name],
+        "send_mail": True,
         "redirect_url": "https://www.example.com",
     }
 
@@ -1432,7 +1423,11 @@ def test_staff_create_send_password_with_url(
     permission_manage_staff,
 ):
     email = "api_user@example.com"
-    variables = {"email": email, "redirect_url": "https://www.example.com"}
+    variables = {
+        "email": email,
+        "send_mail": True,
+        "redirect_url": "https://www.example.com",
+    }
 
     response = staff_api_client.post_graphql(
         STAFF_CREATE_MUTATION, variables, permissions=[permission_manage_staff]
@@ -1464,7 +1459,7 @@ def test_staff_create_without_send_password(
     User.objects.get(email=email)
 
 
-def test_staff_create_without_redirect_url_deprecated_send_mail_flag(
+def test_staff_create_without_redirect_url(
     staff_api_client, media_root, permission_manage_staff
 ):
     email = "api_user@example.com"
@@ -1474,10 +1469,7 @@ def test_staff_create_without_redirect_url_deprecated_send_mail_flag(
     )
     content = get_graphql_content(response)
     data = content["data"]["staffCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.REQUIRED.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     staff_user = User.objects.filter(email=email)
     assert not staff_user
 
@@ -1486,16 +1478,13 @@ def test_staff_create_with_invalid_url(
     staff_api_client, media_root, permission_manage_staff
 ):
     email = "api_user@example.com"
-    variables = {"email": email, "redirect_url": "invalid"}
+    variables = {"email": email, "send_mail": True, "redirect_url": "invalid"}
     response = staff_api_client.post_graphql(
         STAFF_CREATE_MUTATION, variables, permissions=[permission_manage_staff]
     )
     content = get_graphql_content(response)
     data = content["data"]["staffCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.INVALID.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     staff_user = User.objects.filter(email=email)
     assert not staff_user
 
@@ -1503,17 +1492,18 @@ def test_staff_create_with_invalid_url(
 def test_staff_create_with_not_allowed_url(
     staff_api_client, media_root, permission_manage_staff
 ):
-    email = "api_userrr@example.com"
-    variables = {"email": email, "redirect_url": "https://www.fake.com"}
+    email = "api_user@example.com"
+    variables = {
+        "email": email,
+        "send_mail": True,
+        "redirectUrl": "https://www.fake.com",
+    }
     response = staff_api_client.post_graphql(
         STAFF_CREATE_MUTATION, variables, permissions=[permission_manage_staff]
     )
     content = get_graphql_content(response)
     data = content["data"]["staffCreate"]
-    assert data["accountErrors"][0] == {
-        "field": "redirectUrl",
-        "code": AccountErrorCode.INVALID.name,
-    }
+    assert data["errors"][0]["field"] == "redirectUrl"
     staff_user = User.objects.filter(email=email)
     assert not staff_user
 
@@ -1568,6 +1558,7 @@ def test_staff_update_doesnt_change_existing_avatar(
             }
             accountErrors {
                 field
+                message
                 code
             }
         }

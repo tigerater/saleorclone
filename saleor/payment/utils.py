@@ -11,6 +11,7 @@ from django.utils.translation import pgettext_lazy
 from ..account.models import Address, User
 from ..checkout.models import Checkout
 from ..core import analytics
+from ..extensions.manager import get_extensions_manager
 from ..order import events, utils as order_utils
 from ..order.emails import send_payment_confirmation
 from ..order.models import Order
@@ -85,6 +86,9 @@ def handle_fully_paid_order(order):
     except Exception:
         # Analytics failing should not abort the checkout flow
         logger.exception("Recording order in analytics failed")
+    manager = get_extensions_manager()
+    manager.order_fully_paid(order)
+    manager.order_updated(order)
 
 
 def create_payment(
@@ -159,6 +163,7 @@ def mark_order_as_paid(order: Order, request_user: User):
     payment.captured_amount = order.total.gross.amount
     payment.save(update_fields=["captured_amount", "charge_status"])
     events.order_manually_marked_as_paid_event(order=order, user=request_user)
+    get_extensions_manager().order_fully_paid(order)
 
 
 def create_transaction(

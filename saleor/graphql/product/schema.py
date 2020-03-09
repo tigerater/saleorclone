@@ -111,7 +111,6 @@ from .resolvers import (
     resolve_products,
     resolve_report_product_sales,
 )
-from .scalars import AttributeScalar
 from .sorters import (
     AttributeSortingInput,
     CategorySortingInput,
@@ -145,22 +144,6 @@ class ProductQueries(graphene.ObjectType):
         Attribute,
         description="List of the shop's attributes.",
         query=graphene.String(description=DESCRIPTIONS["attributes"]),
-        in_category=graphene.Argument(
-            graphene.ID,
-            description=(
-                "Return attributes for products belonging to the given category. "
-                "DEPRECATED: Will be removed in Saleor 2.10, use the `filter` field "
-                "instead."
-            ),
-        ),
-        in_collection=graphene.Argument(
-            graphene.ID,
-            description=(
-                "Return attributes for products belonging to the given collection. "
-                "DEPRECATED: Will be removed in Saleor 2.10, use the `filter` "
-                "field instead."
-            ),
-        ),
         filter=AttributeFilterInput(description="Filtering options for attributes."),
         sort_by=AttributeSortingInput(description="Sorting options for attributes."),
     )
@@ -213,27 +196,6 @@ class ProductQueries(graphene.ObjectType):
     products = FilterInputConnectionField(
         Product,
         filter=ProductFilterInput(description="Filtering options for products."),
-        attributes=graphene.List(
-            AttributeScalar,
-            description=(
-                "Filter products by attributes. DEPRECATED: Will be removed in "
-                "Saleor 2.10, use the `filter` field instead."
-            ),
-        ),
-        categories=graphene.List(
-            graphene.ID,
-            description=(
-                "Filter products by category. DEPRECATED: Will be removed in "
-                "Saleor 2.10, use the `filter` field instead."
-            ),
-        ),
-        collections=graphene.List(
-            graphene.ID,
-            description=(
-                "Filter products by collections. DEPRECATED: Will be removed in "
-                "Saleor 2.10, use the `filter` field instead."
-            ),
-        ),
         sort_by=ProductOrder(description="Sort products."),
         stock_availability=graphene.Argument(
             StockAvailability, description="Filter products by stock availability."

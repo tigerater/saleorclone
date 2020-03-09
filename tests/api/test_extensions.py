@@ -17,14 +17,9 @@ class PluginSample(BasePlugin):
             "label": "Username",
         },
         "Password": {
-            "type": ConfigurationTypeField.PASSWORD,
+            "type": ConfigurationTypeField.STRING,
             "help_text": "Password input field",
             "label": "Password",
-        },
-        "API private key": {
-            "type": ConfigurationTypeField.SECRET,
-            "help_text": "API key",
-            "label": "Private key",
         },
         "Use sandbox": {
             "type": ConfigurationTypeField.BOOLEAN,
@@ -34,22 +29,48 @@ class PluginSample(BasePlugin):
     }
 
     @classmethod
-    def _get_default_configuration(cls):
+    def get_plugin_configuration(cls, queryset) -> "PluginConfiguration":
+        qs = queryset.filter(name="PluginSample")
+        if qs.exists():
+            return qs[0]
         defaults = {
             "name": "PluginSample",
             "description": "Test plugin description",
             "active": True,
             "configuration": [
-                {"name": "Username", "value": "admin"},
-                {"name": "Password", "value": None},
-                {"name": "API private key", "value": None},
-                {"name": "Use sandbox", "value": False},
+                {
+                    "name": "Username",
+                    "value": "admin",
+                    "type": ConfigurationTypeField.STRING,
+                    "help_text": "Username input field",
+                    "label": "Username",
+                },
+                {
+                    "name": "Password",
+                    "value": "123",
+                    "type": ConfigurationTypeField.STRING,
+                    "help_text": "Password input field",
+                    "label": "Password",
+                },
+                {
+                    "name": "Use sandbox",
+                    "value": False,
+                    "type": ConfigurationTypeField.BOOLEAN,
+                    "help_text": "Use sandbox",
+                    "label": "Use sandbox",
+                },
             ],
         }
-        return defaults
+        return PluginConfiguration.objects.create(**defaults)
 
 
-PLUGINS_QUERY = """
+def test_query_plugin_configurations(
+    staff_api_client, permission_manage_plugins, settings
+):
+
+    # Enable test plugin
+    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
+    query = """
         {
           plugins(first:1){
             edges{
@@ -70,72 +91,20 @@ PLUGINS_QUERY = """
           }
         }
     """
-
-
-@pytest.mark.parametrize(
-    "password, expected_password, api_key, expected_api_key",
-    [
-        (None, None, None, None),
-        ("ABCDEFGHIJ", "", "123456789", "6789"),
-        ("", None, "", None),
-        (None, None, "1234", "4"),
-    ],
-)
-def test_query_plugins_hides_secret_fields(
-    password,
-    expected_password,
-    api_key,
-    expected_api_key,
-    staff_api_client,
-    permission_manage_plugins,
-    settings,
-):
-
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration(PluginSample.PLUGIN_NAME)
-    for conf_field in plugin_configuration.configuration:
-        if conf_field["name"] == "Password":
-            conf_field["value"] = password
-        if conf_field["name"] == "API private key":
-            conf_field["value"] = api_key
-    plugin_configuration.save()
-
     staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGINS_QUERY)
-    content = get_graphql_content(response)
-
-    plugins = content["data"]["plugins"]["edges"]
-    assert len(plugins) == 1
-    plugin = plugins[0]["node"]
-
-    for conf_field in plugin["configuration"]:
-        if conf_field["name"] == "Password":
-            assert conf_field["value"] == expected_password
-        if conf_field["name"] == "API private key":
-            assert conf_field["value"] == expected_api_key
-
-
-def test_query_plugin_configurations(
-    staff_api_client, permission_manage_plugins, settings
-):
-
-    # Enable test plugin
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGINS_QUERY)
+    response = staff_api_client.post_graphql(query)
     content = get_graphql_content(response)
 
     plugins = content["data"]["plugins"]["edges"]
 
     assert len(plugins) == 1
     plugin = plugins[0]["node"]
-    manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration(PluginSample.PLUGIN_NAME)
+    plugin_configuration = PluginConfiguration.objects.get()
 
     assert plugin["name"] == plugin_configuration.name
     assert plugin["active"] == plugin_configuration.active
     assert plugin["description"] == plugin_configuration.description
+
     for index, configuration_item in enumerate(plugin["configuration"]):
         assert (
             configuration_item["name"]
@@ -150,8 +119,6 @@ def test_query_plugin_configurations(
                 configuration_item["value"]
                 == plugin_configuration.configuration[index]["value"]
             )
-        elif configuration_item["value"] is None:
-            assert not plugin_configuration.configuration[index]["value"]
         else:
             assert (
                 configuration_item["value"]
@@ -167,7 +134,15 @@ def test_query_plugin_configurations(
         )
 
 
-PLUGIN_QUERY = """
+def test_query_plugin_configuration(
+    staff_api_client, permission_manage_plugins, settings
+):
+    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
+    manager = get_extensions_manager()
+    plugin_configuration = manager.get_plugin_configuration("PluginSample")
+    configuration_id = graphene.Node.to_global_id("Plugin", plugin_configuration.pk)
+
+    query = """
     query plugin($id: ID!){
       plugin(id:$id){
         name
@@ -182,64 +157,10 @@ PLUGIN_QUERY = """
         }
       }
     }
-"""
-
-
-@pytest.mark.parametrize(
-    "password, expected_password, api_key, expected_api_key",
-    [
-        (None, None, None, None),
-        ("ABCDEFGHIJ", "", "123456789", "6789"),
-        ("", None, "", None),
-        (None, None, "1234", "4"),
-    ],
-)
-def test_query_plugin_hides_secret_fields(
-    password,
-    expected_password,
-    api_key,
-    expected_api_key,
-    staff_api_client,
-    permission_manage_plugins,
-    settings,
-):
-
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration(PluginSample.PLUGIN_NAME)
-    for conf_field in plugin_configuration.configuration:
-        if conf_field["name"] == "Password":
-            conf_field["value"] = password
-        if conf_field["name"] == "API private key":
-            conf_field["value"] = api_key
-    plugin_configuration.save()
-    configuration_id = graphene.Node.to_global_id("Plugin", plugin_configuration.pk)
-
+    """
     variables = {"id": configuration_id}
     staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGIN_QUERY, variables)
-    content = get_graphql_content(response)
-
-    plugin = content["data"]["plugin"]
-
-    for conf_field in plugin["configuration"]:
-        if conf_field["name"] == "Password":
-            assert conf_field["value"] == expected_password
-        if conf_field["name"] == "API private key":
-            assert conf_field["value"] == expected_api_key
-
-
-def test_query_plugin_configuration(
-    staff_api_client, permission_manage_plugins, settings
-):
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration("PluginSample")
-    configuration_id = graphene.Node.to_global_id("Plugin", plugin_configuration.pk)
-
-    variables = {"id": configuration_id}
-    staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGIN_QUERY, variables)
+    response = staff_api_client.post_graphql(query, variables)
     content = get_graphql_content(response)
     plugin = content["data"]["plugin"]
     assert plugin["name"] == plugin_configuration.name
@@ -316,7 +237,7 @@ def test_plugin_configuration_update(
     response = staff_api_client.post_graphql(PLUGIN_UPDATE_MUTATION, variables)
     get_graphql_content(response)
 
-    plugin = manager.get_plugin_configuration(plugin_name="PluginSample")
+    plugin.refresh_from_db()
     assert plugin.active == active
 
     first_configuration_item = plugin.configuration[0]

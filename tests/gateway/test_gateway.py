@@ -250,7 +250,7 @@ def test_confirm_payment(mock_payment_interface, payment_txn_preauth):
 
 
 def test_list_gateways(mock_payment_interface):
-    gateways = [{"name": "Stripe"}, {"name": "Braintree"}]
+    gateways = ["Stripe", "Braintree"]
     mock_payment_interface.list_payment_gateways.return_value = gateways
     lst = gateway.list_gateways()
     mock_payment_interface.list_payment_gateways.assert_called_once()

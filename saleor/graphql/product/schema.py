@@ -4,6 +4,7 @@ from ...core.permissions import OrderPermissions, ProductPermissions
 from ..core.enums import ReportingPeriod
 from ..core.fields import FilterInputConnectionField, PrefetchingConnectionField
 from ..decorators import permission_required
+from ..descriptions import DESCRIPTIONS
 from ..translations.mutations import (
     AttributeTranslate,
     AttributeValueTranslate,
@@ -110,6 +111,7 @@ from .resolvers import (
     resolve_products,
     resolve_report_product_sales,
 )
+from .scalars import AttributeScalar
 from .sorters import (
     AttributeSortingInput,
     CategorySortingInput,
@@ -142,6 +144,23 @@ class ProductQueries(graphene.ObjectType):
     attributes = FilterInputConnectionField(
         Attribute,
         description="List of the shop's attributes.",
+        query=graphene.String(description=DESCRIPTIONS["attributes"]),
+        in_category=graphene.Argument(
+            graphene.ID,
+            description=(
+                "Return attributes for products belonging to the given category. "
+                "DEPRECATED: Will be removed in Saleor 2.10, use the `filter` field "
+                "instead."
+            ),
+        ),
+        in_collection=graphene.Argument(
+            graphene.ID,
+            description=(
+                "Return attributes for products belonging to the given collection. "
+                "DEPRECATED: Will be removed in Saleor 2.10, use the `filter` "
+                "field instead."
+            ),
+        ),
         filter=AttributeFilterInput(description="Filtering options for attributes."),
         sort_by=AttributeSortingInput(description="Sorting options for attributes."),
     )
@@ -154,6 +173,7 @@ class ProductQueries(graphene.ObjectType):
     )
     categories = FilterInputConnectionField(
         Category,
+        query=graphene.String(description=DESCRIPTIONS["category"]),
         filter=CategoryFilterInput(description="Filtering options for categories."),
         sort_by=CategorySortingInput(description="Sort categories."),
         level=graphene.Argument(
@@ -180,6 +200,7 @@ class ProductQueries(graphene.ObjectType):
         Collection,
         filter=CollectionFilterInput(description="Filtering options for collections."),
         sort_by=CollectionSortingInput(description="Sort collections."),
+        query=graphene.String(description=DESCRIPTIONS["collection"]),
         description="List of the shop's collections.",
     )
     product = graphene.Field(
@@ -192,10 +213,32 @@ class ProductQueries(graphene.ObjectType):
     products = FilterInputConnectionField(
         Product,
         filter=ProductFilterInput(description="Filtering options for products."),
+        attributes=graphene.List(
+            AttributeScalar,
+            description=(
+                "Filter products by attributes. DEPRECATED: Will be removed in "
+                "Saleor 2.10, use the `filter` field instead."
+            ),
+        ),
+        categories=graphene.List(
+            graphene.ID,
+            description=(
+                "Filter products by category. DEPRECATED: Will be removed in "
+                "Saleor 2.10, use the `filter` field instead."
+            ),
+        ),
+        collections=graphene.List(
+            graphene.ID,
+            description=(
+                "Filter products by collections. DEPRECATED: Will be removed in "
+                "Saleor 2.10, use the `filter` field instead."
+            ),
+        ),
         sort_by=ProductOrder(description="Sort products."),
         stock_availability=graphene.Argument(
             StockAvailability, description="Filter products by stock availability."
         ),
+        query=graphene.String(description=DESCRIPTIONS["product"]),
         description="List of the shop's products.",
     )
     product_type = graphene.Field(
@@ -210,6 +253,7 @@ class ProductQueries(graphene.ObjectType):
         filter=ProductTypeFilterInput(
             description="Filtering options for product types."
         ),
+        query=graphene.String(description=DESCRIPTIONS["product_type"]),
         sort_by=ProductTypeSortingInput(description="Sort product types."),
         description="List of the shop's product types.",
     )

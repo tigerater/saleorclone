@@ -581,7 +581,7 @@ ACCOUNT_REGISTER_MUTATION = """
     mutation RegisterAccount(
         $password: String!,
         $email: String!,
-        $redirectUrl: String!
+        $redirectUrl: String
     ) {
         accountRegister(
             input: {

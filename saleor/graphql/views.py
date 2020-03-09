@@ -200,7 +200,6 @@ class GraphQLView(View):
 
         logger.error("Exception information:", exc_info=exc)
 
-        result["extensions"] = {"exception": {"code": type(exc).__name__}}
         if settings.DEBUG:
             lines = []
 
@@ -209,7 +208,10 @@ class GraphQLView(View):
                     type(exc), exc, exc.__traceback__
                 ):
                     lines.extend(line.rstrip().splitlines())
-            result["extensions"]["exception"]["stacktrace"] = lines
+
+            result["extensions"] = {
+                "exception": {"code": type(exc).__name__, "stacktrace ": lines}
+            }
         return result
 
 

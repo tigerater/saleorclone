@@ -15,7 +15,7 @@ from . import (
     void,
 )
 
-GATEWAY_NAME = "Stripe"
+GATEWAY_NAME = "stripe"
 
 if TYPE_CHECKING:
     from . import GatewayResponse, PaymentData

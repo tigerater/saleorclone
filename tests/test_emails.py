@@ -1,9 +1,13 @@
 from unittest import mock
 
 import pytest
+from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 from django.templatetags.static import static
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from templated_email import get_connection
 
 import saleor.account.emails as account_emails
@@ -80,6 +84,40 @@ def test_send_emails(
         "context": email_data["context"],
         "from_email": site_settings.default_from_email,
         "template_name": template,
+    }
+
+    mocked_templated_email.assert_called_once_with(
+        recipient_list=recipients, **expected_call_kwargs
+    )
+
+    # Render the email to ensure there is no error
+    email_connection = get_connection()
+    email_connection.get_email_message(to=recipients, **expected_call_kwargs)
+
+
+@mock.patch("saleor.order.emails.send_templated_mail")
+def test_send_staff_emails_without_notification_recipient(
+    mocked_templated_email, order, site_settings
+):
+    emails.send_staff_order_confirmation(order.pk)
+    mocked_templated_email.assert_not_called()
+
+
+@mock.patch("saleor.order.emails.send_templated_mail")
+def test_send_staff_emails(
+    mocked_templated_email, order, site_settings, staff_notification_recipient
+):
+    emails.send_staff_order_confirmation(order.pk)
+    email_data = emails.collect_staff_order_notification_data(
+        order.pk, emails.STAFF_CONFIRM_ORDER_TEMPLATE
+    )
+
+    recipients = [staff_notification_recipient.get_email()]
+
+    expected_call_kwargs = {
+        "context": email_data["context"],
+        "from_email": site_settings.default_from_email,
+        "template_name": emails.STAFF_CONFIRM_ORDER_TEMPLATE,
     }
 
     mocked_templated_email.assert_called_once_with(
@@ -179,6 +217,38 @@ def test_email_having_display_name_in_settings(customer_user, site_settings, set
     assert site_settings.default_from_email == expected_from_email
 
 
+def test_send_dummy_email_with_utf_8(customer_user, site_settings):
+    site_settings.default_mail_sender_address = "hello@example.com"
+    site_settings.default_mail_sender_name = "徐 欣"
+    site_settings.save(
+        update_fields=["default_mail_sender_address", "default_mail_sender_name"]
+    )
+
+    account_emails.send_account_delete_confirmation_email(customer_user)
+
+    assert len(mail.outbox) > 0
+    message: mail.EmailMessage = mail.outbox[-1]
+    assert message.from_email == "徐 欣 <hello@example.com>"
+    assert message.extra_headers == {}
+
+
+@pytest.mark.parametrize(
+    "sender_name, sender_address",
+    (("徐 欣", "hello@example.com\nOopsie: Hello"), ("徐\n欣", "hello@example.com")),
+)
+def test_send_dummy_email_with_header_injection(
+    customer_user, site_settings, sender_name, sender_address
+):
+    site_settings.default_mail_sender_address = sender_name
+    site_settings.default_mail_sender_name = sender_address
+    site_settings.save(
+        update_fields=["default_mail_sender_address", "default_mail_sender_name"]
+    )
+
+    account_emails.send_account_delete_confirmation_email(customer_user)
+    assert len(mail.outbox) == 0
+
+
 def test_email_with_email_not_configured_raises_error(settings, site_settings):
     """Ensure an exception is thrown when not default sender is set;
     both missing in the settings.py and in the site settings table.
@@ -193,7 +263,13 @@ def test_email_with_email_not_configured_raises_error(settings, site_settings):
 
 
 def test_send_set_password_email(staff_user, site_settings):
-    password_set_url = "https://www.example.com"
+    uid = urlsafe_base64_encode(force_bytes(staff_user.pk))
+    token = default_token_generator.make_token(staff_user)
+    password_set_url = build_absolute_uri(
+        reverse(
+            "account:reset-password-confirm", kwargs={"token": token, "uidb64": uid}
+        )
+    )
     template_name = "dashboard/staff/set_password"
     recipient_email = staff_user.email
 
@@ -202,5 +278,9 @@ def test_send_set_password_email(staff_user, site_settings):
     )
 
     assert len(mail.outbox) == 1
+    generated_link = reverse(
+        "account:reset-password-confirm", kwargs={"uidb64": uid, "token": token}
+    )
+    absolute_generated_link = build_absolute_uri(generated_link)
     sended_message = mail.outbox[0].body
-    assert password_set_url in sended_message
+    assert absolute_generated_link in sended_message

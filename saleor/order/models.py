@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Max, Sum
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy
 from django_measurement.models import MeasurementField
@@ -224,7 +225,7 @@ class Order(ModelWithMetadata):
         return "#%d" % (self.id,)
 
     def get_absolute_url(self):
-        return ""
+        return reverse("order:details", kwargs={"token": self.token})
 
     def get_last_payment(self):
         return max(self.payments.all(), default=None, key=attrgetter("pk"))

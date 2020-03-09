@@ -228,8 +228,7 @@ class ServiceAccount(MetadataObjectType, CountableDjangoObjectType):
         return graphene.Node.get_node_from_global_id(_info, root.id)
 
 
-@key("id")
-@key("email")
+@key(fields="id")
 class User(MetadataObjectType, CountableDjangoObjectType):
     addresses = gql_optimizer.field(
         graphene.List(Address, description="List of all user's addresses."),
@@ -354,9 +353,7 @@ class User(MetadataObjectType, CountableDjangoObjectType):
 
     @staticmethod
     def __resolve_reference(root, _info, **_kwargs):
-        if root.id is not None:
-            return graphene.Node.get_node_from_global_id(_info, root.id)
-        return get_user_model().objects.get(email=root.email)
+        return graphene.Node.get_node_from_global_id(_info, root.id)
 
 
 class ChoiceValue(graphene.ObjectType):

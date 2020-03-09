@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
+from django.utils.translation import pgettext, pgettext_lazy
 from django_countries.fields import CountryField
 from django_prices.models import MoneyField
 from django_prices.templatetags.prices import amount
@@ -100,11 +101,15 @@ class Voucher(models.Model):
         )
         if self.type == VoucherType.SHIPPING:
             if self.is_free:
-                return "Free shipping"
-            return f"{discount} off shipping"
+                return pgettext("Voucher type", "Free shipping")
+            return pgettext("Voucher type", "%(discount)s off shipping") % {
+                "discount": discount
+            }
         if self.type == VoucherType.SPECIFIC_PRODUCT:
-            return f"%{discount} off specific products"
-        return f"{discount} off"
+            return pgettext("Voucher type", "%(discount)s off specific products") % {
+                "discount": discount
+            }
+        return pgettext("Voucher type", "%(discount)s off") % {"discount": discount}
 
     @property
     def is_free(self):
@@ -130,18 +135,27 @@ class Voucher(models.Model):
 
     def validate_min_spent(self, value: Money):
         if self.min_spent and value < self.min_spent:
-            msg = f"This offer is only valid for orders over {amount(self.min_spent)}."
-            raise NotApplicable(msg, min_spent=self.min_spent)
+            msg = pgettext(
+                "Voucher not applicable",
+                "This offer is only valid for orders over %(amount)s.",
+            )
+            raise NotApplicable(
+                msg % {"amount": amount(self.min_spent)}, min_spent=self.min_spent
+            )
 
     def validate_min_checkout_items_quantity(self, quantity):
         min_checkout_items_quantity = self.min_checkout_items_quantity
         if min_checkout_items_quantity and min_checkout_items_quantity > quantity:
-            msg = (
-                "This offer is only valid for orders with a minimum of "
-                f"{min_checkout_items_quantity} quantity."
+            msg = pgettext(
+                "Voucher not applicable",
+                (
+                    "This offer is only valid for orders with a minimum of "
+                    "%(min_checkout_items_quantity)d quantity."
+                ),
             )
             raise NotApplicable(
-                msg, min_checkout_items_quantity=min_checkout_items_quantity,
+                msg % {"min_checkout_items_quantity": min_checkout_items_quantity},
+                min_checkout_items_quantity=min_checkout_items_quantity,
             )
 
     def validate_once_per_customer(self, customer_email):
@@ -149,7 +163,9 @@ class Voucher(models.Model):
             voucher=self, customer_email=customer_email
         )
         if voucher_customer:
-            msg = "This offer is valid only once per customer."
+            msg = pgettext(
+                "Voucher not applicable", "This offer is valid only once per customer."
+            )
             raise NotApplicable(msg)
 
 
@@ -214,7 +230,7 @@ class Sale(models.Model):
         permissions = (
             (
                 DiscountPermissions.MANAGE_DISCOUNTS.codename,
-                "Manage sales and vouchers.",
+                pgettext_lazy("Permission description", "Manage sales and vouchers."),
             ),
         )
 

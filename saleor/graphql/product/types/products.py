@@ -292,7 +292,7 @@ class ProductVariant(CountableDjangoObjectType, MetadataObjectType):
                 root.stock.annotate_available_quantity().all(), info
             )
         return gql_optimizer.query(
-            root.stock.annotate_available_quantity().for_country("country").all(), info
+            root.stock.annotate_available_quantity().for_country(country).all(), info
         )
 
     @staticmethod
@@ -464,6 +464,8 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
     )
     translation = TranslationField(ProductTranslation, type_name="product")
 
+    slug = graphene.String(required=True, description="The slug of a product.")
+
     class Meta:
         description = "Represents an individual item for sale in the storefront."
         interfaces = [relay.Node]
@@ -476,7 +478,6 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
             "id",
             "is_published",
             "name",
-            "slug",
             "product_type",
             "publication_date",
             "seo_description",
@@ -609,6 +610,10 @@ class Product(CountableDjangoObjectType, MetadataObjectType):
         return resolve_meta(root, _info)
 
     @staticmethod
+    def resolve_slug(root: models.Product, *_args):
+        return root.get_slug()
+
+    @staticmethod
     def __resolve_reference(root, _info, **_kwargs):
         return graphene.Node.get_node_from_global_id(_info, root.id)
 
@@ -648,7 +653,6 @@ class ProductType(CountableDjangoObjectType, MetadataObjectType):
             "is_digital",
             "is_shipping_required",
             "name",
-            "slug",
             "weight",
             "tax_type",
         ]

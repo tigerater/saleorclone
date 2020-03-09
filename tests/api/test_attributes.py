@@ -559,7 +559,7 @@ def test_create_attribute_and_attribute_values_errors(
     assert product_errors[0]["code"] == error_code.name
 
 
-UPDATE_ATTRIBUTE_MUTATION = """
+UPDATE_ATTRIBUTE_QUERY = """
     mutation updateAttribute(
         $id: ID!, $name: String!, $addValues: [AttributeValueCreateInput]!,
         $removeValues: [ID]!) {
@@ -600,10 +600,9 @@ UPDATE_ATTRIBUTE_MUTATION = """
 def test_update_attribute_name(
     staff_api_client, color_attribute, permission_manage_products
 ):
-    query = UPDATE_ATTRIBUTE_MUTATION
+    query = UPDATE_ATTRIBUTE_QUERY
     attribute = color_attribute
     name = "Wings name"
-    slug = attribute.slug
     node_id = graphene.Node.to_global_id("Attribute", attribute.id)
     variables = {"name": name, "id": node_id, "addValues": [], "removeValues": []}
     response = staff_api_client.post_graphql(
@@ -613,14 +612,13 @@ def test_update_attribute_name(
     attribute.refresh_from_db()
     data = content["data"]["attributeUpdate"]
     assert data["attribute"]["name"] == name == attribute.name
-    assert data["attribute"]["slug"] == slug == attribute.slug
     assert data["attribute"]["productTypes"]["edges"] == []
 
 
 def test_update_attribute_remove_and_add_values(
     staff_api_client, color_attribute, permission_manage_products
 ):
-    query = UPDATE_ATTRIBUTE_MUTATION
+    query = UPDATE_ATTRIBUTE_QUERY
     attribute = color_attribute
     name = "Wings name"
     attribute_value_name = "Red Color"
@@ -648,7 +646,7 @@ def test_update_attribute_remove_and_add_values(
 def test_update_empty_attribute_and_add_values(
     staff_api_client, color_attribute_without_values, permission_manage_products
 ):
-    query = UPDATE_ATTRIBUTE_MUTATION
+    query = UPDATE_ATTRIBUTE_QUERY
     attribute = color_attribute_without_values
     name = "Wings name"
     attribute_value_name = "Yellow Color"
@@ -666,52 +664,6 @@ def test_update_empty_attribute_and_add_values(
     attribute.refresh_from_db()
     assert attribute.values.count() == 1
     assert attribute.values.filter(name=attribute_value_name).exists()
-
-
-def test_update_attribute_slug(
-    staff_api_client, color_attribute, permission_manage_products
-):
-    query = """
-        mutation updateAttribute(
-        $id: ID!, $slug: String) {
-        attributeUpdate(
-                id: $id,
-                input: {
-                    slug: $slug}) {
-            errors {
-                field
-                message
-            }
-            productErrors {
-                field
-                message
-                code
-            }
-            attribute {
-                name
-                slug
-            }
-        }
-    }
-    """
-
-    attribute = color_attribute
-    name = attribute.name
-    old_slug = attribute.slug
-    new_slug = "test-slug"
-
-    assert new_slug != old_slug
-
-    node_id = graphene.Node.to_global_id("Attribute", attribute.id)
-    variables = {"slug": new_slug, "id": node_id}
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_products]
-    )
-    content = get_graphql_content(response)
-    attribute.refresh_from_db()
-    data = content["data"]["attributeUpdate"]
-    assert data["attribute"]["name"] == name == attribute.name
-    assert data["attribute"]["slug"] == new_slug == attribute.slug
 
 
 @pytest.mark.parametrize(
@@ -740,7 +692,7 @@ def test_update_attribute_and_add_attribute_values_errors(
     color_attribute,
     permission_manage_products,
 ):
-    query = UPDATE_ATTRIBUTE_MUTATION
+    query = UPDATE_ATTRIBUTE_QUERY
     attribute = color_attribute
     node_id = graphene.Node.to_global_id("Attribute", attribute.id)
     variables = {
@@ -765,7 +717,7 @@ def test_update_attribute_and_add_attribute_values_errors(
 def test_update_attribute_and_remove_others_attribute_value(
     staff_api_client, color_attribute, size_attribute, permission_manage_products
 ):
-    query = UPDATE_ATTRIBUTE_MUTATION
+    query = UPDATE_ATTRIBUTE_QUERY
     attribute = color_attribute
     node_id = graphene.Node.to_global_id("Attribute", attribute.id)
     size_attribute = size_attribute.values.first()
@@ -773,6 +725,7 @@ def test_update_attribute_and_remove_others_attribute_value(
     variables = {
         "name": "Example name",
         "id": node_id,
+        "slug": "example-slug",
         "addValues": [],
         "removeValues": [attr_id],
     }

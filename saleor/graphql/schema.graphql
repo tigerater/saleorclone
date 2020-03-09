@@ -322,13 +322,6 @@ input AttributeSortingInput {
   direction: OrderDirection!
 }
 
-type AttributeTranslatableContent implements Node {
-  id: ID!
-  name: String!
-  translation(languageCode: LanguageCodeEnum!): AttributeTranslation
-  attribute: Attribute
-}
-
 type AttributeTranslate {
   errors: [Error!]
   attribute: Attribute
@@ -421,13 +414,6 @@ input AttributeValueInput {
   values: [String]!
 }
 
-type AttributeValueTranslatableContent implements Node {
-  id: ID!
-  name: String!
-  translation(languageCode: LanguageCodeEnum!): AttributeValueTranslation
-  attributeValue: AttributeValue
-}
-
 type AttributeValueTranslate {
   errors: [Error!]
   attributeValue: AttributeValue
@@ -500,9 +486,9 @@ type Category implements Node {
   seoDescription: String
   id: ID!
   name: String!
+  slug: String!
   description: String!
   descriptionJson: JSONString!
-  slug: String!
   parent: Category
   level: Int!
   privateMeta: [MetaStore]!
@@ -568,17 +554,6 @@ input CategoryInput {
   seo: SeoInput
   backgroundImage: Upload
   backgroundImageAlt: String
-}
-
-type CategoryTranslatableContent implements Node {
-  seoTitle: String
-  seoDescription: String
-  id: ID!
-  name: String!
-  description: String!
-  descriptionJson: JSONString!
-  translation(languageCode: LanguageCodeEnum!): CategoryTranslation
-  category: Category
 }
 
 type CategoryTranslate {
@@ -834,15 +809,15 @@ type ChoiceValue {
 }
 
 type Collection implements Node {
+  publicationDate: Date
+  isPublished: Boolean!
   seoTitle: String
   seoDescription: String
   id: ID!
   name: String!
+  slug: String!
   description: String!
   descriptionJson: JSONString!
-  publicationDate: Date
-  isPublished: Boolean!
-  slug: String!
   privateMeta: [MetaStore]!
   meta: [MetaStore]!
   products(before: String, after: String, first: Int, last: Int): ProductCountableConnection
@@ -948,17 +923,6 @@ type CollectionReorderProducts {
   errors: [Error!]
   collection: Collection
   productErrors: [ProductError!]
-}
-
-type CollectionTranslatableContent implements Node {
-  seoTitle: String
-  seoDescription: String
-  id: ID!
-  name: String!
-  description: String!
-  descriptionJson: JSONString!
-  translation(languageCode: LanguageCodeEnum!): CollectionTranslation
-  collection: Collection
 }
 
 type CollectionTranslate {
@@ -1397,8 +1361,6 @@ input DateTimeRangeInput {
 }
 
 scalar Decimal
-
-union DefaultTranslationItem = ProductTranslatableContent | CollectionTranslatableContent | CategoryTranslatableContent | AttributeTranslatableContent | AttributeValueTranslatableContent | ProductVariantTranslatableContent | PageTranslatableContent | ShippingMethodTranslatableContent | SaleTranslatableContent | VoucherTranslatableContent | MenuItemTranslatableContent
 
 type DigitalContent implements Node {
   useDefaultSettings: Boolean!
@@ -1914,9 +1876,9 @@ input MenuInput {
 
 type MenuItem implements Node {
   id: ID!
-  name: String!
   sortOrder: Int @deprecated(reason: "Will be dropped in 2.10 and is deprecated since 2.9: use the position in list instead and relative calculus to determine shift position.")
   menu: Menu!
+  name: String!
   parent: MenuItem
   category: Category
   collection: Collection
@@ -1988,13 +1950,6 @@ input MenuItemMoveInput {
   itemId: ID!
   parentId: ID
   sortOrder: Int
-}
-
-type MenuItemTranslatableContent implements Node {
-  id: ID!
-  name: String!
-  translation(languageCode: LanguageCodeEnum!): MenuItemTranslation
-  menuItem: MenuItem
 }
 
 type MenuItemTranslate {
@@ -2631,15 +2586,15 @@ type OrderVoid {
 }
 
 type Page implements Node {
+  publicationDate: Date
+  isPublished: Boolean!
   seoTitle: String
   seoDescription: String
   id: ID!
+  slug: String!
   title: String!
   content: String!
   contentJson: JSONString!
-  publicationDate: Date
-  isPublished: Boolean!
-  slug: String!
   created: DateTime!
   translation(languageCode: LanguageCodeEnum!): PageTranslation
 }
@@ -2696,20 +2651,9 @@ input PageInput {
   seo: SeoInput
 }
 
-type PageTranslatableContent implements Node {
-  seoTitle: String
-  seoDescription: String
-  id: ID!
-  title: String!
-  content: String!
-  contentJson: JSONString!
-  translation(languageCode: LanguageCodeEnum!): PageTranslation
-  page: Page
-}
-
 type PageTranslate {
   errors: [Error!]
-  page: PageTranslatableContent
+  page: Page
 }
 
 type PageTranslation implements Node {
@@ -2910,14 +2854,14 @@ input PriceRangeInput {
 
 type Product implements Node {
   id: ID!
+  publicationDate: Date
+  isPublished: Boolean!
   seoTitle: String
   seoDescription: String
+  productType: ProductType!
   name: String!
   description: String!
   descriptionJson: JSONString!
-  publicationDate: Date
-  isPublished: Boolean!
-  productType: ProductType!
   category: Category!
   updatedAt: DateTime
   chargeTaxes: Boolean!
@@ -3138,17 +3082,6 @@ type ProductPricingInfo {
   priceRangeLocalCurrency: TaxedMoneyRange
 }
 
-type ProductTranslatableContent implements Node {
-  id: ID!
-  seoTitle: String
-  seoDescription: String
-  name: String!
-  description: String!
-  descriptionJson: JSONString!
-  translation(languageCode: LanguageCodeEnum!): ProductTranslation
-  product: Product
-}
-
 type ProductTranslate {
   errors: [Error!]
   product: Product
@@ -3293,8 +3226,8 @@ type ProductUpdatePrivateMeta {
 
 type ProductVariant implements Node {
   id: ID!
-  name: String!
   sku: String!
+  name: String!
   product: Product!
   trackInventory: Boolean!
   quantityAllocated: Int!
@@ -3397,13 +3330,6 @@ input ProductVariantInput {
   weight: WeightScalar
 }
 
-type ProductVariantTranslatableContent implements Node {
-  id: ID!
-  name: String!
-  translation(languageCode: LanguageCodeEnum!): ProductVariantTranslation
-  productVariant: ProductVariant
-}
-
 type ProductVariantTranslate {
   errors: [Error!]
   productVariant: ProductVariant
@@ -3439,7 +3365,6 @@ type Query {
   webhookEvents: [WebhookEvent]
   webhookSamplePayload(eventType: WebhookEventTypeEnum!): JSONString
   translations(kind: TranslatableKinds!, before: String, after: String, first: Int, last: Int): TranslatableItemConnection
-  translation(id: ID!, kind: TranslatableKinds!): DefaultTranslationItem
   shop: Shop
   shippingZone(id: ID!): ShippingZone
   shippingZones(before: String, after: String, first: Int, last: Int): ShippingZoneCountableConnection
@@ -3587,13 +3512,6 @@ input SaleInput {
 
 type SaleRemoveCatalogues {
   errors: [Error!]
-  sale: Sale
-}
-
-type SaleTranslatableContent implements Node {
-  id: ID!
-  name: String!
-  translation(languageCode: LanguageCodeEnum!): SaleTranslation
   sale: Sale
 }
 
@@ -3750,13 +3668,6 @@ type ShippingMethod implements Node {
   maximumOrderWeight: Weight
   type: ShippingMethodTypeEnum
   translation(languageCode: LanguageCodeEnum!): ShippingMethodTranslation
-}
-
-type ShippingMethodTranslatableContent implements Node {
-  id: ID!
-  name: String!
-  translation(languageCode: LanguageCodeEnum!): ShippingMethodTranslation
-  shippingMethod: ShippingMethod
 }
 
 type ShippingMethodTranslation implements Node {
@@ -4279,8 +4190,8 @@ type VerifyToken {
 
 type Voucher implements Node {
   id: ID!
-  name: String
   type: VoucherTypeEnum!
+  name: String
   code: String!
   usageLimit: Int
   used: Int!
@@ -4366,13 +4277,6 @@ input VoucherInput {
 
 type VoucherRemoveCatalogues {
   errors: [Error!]
-  voucher: Voucher
-}
-
-type VoucherTranslatableContent implements Node {
-  id: ID!
-  name: String
-  translation(languageCode: LanguageCodeEnum!): VoucherTranslation
   voucher: Voucher
 }
 

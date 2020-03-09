@@ -2884,7 +2884,6 @@ enum PermissionEnum {
   MANAGE_SETTINGS
   MANAGE_TRANSLATIONS
   MANAGE_WEBHOOKS
-  MANAGE_CHECKOUTS
 }
 
 type Plugin implements Node {
@@ -4576,7 +4575,6 @@ enum WebhookEventTypeEnum {
   ORDER_FULFILLED
   CUSTOMER_CREATED
   PRODUCT_CREATED
-  CHECKOUT_QUANTITY_CHANGED
 }
 
 input WebhookFilterInput {

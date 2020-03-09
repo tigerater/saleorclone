@@ -227,29 +227,28 @@ def test_plugin_updates_configuration_shape(
     plugin_configuration,
     monkeypatch,
 ):
-    def new_default_configuration():
+    @classmethod
+    def new_default_configuration(cls):
         defaults = {
             "name": "PluginSample",
             "description": "",
             "active": True,
-            "configuration": plugin_configuration.configuration + [new_config],
+            "configuration": [{"name": "Test", "value": True}, new_config],
         }
         return defaults
 
-    config_structure = PluginSample.CONFIG_STRUCTURE.copy()
-    config_structure["Foo"] = new_config_structure
-    monkeypatch.setattr(PluginSample, "CONFIG_STRUCTURE", config_structure)
-
     monkeypatch.setattr(
-        PluginSample, "_get_default_configuration", new_default_configuration
+        "tests.extensions.sample_plugins.PluginSample._get_default_configuration",
+        new_default_configuration,
     )
+    PluginSample.CONFIG_STRUCTURE["Foo"] = new_config_structure
 
     configuration = manager_with_plugin_enabled.get_plugin_configuration(
         plugin_name="PluginSample"
     )
-
-    assert len(configuration.configuration) == 5
-    assert configuration.configuration[-1] == {**new_config, **new_config_structure}
+    configuration.refresh_from_db()
+    assert len(configuration.configuration) == 4
+    assert configuration.configuration[-1] == new_config
 
 
 def test_plugin_add_new_configuration(
@@ -257,9 +256,9 @@ def test_plugin_add_new_configuration(
     new_config_structure,
     manager_with_plugin_without_configuration_enabled,
     inactive_plugin_configuration,
-    monkeypatch,
 ):
-    def new_default_configuration():
+    @classmethod
+    def new_default_configuration(cls):
         defaults = {
             "name": "PluginInactive",
             "description": "",
@@ -268,16 +267,14 @@ def test_plugin_add_new_configuration(
         }
         return defaults
 
-    monkeypatch.setattr(
-        PluginInactive, "_get_default_configuration", new_default_configuration
-    )
-    config_structure = {"Foo": new_config_structure}
-    monkeypatch.setattr(PluginInactive, "CONFIG_STRUCTURE", config_structure)
+    PluginInactive._get_default_configuration = new_default_configuration
+    PluginInactive.CONFIG_STRUCTURE["Foo"] = new_config_structure
     config = manager_with_plugin_without_configuration_enabled.get_plugin_configuration(
         plugin_name="PluginInactive"
     )
+    config.refresh_from_db()
     assert len(config.configuration) == 1
-    assert config.configuration[0] == {**new_config, **new_config_structure}
+    assert config.configuration[0] == new_config
 
 
 def test_manager_serve_list_of_payment_gateways():

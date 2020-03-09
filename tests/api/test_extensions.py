@@ -15,34 +15,32 @@ def staff_api_client_can_manage_plugins(staff_api_client, permission_manage_plug
     return staff_api_client
 
 
-PLUGINS_QUERY = """
-    {
-      plugins(first:1){
-        edges{
-          node{
-            name
-            description
-            active
-            id
-            configuration{
-              name
-              type
-              value
-              helpText
-              label
-            }
-          }
-        }
-      }
-    }
-"""
-
-
 def test_query_plugin_configurations(staff_api_client_can_manage_plugins, settings):
 
     # Enable test plugin
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    response = staff_api_client_can_manage_plugins.post_graphql(PLUGINS_QUERY)
+    settings.PLUGINS = ["tests.extensions.sample_plugins.PluginSample"]
+    query = """
+        {
+          plugins(first:1){
+            edges{
+              node{
+                name
+                description
+                active
+                id
+                configuration{
+                  name
+                  type
+                  value
+                  helpText
+                  label
+                }
+              }
+            }
+          }
+        }
+    """
+    response = staff_api_client_can_manage_plugins.post_graphql(query)
     content = get_graphql_content(response)
 
     plugins = content["data"]["plugins"]["edges"]
@@ -55,6 +53,7 @@ def test_query_plugin_configurations(staff_api_client_can_manage_plugins, settin
     assert plugin["name"] == plugin_configuration.name
     assert plugin["active"] == plugin_configuration.active
     assert plugin["description"] == plugin_configuration.description
+
     for index, configuration_item in enumerate(plugin["configuration"]):
         assert (
             configuration_item["name"]
@@ -69,8 +68,6 @@ def test_query_plugin_configurations(staff_api_client_can_manage_plugins, settin
                 configuration_item["value"]
                 == plugin_configuration.configuration[index]["value"]
             )
-        elif configuration_item["value"] is None:
-            assert not plugin_configuration.configuration[index]["value"]
         else:
             assert (
                 configuration_item["value"]
@@ -78,51 +75,13 @@ def test_query_plugin_configurations(staff_api_client_can_manage_plugins, settin
             )
 
 
-@pytest.mark.parametrize(
-    "password, expected_password, api_key, expected_api_key",
-    [
-        (None, None, None, None),
-        ("ABCDEFGHIJ", "", "123456789", "6789"),
-        ("", None, "", None),
-        (None, None, "1234", "4"),
-    ],
-)
-def test_query_plugins_hides_secret_fields(
-    password,
-    expected_password,
-    api_key,
-    expected_api_key,
-    staff_api_client,
-    permission_manage_plugins,
-    settings,
-):
-
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
+def test_query_plugin_configuration(staff_api_client_can_manage_plugins, settings):
+    settings.PLUGINS = ["tests.extensions.sample_plugins.PluginSample"]
     manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration(PluginSample.PLUGIN_NAME)
-    for conf_field in plugin_configuration.configuration:
-        if conf_field["name"] == "Password":
-            conf_field["value"] = password
-        if conf_field["name"] == "API private key":
-            conf_field["value"] = api_key
-    plugin_configuration.save()
+    plugin_configuration = manager.get_plugin_configuration("PluginSample")
+    configuration_id = graphene.Node.to_global_id("Plugin", plugin_configuration.pk)
 
-    staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGINS_QUERY)
-    content = get_graphql_content(response)
-
-    plugins = content["data"]["plugins"]["edges"]
-    assert len(plugins) == 1
-    plugin = plugins[0]["node"]
-
-    for conf_field in plugin["configuration"]:
-        if conf_field["name"] == "Password":
-            assert conf_field["value"] == expected_password
-        if conf_field["name"] == "API private key":
-            assert conf_field["value"] == expected_api_key
-
-
-PLUGIN_QUERY = """
+    query = """
     query plugin($id: ID!){
       plugin(id:$id){
         name
@@ -137,64 +96,9 @@ PLUGIN_QUERY = """
         }
       }
     }
-"""
-
-
-@pytest.mark.parametrize(
-    "password, expected_password, api_key, expected_api_key",
-    [
-        (None, None, None, None),
-        ("ABCDEFGHIJ", "", "123456789", "6789"),
-        ("", None, "", None),
-        (None, None, "1234", "4"),
-    ],
-)
-def test_query_plugin_hides_secret_fields(
-    password,
-    expected_password,
-    api_key,
-    expected_api_key,
-    staff_api_client,
-    permission_manage_plugins,
-    settings,
-):
-
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration(PluginSample.PLUGIN_NAME)
-    for conf_field in plugin_configuration.configuration:
-        if conf_field["name"] == "Password":
-            conf_field["value"] = password
-        if conf_field["name"] == "API private key":
-            conf_field["value"] = api_key
-    plugin_configuration.save()
-    configuration_id = graphene.Node.to_global_id("Plugin", plugin_configuration.pk)
-
+    """
     variables = {"id": configuration_id}
-    staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGIN_QUERY, variables)
-    content = get_graphql_content(response)
-
-    plugin = content["data"]["plugin"]
-
-    for conf_field in plugin["configuration"]:
-        if conf_field["name"] == "Password":
-            assert conf_field["value"] == expected_password
-        if conf_field["name"] == "API private key":
-            assert conf_field["value"] == expected_api_key
-
-
-def test_query_plugin_configuration(
-    staff_api_client, permission_manage_plugins, settings
-):
-    settings.PLUGINS = ["tests.api.test_extensions.PluginSample"]
-    manager = get_extensions_manager()
-    plugin_configuration = manager.get_plugin_configuration("PluginSample")
-    configuration_id = graphene.Node.to_global_id("Plugin", plugin_configuration.pk)
-
-    variables = {"id": configuration_id}
-    staff_api_client.user.user_permissions.add(permission_manage_plugins)
-    response = staff_api_client.post_graphql(PLUGIN_QUERY, variables)
+    response = staff_api_client_can_manage_plugins.post_graphql(query, variables)
     content = get_graphql_content(response)
     plugin = content["data"]["plugin"]
     assert plugin["name"] == plugin_configuration.name
@@ -259,7 +163,7 @@ def test_plugin_configuration_update(
     )
     get_graphql_content(response)
 
-    plugin = PluginConfiguration.objects.get(name="PluginSample")
+    plugin.refresh_from_db()
     assert plugin.active == active
 
     first_configuration_item = plugin.configuration[0]

@@ -3,7 +3,7 @@ import graphene
 from ...core.permissions import WebhookPermissions
 from ..core.fields import FilterInputConnectionField
 from ..decorators import permission_required
-from .enums import WebhookSampleEventTypeEnum
+from .enums import WebhookEventTypeEnum
 from .filters import WebhookFilterInput
 from .mutations import WebhookCreate, WebhookDelete, WebhookUpdate
 from .resolvers import (
@@ -37,7 +37,7 @@ class WebhookQueries(graphene.ObjectType):
     webhook_sample_payload = graphene.Field(
         graphene.JSONString,
         event_type=graphene.Argument(
-            WebhookSampleEventTypeEnum,
+            WebhookEventTypeEnum,
             required=True,
             description="Name of the requested event type.",
         ),

@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 import graphene_django_optimizer as gql_optimizer
 from django.db.models import Sum
 from graphql import GraphQLError
@@ -33,9 +31,6 @@ from .sorters import (
     ProductOrderField,
     ProductTypeSortField,
 )
-
-if TYPE_CHECKING:
-    from django.db.models.query import QuerySet
 
 PRODUCT_SEARCH_FIELDS = ("name", "description")
 PRODUCT_TYPE_SEARCH_FIELDS = ("name",)
@@ -94,7 +89,9 @@ def resolve_digital_contents(info):
     return gql_optimizer.query(qs, info)
 
 
-def sort_products(qs: models.ProductsQueryset, sort_by: ProductOrder) -> "QuerySet":
+def sort_products(
+    qs: models.ProductsQueryset, sort_by: ProductOrder
+) -> models.ProductsQueryset:
     if sort_by is None:
         return qs
 

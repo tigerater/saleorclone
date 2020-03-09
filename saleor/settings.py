@@ -523,6 +523,7 @@ if SENTRY_DSN:
     sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()])
 
 GRAPHENE = {
+    "MIDDLEWARE": ("saleor.graphql.middleware.OpentracingGrapheneMiddleware",),
     "RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST": True,
     "RELAY_CONNECTION_MAX_LIMIT": 100,
 }
@@ -557,3 +558,6 @@ if (
         "Make sure you've added storefront address to ALLOWED_CLIENT_HOSTS "
         "if ENABLE_ACCOUNT_CONFIRMATION_BY_EMAIL is enabled."
     )
+
+
+ENABLE_OPENTRACING = get_bool_from_env("ENABLE_OPENTRACING", False)

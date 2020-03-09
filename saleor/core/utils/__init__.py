@@ -1,14 +1,12 @@
 import logging
 import socket
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import Optional
 from urllib.parse import urljoin
 
 from babel.numbers import get_territory_currencies
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.db.models import Model
 from django.utils.encoding import iri_to_uri
-from django.utils.text import slugify
 from django_countries import countries
 from django_countries.fields import Country
 from django_prices_openexchangerates import exchange_currency
@@ -18,11 +16,6 @@ from versatileimagefield.image_warmer import VersatileImageFieldWarmer
 
 georeader = geolite2.reader()
 logger = logging.getLogger(__name__)
-
-
-if TYPE_CHECKING:
-    # flake8: noqa: F401
-    from django.utils.safestring import SafeText
 
 
 def build_absolute_uri(location: str) -> Optional[str]:
@@ -118,48 +111,3 @@ def create_thumbnails(pk, model, size_set, image_attr=None):
         logger.info("Created %d thumbnails", num_created)
     if failed_to_create:
         logger.error("Failed to generate thumbnails", extra={"paths": failed_to_create})
-
-
-def generate_unique_slug(
-    instance: Type[Model],
-    slugable_field_name: str = None,
-    slugable_value: str = None,
-    slug_field_name: str = "slug",
-) -> str:
-    """Create unique slug for model instance.
-
-    It's required to provide slugable_field_name or slugable_value.
-
-    Args:
-        instance: model instance for which slug is created
-        slugable_field_name: name of field used to create a slug (Optional)
-        slugable_value: value used to create slug (Optional)
-        slug_field_name: name of slug field in instance model
-
-    """
-    if slugable_value:
-        slug = slugify(slugable_value)
-    elif slugable_field_name:
-        slug = slugify(getattr(instance, slugable_field_name))
-    else:
-        raise Exception("You must provide slugable_field_name or slugable_value.")
-    unique_slug: Union["SafeText", str] = slug
-
-    ModelClass = instance.__class__
-    extension = 1
-
-    search_field = f"{slug_field_name}__iregex"
-    pattern = rf"{slug}-\d+$|{slug}$"
-    slug_values = (
-        ModelClass._default_manager.filter(  # type: ignore
-            **{search_field: pattern}
-        )
-        .exclude(pk=instance.pk)
-        .values_list(slug_field_name, flat=True)
-    )
-
-    while unique_slug in slug_values:
-        extension += 1
-        unique_slug = f"{slug}-{extension}"
-
-    return unique_slug

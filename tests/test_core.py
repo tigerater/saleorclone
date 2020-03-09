@@ -16,7 +16,6 @@ from saleor.core.utils import (
     Country,
     build_absolute_uri,
     create_thumbnails,
-    generate_unique_slug,
     get_client_ip,
     get_country_by_ip,
     get_currency_for_country,
@@ -26,7 +25,7 @@ from saleor.core.weight import WeightUnits, convert_weight
 from saleor.discount.models import Sale, Voucher
 from saleor.giftcard.models import GiftCard
 from saleor.order.models import Order
-from saleor.product.models import Category, ProductImage, ProductType
+from saleor.product.models import ProductImage
 from saleor.shipping.models import ShippingZone
 
 type_schema = {
@@ -249,69 +248,3 @@ def test_placeholder(settings):
     size = 60
     result = placeholder(size)
     assert result == "/static/" + settings.PLACEHOLDER_IMAGES[size]
-
-
-@pytest.mark.parametrize(
-    "product_name, slug_result",
-    [
-        ("Paint", "paint"),
-        ("paint", "paint-3"),
-        ("Default Type", "default-type"),
-        ("default type", "default-type-2"),
-        ("Shirt", "shirt"),
-    ],
-)
-def test_generate_unique_slug_with_slugable_field(
-    product_type, product_name, slug_result
-):
-    product_names_and_slugs = [
-        ("Paint", "paint"),
-        ("Paint blue", "paint-blue"),
-        ("Paint test", "paint-2"),
-        ("paint", "p"),
-        ("Shirt", "s"),
-        ("default type", "d"),
-    ]
-    for name, slug in product_names_and_slugs:
-        test_product = ProductType.objects.get(pk=product_type.pk)
-        test_product.pk = None
-        test_product.name = name
-        test_product.slug = slug
-        test_product.save()
-
-    instance = ProductType.objects.filter(name=product_name).first()
-    result = generate_unique_slug(instance, slugable_field_name="name")
-    assert result == slug_result
-
-
-@pytest.mark.parametrize(
-    "category_name, slugable_value, slug_result",
-    [
-        ("Paint", "paint", "paint"),
-        ("paint", "paint", "paint-3"),
-        ("paint", "paint-1", "paint-1"),
-        ("Shirt", "example", "example"),
-        ("Shirt", "shirt", "shirt"),
-    ],
-)
-def test_generate_unique_slug_with_slugable_value(
-    category_name, slugable_value, slug_result
-):
-    category_names_and_slugs = [
-        ("Paint", "paint"),
-        ("Paint blue", "paint-blue"),
-        ("Paint test", "paint-2"),
-        ("paint", "p"),
-        ("Shirt", "shirt"),
-    ]
-    for name, slug in category_names_and_slugs:
-        Category.objects.create(name=name, slug=slug)
-
-    instance = Category.objects.filter(name=category_name).first()
-    result = generate_unique_slug(instance, slugable_value=slugable_value)
-    assert result == slug_result
-
-
-def test_generate_unique_slug_non_slugable_value_and_slugable_field(category):
-    with pytest.raises(Exception):
-        generate_unique_slug(category)
